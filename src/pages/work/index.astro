@@ -1,0 +1,25 @@
+---
+import Site from '../../layouts/Site.astro';
+import body from '../../html/work.html?raw';
+import '../../styles/page-base.css';
+import '../../styles/page-work.css';
+import '../../styles/mobile.css';
+import '../../styles/theme.css'; // last: the stucco theme overrides the page tokens
+
+const title = 'Work — sixteen systems by Syed Ali Hamad Gilani';
+const description =
+  'Nine delivered for clients, seven built with the workflow JSON in the repo. Every figure is counted or attributed; nothing is estimated.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: title,
+  description,
+  url: new URL('/work/', Astro.site).href,
+  author: { '@id': new URL('/#person', Astro.site).href },
+};
+---
+
+<Site title={title} description={description} jsonLd={jsonLd}>
+  <Fragment set:html={body} />
+</Site>

@@ -1,0 +1,111 @@
+---
+/* The shell for every page. The pages themselves are static HTML fragments in
+   src/html/ (ported from the approved designs) — this file owns only the head,
+   the skip link, and the structured data. It deliberately adds no nav, main or
+   footer: each fragment carries its own. */
+import { site } from '../data/site.js';
+
+/* profile: true only on the home page, which is the page about him. */
+const { title, description, jsonLd = null, profile = false } = Astro.props;
+
+const origin = new URL('/', Astro.site).href;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL('/og.jpg', Astro.site).href;
+
+/* Search Console ownership, when he sets it up: the token goes in a Vercel
+   environment variable, so verifying never needs a code change. */
+const googleVerification = process.env.GOOGLE_SITE_VERIFICATION;
+
+/* The Person ships on every page — it is what search engines and AI answer
+   engines read to work out who the site is about. One @id everywhere, so every
+   page describes the same entity, and every page's own markup can point at it.
+   alternateName carries the forms of his name people actually search for. */
+const person = {
+  '@type': 'Person',
+  '@id': `${origin}#person`,
+  name: site.name,
+  alternateName: site.alternateNames,
+  jobTitle: site.role,
+  description: site.bio,
+  url: origin,
+  email: `mailto:${site.email}`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Lahore', addressCountry: 'PK' },
+  sameAs: site.socials.filter((s) => s.href).map((s) => s.href),
+  knowsAbout: [
+    'Workflow Automation', 'n8n', 'AI Agents', 'Voice Agents', 'Large Language Models',
+    'API Integration', 'CRM Integration', 'Web Development', 'Next.js', 'PostgreSQL',
+  ],
+};
+
+/* On the home page the same Person is the subject of a ProfilePage: Google's
+   markup for "this page is about this person". Elsewhere it stands alone. */
+const identity = profile
+  ? { '@context': 'https://schema.org', '@type': 'ProfilePage', '@id': `${origin}#profile`, url: origin, mainEntity: person }
+  : { '@context': 'https://schema.org', ...person };
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <link rel="canonical" href={canonical} />
+    {googleVerification && <meta name="google-site-verification" content={googleVerification} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name} — ${site.role}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="theme-color" content="#DAD9D5" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&display=swap"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(identity)} />
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  /* The one rule the shell owns. Everything else is the page's own stylesheet. */
+  .skip {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+  }
+  .skip:focus {
+    left: 12px;
+    top: 12px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: #9c3712;
+    color: #fbfaf7;
+    font: 500 14px/1 'IBM Plex Sans', system-ui, sans-serif;
+  }
+</style>

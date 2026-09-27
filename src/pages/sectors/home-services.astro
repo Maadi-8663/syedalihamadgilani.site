@@ -1,0 +1,29 @@
+---
+import Site from '../../layouts/Site.astro';
+import ported from '../../html/sector.html?raw';
+import { withSectorFlow, withTouchCopy } from '../../mobile/diagrams.js';
+import '../../styles/page-base.css';
+import '../../styles/page-sector.css';
+import '../../styles/mobile.css';
+import '../../styles/theme.css'; // last: the stucco theme overrides the page tokens
+
+/* the wide diagram also gets a vertical phone version, built from it (src/mobile/diagrams.js) */
+const body = withTouchCopy(withSectorFlow(ported));
+
+const title = 'Home services & construction — Syed Ali Hamad Gilani';
+const description =
+  'Three systems delivered for contractors and field-service businesses — a lead-to-cash CRM for three companies, a Google Local Services Ads responder and a construction outreach line — plus four built for the sector. 44 automations counted.';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Home services & construction',
+  description,
+  url: new URL('/sectors/home-services/', Astro.site).href,
+  author: { '@id': new URL('/#person', Astro.site).href },
+};
+---
+
+<Site title={title} description={description} jsonLd={jsonLd}>
+  <Fragment set:html={body} />
+</Site>
