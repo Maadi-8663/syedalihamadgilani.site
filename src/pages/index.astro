@@ -6,6 +6,7 @@ import { withSectorCards } from '../pictures/sectors.js';
 import { withToolCluster } from '../pictures/cluster.js';
 import { withBrandColours } from '../pictures/brands.js';
 import { withWords } from '../motion/words.js';
+import { withIntegrationsLink } from '../integrations/nav.js';
 import '../styles/page-home.css';
 import '../styles/cards.css';
 import '../styles/mobile.css';
@@ -17,7 +18,8 @@ import { site } from '../data/site.js';
    expertise pictures, the sector photos, the doubled tool cluster and its
    brand colours, and the word-split headings go in here, at build time, so a
    re-port keeps them. */
-const body = withWords(withSectorCards(withBrandColours(withToolCluster(withPictures(ported)))), [/<h2 class="say rv">/, /<h2>/]);
+const body = withIntegrationsLink(
+  withWords(withSectorCards(withBrandColours(withToolCluster(withPictures(ported)))), [/<h2 class="say rv">/, /<h2>/]));
 
 const title = 'Syed Ali Hamad Gilani — AI Automation Engineer & Web Developer';
 /* His full name leads the description: it is the snippet Google shows under

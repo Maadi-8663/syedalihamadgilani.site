@@ -1,0 +1,51 @@
+/* integrations.css — the Integrations page's cards (2026-09-29).
+
+   Layout and the flip only. Colours are theme tokens, and each card's brand
+   colour arrives as --brand; theme.css applies it. The page borrows /work/'s
+   header, spine and sticky group headers from page-work.css, so only the
+   cards live here.
+
+   Every selector starts with `html`, for the reason theme.css gives: the
+   build can emit this file before the page stylesheets. */
+
+html .icards{list-style:none;margin:22px 0 48px;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(236px,1fr));gap:16px}
+html .icard{position:relative;border-radius:16px;perspective:1200px;outline:none}
+html .icard .flip{position:relative;display:grid;height:100%;transform-style:preserve-3d;transition:transform 720ms var(--enter)}
+/* both sides share one grid cell, so a card is as tall as its longer side */
+html .icard .side{grid-area:1/1;display:flex;flex-direction:column;min-width:0;border:1px solid var(--hair);border-radius:16px;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden}
+html .icard .front{align-items:center;justify-content:center;gap:18px;min-height:212px;padding:30px 18px 26px;background:var(--paper2)}
+html .icard .back{justify-content:flex-start;gap:12px;padding:20px 20px 22px;background:var(--wash);border-color:var(--accent);transform:rotateY(180deg)}
+html .icard .mark{display:block;width:64px;height:64px}
+html .icard .mark .br{width:100%;height:100%}
+html .icard .nm{font-family:var(--serif);font-weight:400;font-size:21px;line-height:1.15;letter-spacing:-.01em;color:var(--ink);text-align:center}
+html .icard .nm.type{font-style:italic;font-size:30px}
+html .icard .bt{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+html .icard .bt .br{width:18px;height:18px;flex:none}
+html .icard .tx{font-size:14px;line-height:1.55;color:var(--ink2)}
+
+/* A pointer turns a card on hover; focus turns it too, for keyboards and for
+   a tap on a phone, where there is no hover. */
+@media (hover:hover){html .icard:hover .flip{transform:rotateY(180deg)}}
+html .icard:focus .flip,html .icard:focus-within .flip{transform:rotateY(180deg)}
+html .icard:focus-visible{box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--accent)}
+@media (prefers-reduced-motion:reduce){html .icard .flip{transition:none}}
+
+/* Phones: no hover, and a card turned by a tap hides what it says — two to a
+   row, every card was as tall as its text (~270px) with a near-empty front.
+   So here a card does not turn: it is one plain card, mark and name on top,
+   what the integration does below, one to a row, nothing to tap. */
+@media (max-width:719px){
+  html .icards{grid-template-columns:1fr;gap:10px;margin:16px 0 36px}
+  html .icard{perspective:none;border:1px solid var(--hair);background:var(--paper2)}
+  html .icard .flip{display:block;transform:none!important;transition:none}
+  html .icard .side{border:0;border-radius:0;background:none;-webkit-backface-visibility:visible;backface-visibility:visible}
+  html .icard .front{flex-direction:row;justify-content:flex-start;gap:12px;min-height:0;padding:16px 16px 0}
+  html .icard .mark{width:30px;height:30px}
+  html .icard .nm{font-size:19px;text-align:left}
+  html .icard .nm.type{font-size:21px}
+  html .icard .back{transform:none;gap:0;padding:10px 16px 18px}
+  html .icard .bt{display:none}
+  html .icard .tx{font-size:14px}
+  html .int-hint{display:none}
+}

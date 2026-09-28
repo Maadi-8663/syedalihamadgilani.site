@@ -82,3 +82,26 @@ export function withBrandColours(page) {
   if (!placed) throw new Error('brand colours: no cluster tiles found — the hero markup changed');
   return out;
 }
+
+/* The Home services page's tool marks, coloured the same way (2026-09-29, his
+   request: "Make the logos on the Home services page colourful too"). A tool
+   set in type (.tnode.wide) has no mark and keeps its ink. The caption under
+   the marks said they were "set in one ink", so it changes in the same step —
+   the words and the marks cannot disagree — and it now points to the page
+   that says what each integration does. */
+const INK = 'Marks are the vendors’ own, set in one ink; a tool without a published mark is set in type.';
+const COLOUR = 'Marks are the vendors’ own, in their own colours; a tool without a published mark is set in type. '
+  + '<a class="link" href="/integrations/">What each integration does</a>';
+
+export function withTnodeColours(page) {
+  let placed = 0;
+  let out = page.replace(/<li class="tnode" tabindex="0" aria-label="([^",]+), used in [^"]*">/g, (m, name) => {
+    const hex = BRAND[name];
+    if (!hex) throw new Error(`brand colours: no colour for the tool mark "${name}" — add it from Simple Icons`);
+    placed++;
+    return m.replace('<li class="tnode"', `<li class="tnode" style="--brand:${hex}"`);
+  });
+  if (!placed) throw new Error('brand colours: no tool marks found — the sector markup changed');
+  if (out.split(INK).length !== 2) throw new Error('brand colours: the tool-mark caption changed — update withTnodeColours');
+  return out.replace(INK, COLOUR);
+}

@@ -2,6 +2,7 @@
 import Site from '../../layouts/Site.astro';
 import ported from '../../html/work.html?raw';
 import { withWords } from '../../motion/words.js';
+import { withIntegrationsLink } from '../../integrations/nav.js';
 import '../../styles/page-base.css';
 import '../../styles/page-work.css';
 import '../../styles/mobile.css';
@@ -10,7 +11,7 @@ import '../../styles/theme.css'; // last: the stucco theme overrides the page to
 
 /* the headings, split into words for motion.css: the title on load, the
    group names as they scroll in */
-const body = withWords(withWords(ported, [/<h1 class="serif"[^>]*>/], 'load'), [/<h2>/]);
+const body = withIntegrationsLink(withWords(withWords(ported, [/<h1 class="serif"[^>]*>/], 'load'), [/<h2>/]));
 
 const title = 'Work — sixteen systems by Syed Ali Hamad Gilani';
 const description =

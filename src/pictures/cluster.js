@@ -112,31 +112,48 @@ function place(ringIndex, i) {
 
 const pct = (x) => `${Math.round(x * 10) / 10}%`;
 
-export function withToolCluster(page) {
-  const open = '<div class="cluster" aria-label="Tools used in the work">';
-  const start = page.indexOf(open);
-  if (start === -1) throw new Error('tool cluster: the hero cluster is missing — the ported markup changed');
-  const end = page.indexOf('</div>', start);
-  const inner = page.slice(start + open.length, end);
+const OPEN = '<div class="cluster" aria-label="Tools used in the work">';
+const TILE = /<span class="tile" style="([^"]*)" title="([^"]*)" role="img" aria-label="([^"]+)">(<svg[\s\S]*?<\/svg>)<\/span>/g;
+const PORTED = RINGS[0].n + RINGS[1].n + RINGS[2].n;
 
-  const TILE = /<span class="tile" style="([^"]*)" title="([^"]*)" role="img" aria-label="([^"]+)">(<svg[\s\S]*?<\/svg>)<\/span>/g;
-  const ported = [...inner.matchAll(TILE)].map((m) => ({
+/* The cluster as ported: where its tiles sit in the page, and the tiles. */
+function portedCluster(page) {
+  const at = page.indexOf(OPEN);
+  if (at === -1) throw new Error('tool cluster: the hero cluster is missing — the ported markup changed');
+  const start = at + OPEN.length;
+  const end = page.indexOf('</div>', start);
+  const inner = page.slice(start, end);
+  const tiles = [...inner.matchAll(TILE)].map((m) => ({
     style: m[1], title: m[2], label: m[3], svg: m[4],
     k: m[1].match(/--k:(\d+)/)[1], bob: m[1].match(/--bob:([\d.]+s)/)[1],
   }));
-  const portedSlots = RINGS[0].n + RINGS[1].n + RINGS[2].n;
-  if (ported.length !== portedSlots || inner.replace(TILE, '').trim()) {
-    throw new Error(`tool cluster: expected ${portedSlots} ported tiles and nothing else, found ${ported.length}`);
+  if (tiles.length !== PORTED || inner.replace(TILE, '').trim()) {
+    throw new Error(`tool cluster: expected ${PORTED} ported tiles and nothing else, found ${tiles.length}`);
   }
+  return { start, end, tiles };
+}
+
+const addedSvg = (t) => '<svg class="br" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">'
+  + (BACKED.has(t.label) ? '<rect x="1" y="1" width="22" height="22" fill="#000"/>' : '')
+  + `<path d="${t.path}"/></svg>`;
+
+/* Every mark in the cluster, by label — the Integrations page draws its cards
+   from these, so a logo exists in one place only. */
+export function toolMarks(page) {
+  const marks = new Map(portedCluster(page).tiles.map((t) => [t.label, t.svg]));
+  for (const t of ADDED) marks.set(t.label, addedSvg(t));
+  return marks;
+}
+
+export function withToolCluster(page) {
+  const { start, end, tiles: ported } = portedCluster(page);
   if (ADDED.length !== RINGS[3].n) throw new Error(`tool cluster: the outer ring holds ${RINGS[3].n}, not ${ADDED.length}`);
 
   const added = ADDED.map((t, i) => ({
     label: t.label,
     title: t.count ? `${t.label} · in ${t.count} system${t.count === 1 ? '' : 's'}` : t.label,
-    svg: '<svg class="br" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">'
-      + (BACKED.has(t.label) ? '<rect x="1" y="1" width="22" height="22" fill="#000"/>' : '')
-      + `<path d="${t.path}"/></svg>`,
-    k: String(portedSlots + i), bob: BOB[i % BOB.length],
+    svg: addedSvg(t),
+    k: String(PORTED + i), bob: BOB[i % BOB.length],
   }));
 
   const tiles = [...ported, ...added];
@@ -148,5 +165,5 @@ export function withToolCluster(page) {
       + `title="${t.title}" role="img" aria-label="${t.label}">${t.svg}</span>`;
   })).join('');
 
-  return page.slice(0, start + open.length) + html + page.slice(end);
+  return page.slice(0, start) + html + page.slice(end);
 }

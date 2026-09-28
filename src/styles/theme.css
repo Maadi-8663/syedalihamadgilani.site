@@ -124,6 +124,12 @@ html .skill:hover{box-shadow:0 18px 34px -22px rgba(48,44,36,.42)}
    own choice; each tile says its name on hover and to screen readers. */
 html .cluster .tile{color:var(--brand,var(--ink2))}
 html .cluster .tile:hover{color:var(--brand,var(--accent))}
+/* The same colours, 2026-09-29, his request: the Home services page's tool
+   marks (a tapped or turned mark still takes the oxide; the mark itself keeps
+   its colour) and the Integrations page's cards, whose turned side is the
+   one accent's wash. */
+html .tnode .face:not(.back) .br{fill:var(--brand,currentColor)}
+html .icard .mark,html .icard .bt .br{color:var(--brand,var(--ink2))}
 
 /* ---- text on an accent fill -------------------------------------------- */
 html ::selection{background:var(--accent);color:var(--on-accent)}

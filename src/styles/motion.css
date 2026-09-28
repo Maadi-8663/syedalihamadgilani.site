@@ -192,6 +192,14 @@ html:root{
   html .invkey>span{animation:mo-fade var(--mo-ease) both;animation-timeline:--mo-inv;
     animation-range:entry calc(6vh + var(--d, 0) * 1vh) entry calc(18vh + var(--d, 0) * 1vh)}
 
+  /* the Integrations cards rise a few at a time along each row of four
+     (2026-09-29); the last finishes 30vh after entering, like every reveal */
+  html .icards .icard{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
+    animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
+  html .icards .icard:nth-child(4n+2){--d:2}
+  html .icards .icard:nth-child(4n+3){--d:4}
+  html .icards .icard:nth-child(4n+4){--d:6}
+
   /* stagger steps, by position among siblings */
   html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(2){--d:1}
   html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(3){--d:2}
@@ -221,5 +229,7 @@ html:root{
   html .hero>.cluster,html .skill .pic svg{animation:none}
   @keyframes mo-hero-copy-sm{to{translate:0 -6vh}}
   html .guards li:nth-child(2n){--d:0}
+  /* one card to a row here, so no card waits for another */
+  html .icards .icard:nth-child(n){--d:0}
 }
 }
