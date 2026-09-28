@@ -2,7 +2,7 @@
 import Site from '../layouts/Site.astro';
 import work from '../html/work.html?raw';
 import home from '../html/home.html?raw';
-import { integrationsPage, TOOL_COUNT, spell } from '../integrations/page.js';
+import { integrationsPage } from '../integrations/page.js';
 import { withWords } from '../motion/words.js';
 import '../styles/page-base.css';
 import '../styles/page-work.css';
@@ -14,9 +14,12 @@ import '../styles/theme.css'; // last: the stucco theme overrides the page token
 /* Not a ported page: it is built from src/integrations/ at build time, in
    the register's clothes (see page.js). Its title rises word by word on
    load and its group names as they scroll in, as on /work/. */
-const body = withWords(withWords(integrationsPage({ work, home }), [/<h1 class="serif"[^>]*>/], 'load'), [/<h2>/]);
+const body = withWords(withWords(integrationsPage({ work, home }), [/<h1 class="serif"[^>]*>/], 'load'),
+  [/<h2>/, /<h2 class="more-h serif"[^>]*>/]);
 
-const title = `Integrations — ${spell(TOOL_COUNT)} tools, connected by Syed Ali Hamad Gilani`;
+/* No count, in the title or the heading — his instruction, 2026-09-29: "dont
+   write the number: 45 Tools". The page ends "And a lot more." */
+const title = 'Integrations — tools connected by Syed Ali Hamad Gilani';
 const description =
   'What each integration does: n8n, WhatsApp, OpenAI, HubSpot, GoHighLevel, Google Workspace, Shopify, Stripe and the rest of the tools Syed Ali Hamad Gilani connects and builds with.';
 

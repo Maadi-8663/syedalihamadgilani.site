@@ -18,19 +18,7 @@ import { GROUPS, TYPESET } from './tools.js';
 import { toolMarks } from '../pictures/cluster.js';
 import { BRAND } from '../pictures/brands.js';
 import { withIntegrationsLink } from './nav.js';
-
-export const TOOL_COUNT = GROUPS.reduce((n, g) => n + g.tools.length, 0);
-
-const ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven',
-  'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
-const TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-
-/* The count in words, as /work/ writes "Sixteen systems." */
-export function spell(n) {
-  if (n < 20) return ONES[n];
-  if (n < 100) return TENS[Math.floor(n / 10)] + (n % 10 ? `-${ONES[n % 10]}` : '');
-  throw new Error(`integrations: no words for ${n}`);
-}
+import { site } from '../data/site.js';
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
 const cut = (page, open, close) => {
@@ -63,7 +51,24 @@ export function integrationsPage({ work, home }) {
         <ul class="icards">${g.tools.map(card).join('')}</ul>
       </section>`;
 
-  const count = spell(TOOL_COUNT);
+  /* The close (his words, 2026-09-29: "And a lot more. Book an appointment to
+     get your manual tasks automated... And add the place for writing"). The
+     site ships no JavaScript and has no form back end, so the writing goes
+     out as email: the browser turns the form into a message in the visitor's
+     own email app, and the note says so. Measured in Chrome, 2026-09-29: as
+     a GET form it wrote every space as "+" ("Hi+Syed,"); as plain text, below,
+     spaces survive and the subject comes from the address, at the price of a
+     "Message=" before the text and a line break where someone types "&". */
+  const close = `<section class="more" aria-labelledby="more">
+        <div class="more-say"><h2 class="more-h serif" id="more">And a lot more.</h2><p class="body rv">Book an appointment to get your manual tasks automated.</p></div>
+        <form class="more-form rv" action="mailto:${site.email}?subject=Appointment%3A%20automating%20a%20manual%20task" method="post" enctype="text/plain">
+          <label class="q" for="more-msg">What should be automated?</label>
+          <textarea id="more-msg" name="Message" rows="6" required placeholder="The task, how often it happens, and the tools it touches. For example: every new web lead is copied into the CRM by hand, then sent a quote."></textarea>
+          <button class="send" type="submit">Book an appointment <svg class="sy" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <p class="note">This opens your email app with your message, addressed to <a class="link" href="mailto:${site.email}">${site.email}</a>.</p>
+        </form>
+      </section>`;
+
   const nav = withIntegrationsLink(cut(work, '<nav class="nav"', '</nav>'), { current: true });
   return `<div class="page">
 ${nav}
@@ -72,11 +77,12 @@ ${nav}
     <span class="spine" aria-hidden="true"></span>
     <div class="wrap" style="padding-top:64px">
       <p class="label">Integrations</p>
-      <h1 class="serif" style="font-size:clamp(48px,6.6vw,96px);line-height:1;margin-top:20px">${count[0].toUpperCase() + count.slice(1)} tools.</h1>
+      <h1 class="serif" style="font-size:clamp(48px,6.6vw,96px);line-height:1;margin-top:20px">Your tools, working together.</h1>
       <div class="reg-head">
         <p class="body" style="max-width:760px">The platforms, services and frameworks I connect and build with, grouped by the job they do.<span class="int-hint"> <span class="if-hover">Hover</span><span class="if-touch">Tap</span> a card to see what each integration covers.</span></p>
       </div>
       ${GROUPS.map(group).join('')}
+      ${close}
     </div>
   </div>
 </main>

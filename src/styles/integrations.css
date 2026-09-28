@@ -24,6 +24,24 @@ html .icard .bt{display:flex;align-items:center;gap:9px;font-family:var(--mono);
 html .icard .bt .br{width:18px;height:18px;flex:none}
 html .icard .tx{font-size:14px;line-height:1.55;color:var(--ink2)}
 
+/* The close: "And a lot more", and a message that books a call (page.js says
+   why it is a mailto form). The card, label and button follow the home
+   page's contact composer. */
+html .more{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:28px 56px;align-items:start;margin:40px 0 96px;padding-top:48px;border-top:1px solid var(--hair)}
+html .more-h{font-size:clamp(40px,5vw,72px);line-height:1;color:var(--ink)}
+html .more-say .body{margin-top:18px;max-width:420px}
+html .more-form{display:flex;flex-direction:column;gap:12px;border:1px solid var(--hair);border-radius:18px;background:var(--paper2);padding:clamp(18px,2.2vw,28px)}
+html .more-form .q{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+html .more-form textarea{display:block;width:100%;min-height:150px;resize:vertical;padding:14px 16px;border:1px solid var(--hair);border-radius:12px;
+  background:var(--paper2);color:var(--ink);font:400 15px/1.55 var(--sans)}
+html .more-form textarea::placeholder{color:var(--ink3)}
+html .more-form textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--wash)}
+html .more-form .send{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;min-height:44px;margin-top:4px;padding:0 20px;border:0;border-radius:22px;
+  background:var(--accent);color:var(--on-accent);font:600 14px/1 var(--sans);cursor:pointer;transition:background 120ms var(--enter)}
+html .more-form .send:hover{background:var(--accent-2)}
+html .more-form .send:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html .more-form .note{font-size:13px;line-height:1.5;color:var(--ink3)}
+
 /* A pointer turns a card on hover; focus turns it too, for keyboards and for
    a tap on a phone, where there is no hover. */
 @media (hover:hover){html .icard:hover .flip{transform:rotateY(180deg)}}
@@ -48,4 +66,6 @@ html .icard:focus-visible{box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--acce
   html .icard .bt{display:none}
   html .icard .tx{font-size:14px}
   html .int-hint{display:none}
+  html .more{grid-template-columns:1fr;gap:22px;margin:24px 0 64px;padding-top:34px}
+  html .more-h{font-size:clamp(36px,11vw,48px)}
 }
