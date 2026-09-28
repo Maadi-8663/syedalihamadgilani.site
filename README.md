@@ -12,4 +12,4 @@ the headings are split into words at build time so they can rise word by word.
     npm install
     npm run build      # output in dist/
 
-Deployed on Vercel.
+Deployed on Vercel from this repository: every push to `main` goes live.
