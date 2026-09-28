@@ -130,6 +130,8 @@ html .cluster .tile:hover{color:var(--brand,var(--accent))}
    one accent's wash. */
 html .tnode .face:not(.back) .br{fill:var(--brand,currentColor)}
 html .icard .mark,html .icard .bt .br{color:var(--brand,var(--ink2))}
+/* a card that is not a vendor's (Custom Automations) draws its icon in the accent */
+html .icard.custom .mark,html .icard.custom .bt .sy{color:var(--accent)}
 
 /* ---- text on an accent fill -------------------------------------------- */
 html ::selection{background:var(--accent);color:var(--on-accent)}

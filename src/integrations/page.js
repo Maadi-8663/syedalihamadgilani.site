@@ -14,8 +14,9 @@
    the first paint. This throws if a card would ship without its mark or its
    colour. */
 
-import { GROUPS, TYPESET } from './tools.js';
+import { GROUPS, TYPESET, CUSTOM } from './tools.js';
 import { toolMarks } from '../pictures/cluster.js';
+import { integrationMarks } from './marks.js';
 import { BRAND } from '../pictures/brands.js';
 import { withIntegrationsLink } from './nav.js';
 import { site } from '../data/site.js';
@@ -28,13 +29,20 @@ const cut = (page, open, close) => {
 };
 
 export function integrationsPage({ work, home }) {
-  const marks = toolMarks(home);
+  const marks = new Map([...toolMarks(home), ...integrationMarks()]);
 
   const card = ([name, text]) => {
+    if (CUSTOM[name]) {
+      /* not a vendor's tool: its own line icon, in the one accent */
+      const icon = '<svg class="sy" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" '
+        + `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${CUSTOM[name]}</svg>`;
+      return `<li class="icard custom" tabindex="0"><div class="flip"><div class="side front"><span class="mark">${icon}</span><h3 class="nm">${esc(name)}</h3></div>`
+        + `<div class="side back"><p class="bt" aria-hidden="true">${icon}<span>${esc(name)}</span></p><p class="tx">${esc(text)}</p></div></div></li>`;
+    }
     const typeset = TYPESET.has(name);
     const svg = marks.get(name);
     if (typeset === Boolean(svg)) {
-      throw new Error(`integrations: ${name} ${typeset ? 'has a mark but is set in type' : 'has no mark in the cluster'}`);
+      throw new Error(`integrations: ${name} ${typeset ? 'has a mark but is set in type' : 'has no mark in the cluster or marks.js'}`);
     }
     if (!typeset && !BRAND[name]) throw new Error(`integrations: no brand colour for ${name}`);
     const front = typeset
@@ -45,9 +53,10 @@ export function integrationsPage({ work, home }) {
     return `<li class="icard" tabindex="0"${typeset ? '' : ` style="--brand:${BRAND[name]}"`}><div class="flip">${front}${back}</div></li>`;
   };
 
+  const tools = (g) => g.tools.filter(([name]) => !CUSTOM[name]).length;
   const group = (g, i) => `<section class="group" id="${g.id}">
         <span class="snode" style="top:40px" aria-hidden="true"></span>
-        <div class="ghead"><span class="ring"><svg class="sy " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${g.icon}</svg></span><h2>${esc(g.title)}</h2><span class="n">${String(i + 1).padStart(2, '0')} · ${g.tools.length} ${g.tools.length === 1 ? 'TOOL' : 'TOOLS'}</span></div>
+        <div class="ghead"><span class="ring"><svg class="sy " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${g.icon}</svg></span><h2>${esc(g.title)}</h2><span class="n">${String(i + 1).padStart(2, '0')} · ${tools(g)} ${tools(g) === 1 ? 'TOOL' : 'TOOLS'}</span></div>
         <ul class="icards">${g.tools.map(card).join('')}</ul>
       </section>`;
 

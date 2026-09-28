@@ -63,6 +63,11 @@ export const BRAND = {
   'LangChain': '#7FC8FF',
   'FastAPI': '#009688',
   'Google Search': '#4285F4',
+  /* on the Integrations page only (src/integrations/marks.js), 2026-09-29 */
+  'Zapier': '#FF4F00',
+  'IFTTT': '#000000',
+  'Node-RED': '#8F0000',
+  'Apache Airflow': '#017CEE',
 };
 
 /* A tile named for what the tool did, where Simple Icons names the brand. */

@@ -12,9 +12,14 @@
    the 38 marks of the home page's cluster (src/pictures/cluster.js has the
    evidence that each was used in real work), plus the seven the site sets
    in type because Simple Icons publishes no mark for them: OpenAI, Twilio,
-   GoHighLevel, HouseCall Pro, CallRail, Skyvern and Apify. A name here must
-   match its label in the cluster and in brands.js; page.js throws if a
-   marked tool has no mark, so a typo cannot ship a blank card.
+   GoHighLevel, HouseCall Pro, CallRail, Skyvern and Apify. Later the same
+   day he asked for more: "Add more automation platforms: Zapier, and all
+   others you know. And also add a card named Custom Automations." Those
+   platforms are listed at his word, as what he offers — this page is
+   capabilities, where the cluster is evidence, so they are not in the
+   cluster. Their marks, where Simple Icons has one, are in marks.js. A name
+   here must match its label there, in the cluster and in brands.js; page.js
+   throws if a marked tool has no mark, so a typo cannot ship a blank card.
 
    `icon` is each group's ring, drawn in the site's line style (24px, 1.5
    stroke). Groups run from the platforms that do the automating to the
@@ -27,6 +32,16 @@ export const GROUPS = [
     tools: [
       ['n8n', 'End-to-end workflows on n8n, self-hosted or cloud: webhooks, schedules, sub-workflows and custom code, with error handling, retries and duplicate protection built in, so a failed step is caught and recovered, never silently lost.'],
       ['Make', 'Scenarios in Make for teams that prefer a visual builder: routers, filters and iterators moving data between your apps, with error routes and schedules set up so the scenario can be maintained without a developer.'],
+      ['Zapier', 'Zaps across the apps your team already uses: multi-step workflows with paths, filters and formatting, built so a non-technical team can read and adjust them, and documented step by step at hand-over.'],
+      ['Microsoft Power Automate', 'Flows inside Microsoft 365: approvals in Teams and Outlook, files routed to SharePoint and OneDrive, Excel and Dataverse kept in step, and connectors out to the rest of your stack.'],
+      ['Pipedream', 'Code-first workflows on Pipedream: event-driven steps in Node.js or Python between any APIs, for integrations that need custom logic without running a server of your own.'],
+      ['IFTTT', 'IFTTT applets for small, everyday automations: a single trigger and action between common apps and smart devices, for jobs too small to justify a full workflow.'],
+      ['Pabbly Connect', 'Pabbly Connect workflows for flat-price automation: triggers, routers and filters moving data between your apps, set up and documented so your team can run them day to day.'],
+      ['Node-RED', 'Flow-based automation on Node-RED for devices, sensors and internal systems: lightweight, self-hosted flows that watch, transform and route events as they happen.'],
+      ['Activepieces', 'Open-source automation on Activepieces, self-hosted so the data stays on your servers: flows with branches, loops and AI steps that your team can maintain after hand-over.'],
+      ['Apache Airflow', 'Scheduled data pipelines on Apache Airflow: workflows that extract, transform and load data between your systems on a timetable, with retries, dependencies and a record of every run.'],
+      ['Workato', 'Workato recipes for larger organisations: governed integrations between ERP, CRM, finance and HR systems, with error handling, logging and role-based access.'],
+      ['Custom Automations', 'When no platform fits: automations written as code around your process — Python or Node.js services, scheduled jobs, webhooks and AI agents — hosted on your servers or in the cloud, with logging and alerts so no failure goes unseen.'],
     ],
   },
   {
@@ -123,4 +138,12 @@ export const GROUPS = [
 ];
 
 /* The tools set in type: no published mark, so their card shows the name. */
-export const TYPESET = new Set(['OpenAI', 'Skyvern', 'Twilio', 'CallRail', 'GoHighLevel', 'HouseCall Pro', 'Apify']);
+export const TYPESET = new Set(['OpenAI', 'Skyvern', 'Twilio', 'CallRail', 'GoHighLevel', 'HouseCall Pro', 'Apify',
+  'Microsoft Power Automate', 'Pipedream', 'Pabbly Connect', 'Activepieces', 'Workato']);
+
+/* Cards that are not a vendor's tool, with the line icon their front shows
+   in place of a mark (2026-09-29, his request: "add a card named Custom
+   Automations"). They are not counted in a group's tools. */
+export const CUSTOM = {
+  'Custom Automations': '<path d="M8.5 7.5 4 12l4.5 4.5M15.5 7.5 20 12l-4.5 4.5M13.5 5l-3 14"/>',
+};
