@@ -114,6 +114,17 @@ html .snode::before{background:var(--wash)}
 @supports not (animation-timeline: view()){html .cats .ring{background:var(--wash)}}
 html .skill:hover{box-shadow:0 18px 34px -22px rgba(48,44,36,.42)}
 
+/* ---- the hero's logos, in their own colours ----------------------------
+   Syed, 2026-09-28: "use the original colour of the logos. Like green for
+   Whatsapp." Each cluster tile carries its brand's colour as --brand
+   (src/pictures/brands.js, from Simple Icons). Like the picture grounds these
+   are imagery, not UI colour, so the one-accent rule stands: a hovered tile
+   still takes the oxide ring and wash, and its logo keeps its colour. The
+   pale ones (React, WhatsApp, Supabase) are pale on white by their brands'
+   own choice; each tile says its name on hover and to screen readers. */
+html .cluster .tile{color:var(--brand,var(--ink2))}
+html .cluster .tile:hover{color:var(--brand,var(--accent))}
+
 /* ---- text on an accent fill -------------------------------------------- */
 html ::selection{background:var(--accent);color:var(--on-accent)}
 html .chips input:checked+label,html .send,html .send:hover,html .send .sy{color:var(--on-accent)}
