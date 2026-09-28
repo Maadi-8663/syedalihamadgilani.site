@@ -2,7 +2,9 @@
 
    Syed: "The logos in the clusters are all white. Make them colourfull... use
    the original colour of the logos. Like green for Whatsapp." Until then every
-   mark in the cluster was set in the site's ink on a plaster disc.
+   mark in the cluster was set in the site's ink on a plaster disc. The next
+   day the cluster doubled to 38 (src/pictures/cluster.js), and the added
+   tools' colours were taken the same way.
 
    Each colour is the brand's own as Simple Icons publishes it — v16.29.0,
    data/simple-icons.json, where every entry cites the brand's guidelines or
@@ -11,7 +13,7 @@
    so a build on Vercel would not have it. To re-check them against the
    package, if it is still installed (prints only mismatches):
 
-     node --input-type=module -e "import {BRAND} from './src/pictures/brands.js'; import fs from 'node:fs'; const d = JSON.parse(fs.readFileSync('node_modules/simple-icons/data/simple-icons.json', 'utf8')); for (const [t, h] of Object.entries(BRAND)) { const x = d.find((i) => i.title === t); if (!x || '#' + x.hex !== h) console.log('MISMATCH', t, h, x && x.hex); }"
+     node --input-type=module -e "import {BRAND, SI_TITLE} from './src/pictures/brands.js'; import fs from 'node:fs'; const d = JSON.parse(fs.readFileSync('node_modules/simple-icons/data/simple-icons.json', 'utf8')); for (const [t, h] of Object.entries(BRAND)) { const x = d.find((i) => i.title === (SI_TITLE[t] || t)); if (!x || '#' + x.hex !== h) console.log('MISMATCH', t, h, x && x.hex); }"
 
    (or search the titles at simpleicons.org). Next.js and ElevenLabs really are
    black. Logos that are several colours (Gmail, Python, Google Ads, Gemini,
@@ -42,7 +44,29 @@ export const BRAND = {
   'Meta': '#0467DF',
   'Telegram': '#26A5E4',
   'ElevenLabs': '#000000',
+  'HubSpot': '#FF7A59',
+  'Google Calendar': '#4285F4',
+  'Prisma': '#2D3748',
+  'Airtable': '#18BFFF',
+  'Make': '#6D00CC',
+  'NGINX': '#009639',
+  'Notion': '#000000',
+  'JavaScript': '#F7DF1E',
+  'Google Maps': '#4285F4',
+  'Ollama': '#000000',
+  'Tailwind CSS': '#06B6D4',
+  'Express': '#0A0A0A',
+  'Vite': '#9135FF',
+  'Google Drive': '#4285F4',
+  'Flask': '#3BABC3',
+  'GitHub': '#181717',
+  'LangChain': '#7FC8FF',
+  'FastAPI': '#009688',
+  'Google Search': '#4285F4',
 };
+
+/* A tile named for what the tool did, where Simple Icons names the brand. */
+export const SI_TITLE = { 'Google Search': 'Google' };
 
 export function withBrandColours(page) {
   let placed = 0;
