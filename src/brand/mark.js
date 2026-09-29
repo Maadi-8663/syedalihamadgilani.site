@@ -24,7 +24,7 @@
    crossbar, which runs on past the right leg into a curl. The Z is in there,
    unwritten: the curled stroke is its top, the A's left leg from the apex down
    to the crossbar its diagonal, the crossbar its foot. The photo overlaps the
-   badge's right edge by 6px (brand.css), so the curl that ends the Z is kept
+   badge's right edge by ~15% (brand.css), so the curl that ends the Z is kept
    clear of it.
 
    Built at build time like the site's other additions: the ported pages keep
@@ -59,7 +59,7 @@ export const MARK = monogram();
 
 const GILANI = '<a class="mark" href="/"><i aria-hidden="true"></i><b>Gilani</b></a>';
 const PHOTO = '<img class="me" src="/photos/syed-96.webp" srcset="/photos/syed-96.webp 96w, /photos/syed-144.webp 144w" '
-  + 'sizes="(max-width: 719px) 36px, 40px" width="40" height="40" alt="" decoding="async">';
+  + 'sizes="(max-width: 719px) 42px, 48px" width="48" height="48" alt="" decoding="async">';
 
 export function withBrandMark(page) {
   const found = page.split(GILANI).length - 1;
