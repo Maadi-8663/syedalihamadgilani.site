@@ -1,0 +1,16 @@
+/* brand.css — the AtoZ mark and his photo in the nav (2026-09-29).
+
+   The markup is src/brand/mark.js. The badge and the round photo are the same
+   size, side by side; the photo sits on top, over the badge's right edge by
+   6px, parted from it by a ring of the ground's colour. Every selector starts
+   with `html`, as in theme.css: the page stylesheets' own .nav .mark rules
+   (the old ring-and-name mark) must lose whatever order the build emits. */
+
+html .nav .mark{display:flex;align-items:center;gap:0}
+html .nav .mark .em{width:40px;height:40px;display:block;flex:none}
+html .nav .mark .me{width:40px;height:40px;margin-left:-6px;border-radius:50%;display:block;flex:none;position:relative;
+  object-fit:cover;box-shadow:0 0 0 2.5px var(--paper)}
+@media (max-width:719px){
+  html .nav .mark .em,html .nav .mark .me{width:36px;height:36px}
+  html .nav .mark .me{margin-left:-5px}
+}

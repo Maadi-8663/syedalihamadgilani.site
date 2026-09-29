@@ -4,15 +4,17 @@ import ported from '../../html/system.html?raw';
 import { withSystemArch } from '../../mobile/diagrams.js';
 import { withWords } from '../../motion/words.js';
 import { withIntegrationsLink } from '../../integrations/nav.js';
+import { withBrandMark } from '../../brand/mark.js';
 import '../../styles/page-base.css';
 import '../../styles/page-system.css';
 import '../../styles/mobile.css';
 import '../../styles/motion.css';
-import '../../styles/theme.css'; // last: the stucco theme overrides the page tokens
+import '../../styles/brand.css';
+import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
 /* the wide diagram also gets a vertical phone version, built from it (src/mobile/diagrams.js) */
 /* and the title split into words for motion.css, revealed on load */
-const body = withIntegrationsLink(withWords(withSystemArch(ported), [/<h1 class="serif"[^>]*>/], 'load'));
+const body = withBrandMark(withIntegrationsLink(withWords(withSystemArch(ported), [/<h1 class="serif"[^>]*>/], 'load')));
 
 const title = 'Lead-to-Cash CRM for Three Contractors — Syed Ali Hamad Gilani';
 const description =

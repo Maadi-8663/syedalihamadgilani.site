@@ -19,6 +19,7 @@ import { toolMarks } from '../pictures/cluster.js';
 import { integrationMarks } from './marks.js';
 import { BRAND } from '../pictures/brands.js';
 import { withIntegrationsLink } from './nav.js';
+import { withBrandMark } from '../brand/mark.js';
 import { site } from '../data/site.js';
 
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
@@ -78,7 +79,7 @@ export function integrationsPage({ work, home }) {
         </form>
       </section>`;
 
-  const nav = withIntegrationsLink(cut(work, '<nav class="nav"', '</nav>'), { current: true });
+  const nav = withBrandMark(withIntegrationsLink(cut(work, '<nav class="nav"', '</nav>'), { current: true }));
   return `<div class="page">
 ${nav}
 <main id="main" class="reg">
