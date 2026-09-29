@@ -34,7 +34,9 @@
 const MAROON = '#9C3712', WHITE = '#FBFAF7';   // theme.css --accent and --on-accent
 const f = (n) => (Math.round(n * 100) / 100).toString();
 
-function monogram(w = 1.5) {
+/* w is the line weight in the 48-unit drawing: 1.5 in the nav; the small
+   icons draw it heavier, or at 16px the lines would vanish. */
+export function monogram(w = 1.5) {
   const C = 24, R = 20.6;                      // the ring
   const apex = [24, 9.2], by = 38.2;           // the apex, and where the legs meet the ring
   const half = Math.sqrt(R * R - (by - C) ** 2);
