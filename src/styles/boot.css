@@ -1,0 +1,173 @@
+/* boot.css — the home page's opening, all CSS (2026-09-29).
+
+   His brief is in src/motion/boot.js, which writes the markup. The timeline,
+   from first paint:
+
+        0 – 350ms  stillness: the page as it is, the ground and its dots —
+                   and room for a first paint that lands late (measured
+                   2026-09-29: the clock started up to 335ms before it)
+      350 –1320    every dot of the ground flies to the centre, shrinking, and
+                   fades into the network as it arrives (each lags 0–120ms)
+     1050 –1450    the network appears: 150 nodes and a hub
+     1250 –1700    its links connect, outward from the hub
+     1650 –2400    lightning: the hub fires, twelve pulses race along the web
+                   to the rim, a ring flashes where each lands, and the whole
+                   web lights up as they pass
+     1050 –2750    all the while it turns, 110°
+     2350 –2750    it breaks apart
+     2350 –3350    the dots fly back out, each to its own place on the ground
+     2650 –        the page comes in, a piece at a time (--boot-at)
+     3400          the opening is gone; what is left is the ground itself
+
+   Everything moves with transform, opacity and a mask, so the compositor runs
+   it — smooth even while the page is still settling. The dots are windows onto
+   the ground's own tile, at their own places, so where they leave from and
+   land on is the ground pixel for pixel; the ground's copy of them is hidden
+   under .boot-ground until then.
+
+   It does not run at all — the page is simply there — when motion is reduced,
+   when the browser lacks CSS trigonometry or container units (@supports), when
+   the address carries a #section (arriving at /#contact from another page),
+   or once someone presses Tab (:focus-visible) — a keyboard user gets the page
+   at once. Scrolling during it fades it away. Every selector starts with
+   `html`, as in theme.css and motion.css. */
+
+@property --bm{syntax:'<percentage>';inherits:false;initial-value:0%}
+
+html .boot{display:none}
+
+@media (prefers-reduced-motion:no-preference){
+@supports (width:calc(1cqw * cos(0deg))) and (translate:1px){
+
+  html:not(:has(:target,:focus-visible)){--boot-at:2700ms}
+  html:not(:has(:target,:focus-visible)) .boot{display:block;animation:boot-done 1ms linear 3400ms forwards}
+  /* hidden at both ends: Chrome finishes a 1ms animation at progress
+     0.99999999999989, not 1, and visibility stays visible for any progress
+     short of 1 (measured 2026-09-29) */
+  @keyframes boot-done{from,to{visibility:hidden}}
+
+  /* the ground without its dots, and the stage: both under the page (z -1),
+     so a dot flying home slides beneath the copy and cards coming in */
+  html .boot-ground{position:fixed;inset:0;z-index:-1;background:var(--paper)}
+  html .boot-field{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none;container-type:size;
+    --R:300px;--u:.3333}                 /* network radius, and SVG units per px */
+  @media (max-width:1023px),(max-height:759px){html .boot-field{--R:240px;--u:.4167}}
+  @media (max-width:719px){html .boot-field{--R:150px;--u:.6667}}
+
+  /* ---- the dots ---------------------------------------------------------
+     Each flies to a place in a disc of the network's size: the same bearing
+     from the centre it has on the screen, and a radius that grows with how
+     far out it sits (its larger ratio to the half-width or half-height; the
+     square root keeps the disc evenly filled). tan(atan2(a, b)) is a/b, the
+     only way CSS can divide one length by another. */
+  html .boot-field i{position:absolute;display:block;
+    left:calc(var(--x) * 1px);top:calc(var(--y) * 1px);width:calc(var(--w) * 1px);height:calc(var(--h) * 1px);
+    background:url(/specks.svg) calc(var(--x) * -1px) calc(var(--y) * -1px)/1200px 1200px;
+    --dx:calc((var(--x) + var(--w) / 2) * 1px - 50cqw);
+    --dy:calc((var(--y) + var(--h) / 2) * 1px - 50cqh);
+    --rho:min(1.2,max(tan(atan2(max(var(--dx),-1 * var(--dx)),50cqw)),tan(atan2(max(var(--dy),-1 * var(--dy)),50cqh))));
+    --r:calc(var(--R) * .94 * sqrt(var(--rho)));
+    --tx:calc(var(--r) * cos(atan2(var(--dy),var(--dx))) - var(--dx));
+    --ty:calc(var(--r) * sin(atan2(var(--dy),var(--dx))) - var(--dy));
+    animation:boot-in 850ms cubic-bezier(.6,0,.3,1) calc(350ms + var(--j) * 1ms) both,
+      boot-out 1000ms var(--enter) 2350ms forwards}
+  @keyframes boot-in{
+    0%{translate:0 0;scale:1;opacity:1}
+    82%{opacity:1}
+    100%{translate:var(--tx) var(--ty);scale:.6;opacity:0}}
+  @keyframes boot-out{
+    0%{translate:var(--tx) var(--ty);scale:.6;opacity:0}
+    18%{opacity:1}
+    100%{translate:0 0;scale:1;opacity:1}}
+
+  /* only the dots a screen can show: the buckets are src/motion/boot.js's */
+  @media (max-width:400px){html .boot-field :is(.bx1,.bx2,.bx3,.bx4,.bx5,.bx6){display:none}}
+  @media (max-width:768px){html .boot-field :is(.bx2,.bx3,.bx4,.bx5,.bx6){display:none}}
+  @media (max-width:1024px){html .boot-field :is(.bx3,.bx4,.bx5,.bx6){display:none}}
+  @media (max-width:1280px){html .boot-field :is(.bx4,.bx5,.bx6){display:none}}
+  @media (max-width:1600px){html .boot-field :is(.bx5,.bx6){display:none}}
+  @media (max-width:1920px){html .boot-field .bx6{display:none}}
+  @media (max-height:700px){html .boot-field :is(.by1,.by2,.by3){display:none}}
+  @media (max-height:900px){html .boot-field :is(.by2,.by3){display:none}}
+  @media (max-height:1100px){html .boot-field .by3{display:none}}
+
+  /* ---- the network ------------------------------------------------------ */
+  html .boot-net{position:absolute;left:50%;top:50%;width:calc(2 * var(--R));height:calc(2 * var(--R));
+    margin:calc(-1 * var(--R)) 0 0 calc(-1 * var(--R));
+    animation:boot-turn 1700ms cubic-bezier(.45,0,.55,1) 1050ms both,boot-net 1700ms 1050ms both}
+  html .boot-net svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+  @keyframes boot-turn{from{rotate:0deg}to{rotate:110deg}}
+  @keyframes boot-net{
+    0%{opacity:0;scale:.9;animation-timing-function:cubic-bezier(.16,1,.3,1)}
+    24%{opacity:1;scale:1}
+    76%{opacity:1;scale:1;animation-timing-function:cubic-bezier(.5,0,.7,.4)}
+    100%{opacity:0;scale:1.16}}
+
+  html .bn-edges path{fill:none;stroke:var(--accent);stroke-opacity:.5;stroke-width:1;vector-effect:non-scaling-stroke}
+  html .bn-nodes path{fill:none;stroke:var(--accent);stroke-width:3.2;stroke-linecap:round;vector-effect:non-scaling-stroke}
+  html .bn-nodes .bn-hub{stroke-width:8}
+  html .bn-nodes .bn-ring{fill:none;stroke:var(--accent);stroke-width:1;vector-effect:non-scaling-stroke;
+    transform-box:fill-box;transform-origin:center;animation:boot-pulse 640ms cubic-bezier(.16,1,.3,1) 1650ms both}
+  @keyframes boot-pulse{0%{scale:1;opacity:1}100%{scale:5;opacity:0}}
+
+  /* the links connect outward from the hub: a mask whose edge runs from the
+     centre to the rim */
+  html .bn-edges{-webkit-mask-image:radial-gradient(closest-side,#000 calc(var(--bm) - 14%),transparent var(--bm));
+    mask-image:radial-gradient(closest-side,#000 calc(var(--bm) - 14%),transparent var(--bm));
+    animation:boot-connect 450ms cubic-bezier(.4,0,.2,1) 1250ms both,boot-flash 620ms ease-out 1760ms both}
+  html .bn-nodes{animation:boot-flash 620ms ease-out 1760ms both}
+  @keyframes boot-connect{from{--bm:0%}to{--bm:118%}}
+  @keyframes boot-flash{0%,100%{opacity:.7}32%{opacity:1}}
+
+  /* lightning, as data: along each route a pulse — a bright head on a soft
+     trail over a faint glow — runs from the hub to the rim in a third of a
+     second, the twelve a beat apart. With pathLength 1, a dash's front sits
+     at (its length − offset): each layer is offset so the three fronts start
+     just before the hub (-0.01) and leave past the rim (1.35) together.
+     Where a pulse lands, a ring flashes. */
+  html .bn-bolts path{fill:none;stroke:var(--accent);stroke-linecap:round;stroke-linejoin:round;
+    animation:boot-run 440ms linear calc(1700ms + var(--b) * 15ms) both}
+  html .bn-bolts .gl{stroke-width:calc(5 * var(--u));stroke-opacity:.14;stroke-dasharray:.34 3;--o0:.35;--o1:-1.01}
+  html .bn-bolts .tr{stroke-width:calc(1.5 * var(--u));stroke-opacity:.5;stroke-dasharray:.34 3;--o0:.35;--o1:-1.01}
+  html .bn-bolts .hd{stroke-width:calc(2.4 * var(--u));stroke-dasharray:.08 3;--o0:.09;--o1:-1.27}
+  @keyframes boot-run{from{stroke-dashoffset:var(--o0)}to{stroke-dashoffset:var(--o1)}}
+  html .bn-bolts .tip{fill:none;stroke:var(--accent);stroke-width:1;vector-effect:non-scaling-stroke;opacity:0;
+    transform-box:fill-box;transform-origin:center;animation:boot-tip 520ms cubic-bezier(.16,1,.3,1) calc(2020ms + var(--b) * 15ms) both}
+  @keyframes boot-tip{0%{opacity:0;scale:.5}12%{opacity:1}100%{opacity:0;scale:3.4}}
+
+  /* scrolling during it: the opening steps aside and the ground shows */
+  @supports (animation-timeline:scroll()){
+    html .boot-ground,html .boot-field{animation:boot-away linear both;animation-timeline:scroll(root);animation-range:0px 120px}
+    @keyframes boot-away{to{opacity:0}}
+  }
+
+  /* ---- then the page, a piece at a time ---------------------------------
+     Everything waits behind the opening; the pieces that already had an
+     entrance (page-home.css) keep it, --boot-at later, and the nav gets one. */
+  html:not(:has(:target,:focus-visible)) body>:not(.boot):not(.skip){animation:boot-page 700ms var(--enter) 2700ms backwards}
+  @keyframes boot-page{from{opacity:0}}
+
+  html:not(:has(:target,:focus-visible)) .nav .mark{animation:rise 620ms var(--enter) var(--boot-at) both}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li{animation:rise 560ms var(--enter) both;animation-delay:calc(var(--boot-at) + 60ms + var(--n, 0) * 55ms)}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(2){--n:1}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(3){--n:2}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(4){--n:3}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(5){--n:4}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(6){--n:5}
+  html:not(:has(:target,:focus-visible)) .nav .menu{animation:rise 560ms var(--enter) calc(var(--boot-at) + 80ms) both}
+
+  html:not(:has(:target,:focus-visible)) .hero .eyebrow{animation-delay:calc(var(--boot-at) + 120ms)}
+  html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(1){animation-delay:calc(var(--boot-at) + 190ms)}
+  html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(2){animation-delay:calc(var(--boot-at) + 270ms)}
+  html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(3){animation-delay:calc(var(--boot-at) + 350ms)}
+  html:not(:has(:target,:focus-visible)) .hero .tw{animation-delay:calc(var(--boot-at) + 450ms)}
+  html:not(:has(:target,:focus-visible)) .tw :is(.t,.c){animation-delay:calc(var(--boot-at) + 900ms)}
+  html:not(:has(:target,:focus-visible)) .hero .facts{animation-delay:calc(var(--boot-at) + 530ms)}
+  html:not(:has(:target,:focus-visible)) .cluster .tile{
+    animation-delay:calc(var(--k) * 42ms + 300ms + var(--boot-at)),calc(var(--k) * 42ms + 860ms + var(--boot-at))}
+  /* phones show the marks as a grid with no entrance of their own: give them
+     one, row by row */
+  @media (max-width:719px){
+    html:not(:has(:target,:focus-visible)) .cluster .tile{animation:rise 520ms var(--enter) calc(var(--boot-at) + 560ms + var(--k) * 24ms) both}
+  }
+}}
