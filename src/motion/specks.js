@@ -23,9 +23,14 @@
        no fill;
      - a via (28%, 38): a ring on its own;
      - a dot (30%, 43).
-   All in the site's one accent, at 0.32–0.62 opacity. The marks cover 0.36%
-   of the ground (counted on a 2x render, 2026-09-29), so text is judged
-   against the flat ground colour.
+   All in the site's one accent, drawn at 0.32–0.62 opacity — and the ground
+   shows them at REST of that, 0.07–0.14, since he said the same evening: "in
+   the background, make the nodes very fade. Should be barely visible. Right
+   now, they are making the view somehow messy." So there are two tiles:
+   public/specks.svg, the ground, faint; and public/specks-lit.svg, the same
+   marks at full strength, which only the home page's opening flies (it dims
+   each one to REST as it lands, which is exactly the ground). Text is judged
+   against the flat ground colour: the marks barely register on it.
 
    One square tile, seamless: anything near an edge is drawn again on the far
    side, so the join cannot show. Placement is best-candidate sampling
@@ -34,6 +39,7 @@
    the same scatter — the one he chose; change SEED for a different one. */
 
 export const TILE = 1200;   // px; repeats every 1200px, too far apart to notice
+export const REST = 0.22;   // the ground's marks, as a share of the lit marks' opacity
 const SEED = 20260929;
 const COUNT = 160;          // sites per tile: one per ~95px on average
 const INK = '#9C3712';      // the accent, iron oxide (theme.css --accent)
@@ -51,8 +57,9 @@ export function rng(seed) {
   };
 }
 
-/* The tile's SVG, and every site with the box its mark occupies (tile px, the
-   box may run past the tile's edge where the mark wraps). */
+/* The ground's tile (svg), the same marks at full strength (lit), and every
+   site with the box its mark occupies (tile px; the box may run past the
+   tile's edge where the mark wraps). */
 export function specks() {
   const rand = rng(SEED);
   const wrapDist = (a, b) => {
@@ -128,7 +135,8 @@ export function specks() {
     }
   }
 
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${TILE}" height="${TILE}" viewBox="0 0 ${TILE} ${TILE}">`
+  const lit = `<svg xmlns="http://www.w3.org/2000/svg" width="${TILE}" height="${TILE}" viewBox="0 0 ${TILE} ${TILE}">`
     + `<style>.t{fill:none;stroke:${INK}}.p{fill:${INK}}</style>${parts.join('')}</svg>\n`;
-  return { svg, marks, copies: parts.length };
+  const svg = lit.replace(/opacity="([0-9.]+)"/g, (m, a) => `opacity="${(a * REST).toFixed(3)}"`);
+  return { svg, lit, marks, copies: parts.length };
 }

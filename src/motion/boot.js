@@ -14,12 +14,13 @@
    all of it. This module writes the markup:
 
    - the marks: one element for every dot of the ground inside the first
-     2560x1440 of the page, each a window onto the very tile the ground
-     repeats (public/specks.svg, from the same generator, src/motion/specks.js),
-     at the same place. Where they start and where they come back to is
-     therefore exactly the ground, pixel for pixel, so the hand-off at the end
-     cannot be seen. Each carries its box and a size bucket, so a small screen
-     only animates the marks it can show;
+     2560x1440 of the page, each a window at its own place onto the ground's
+     tile at full strength (public/specks-lit.svg; the ground shows the same
+     marks at REST of that — both tiles from src/motion/specks.js). Held at
+     opacity REST they are exactly the ground, so where they start and where
+     they come back to is the ground itself, and the hand-off cannot be seen;
+     in flight they are lit. Each carries its box and a size bucket, so a
+     small screen only animates the marks it can show;
    - the network they become: a hub and 150 nodes spread evenly over a disc,
      joined as a relative neighbourhood graph (two nodes link when no third is
      nearer to both — an open web, never a mesh of triangles), the hub wired
@@ -32,7 +33,7 @@
    screen by boot.css. */
 import fs from 'node:fs';
 import path from 'node:path';
-import { specks, TILE, rng } from './specks.js';
+import { specks, TILE, REST, rng } from './specks.js';
 
 const REGION = { w: 2560, h: 1440 };            // the largest screen the marks cover
 const XB = [400, 768, 1024, 1280, 1600, 1920];  // width buckets: boot.css hides the ones past the screen
@@ -40,9 +41,11 @@ const YB = [700, 900, 1100];                    // height buckets
 const r1 = (n) => Math.round(n * 10) / 10;
 
 function marks() {
-  const { svg, marks } = specks();
-  const file = fs.readFileSync(path.join(process.cwd(), 'public', 'specks.svg'), 'utf8');
-  if (file.replace(/\r\n/g, '\n') !== svg) throw new Error('boot.js: public/specks.svg is not what src/motion/specks.js draws — run node scripts/make-specks.mjs');
+  const { svg, lit, marks } = specks();
+  for (const [name, want] of [['specks.svg', svg], ['specks-lit.svg', lit]]) {
+    const file = fs.readFileSync(path.join(process.cwd(), 'public', name), 'utf8');
+    if (file.replace(/\r\n/g, '\n') !== want) throw new Error(`boot.js: public/${name} is not what src/motion/specks.js draws — run node scripts/make-specks.mjs`);
+  }
   const rand = rng(29092026);
   const out = [];
   for (let j = 0; j * TILE < REGION.h; j++) for (let i = 0; i * TILE < REGION.w; i++) {
@@ -137,7 +140,7 @@ function network() {
    its animations start — with the first paint. */
 export function withBoot(page) {
   const net = network();
-  return `<div class="boot" aria-hidden="true"><div class="boot-ground"></div><div class="boot-field">${marks().join('')}${net.html}</div></div>\n${page}`;
+  return `<div class="boot" aria-hidden="true" style="--rest:${REST}"><div class="boot-ground"></div><div class="boot-field">${marks().join('')}${net.html}</div></div>\n${page}`;
 }
 
 export const bootStats = () => ({ marks: marks().length, ...network().stats });

@@ -5,9 +5,10 @@
    the random spotting of maroon coloured tech tools (Very short ones)." The
    ground is a near-white, #FAF9F6, scattered with dots in the accent drawn
    as a sparse circuit board — pads, vias and short traces — public/specks.svg,
-   written by scripts/make-specks.mjs (its header says how the scatter is
-   placed, and that a first scatter of tiny icons was rejected as "very
-   unprofessional"). Cards sit on it in white, edged with a hairline. The inks
+   written by scripts/make-specks.mjs from src/motion/specks.js (whose header
+   says how the scatter is placed, that a first scatter of tiny icons was
+   rejected as "very unprofessional", and why the dots are barely visible:
+   he asked for them "very fade"). Cards sit on it in white, edged with a hairline. The inks
    and the accent are the stucco theme's, unchanged; on this ground every one
    gains contrast (measured below).
 

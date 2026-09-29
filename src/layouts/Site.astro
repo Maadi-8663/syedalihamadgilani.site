@@ -5,8 +5,9 @@
    footer: each fragment carries its own. */
 import { site } from '../data/site.js';
 
-/* profile: true only on the home page, which is the page about him. */
-const { title, description, jsonLd = null, profile = false } = Astro.props;
+/* profile: true only on the home page, which is the page about him.
+   preload: images a page needs at first paint, beyond the ground's dots. */
+const { title, description, jsonLd = null, profile = false, preload = [] } = Astro.props;
 
 const origin = new URL('/', Astro.site).href;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -77,6 +78,7 @@ const identity = profile
     {/* the ground's dots: every page's background, and the dots the home
         page's opening moves, so fetch them alongside the CSS, not after it */}
     <link rel="preload" href="/specks.svg" as="image" type="image/svg+xml" />
+    {preload.map((href) => <link rel="preload" href={href} as="image" type="image/svg+xml" />)}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

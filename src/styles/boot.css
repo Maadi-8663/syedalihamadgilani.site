@@ -20,10 +20,13 @@
      3400          the opening is gone; what is left is the ground itself
 
    Everything moves with transform, opacity and a mask, so the compositor runs
-   it — smooth even while the page is still settling. The dots are windows onto
-   the ground's own tile, at their own places, so where they leave from and
-   land on is the ground pixel for pixel; the ground's copy of them is hidden
-   under .boot-ground until then.
+   it — smooth even while the page is still settling. The dots are windows, at
+   their own places, onto the ground's tile at full strength (specks-lit.svg).
+   The ground itself shows those marks at --rest of that strength (faint, his
+   request: "barely visible"), so a window held at opacity --rest is the ground
+   pixel for pixel: they leave from it, light up as they fly, and dim back into
+   it as they land. The ground's own copy is hidden under .boot-ground until
+   then. --rest is set on .boot by boot.js, from src/motion/specks.js.
 
    It does not run at all — the page is simply there — when motion is reduced,
    when the browser lacks CSS trigonometry or container units (@supports), when
@@ -62,7 +65,7 @@ html .boot{display:none}
      only way CSS can divide one length by another. */
   html .boot-field i{position:absolute;display:block;
     left:calc(var(--x) * 1px);top:calc(var(--y) * 1px);width:calc(var(--w) * 1px);height:calc(var(--h) * 1px);
-    background:url(/specks.svg) calc(var(--x) * -1px) calc(var(--y) * -1px)/1200px 1200px;
+    background:url(/specks-lit.svg) calc(var(--x) * -1px) calc(var(--y) * -1px)/1200px 1200px;
     --dx:calc((var(--x) + var(--w) / 2) * 1px - 50cqw);
     --dy:calc((var(--y) + var(--h) / 2) * 1px - 50cqh);
     --rho:min(1.2,max(tan(atan2(max(var(--dx),-1 * var(--dx)),50cqw)),tan(atan2(max(var(--dy),-1 * var(--dy)),50cqh))));
@@ -71,14 +74,18 @@ html .boot{display:none}
     --ty:calc(var(--r) * sin(atan2(var(--dy),var(--dx))) - var(--dy));
     animation:boot-in 850ms cubic-bezier(.6,0,.3,1) calc(350ms + var(--j) * 1ms) both,
       boot-out 1000ms var(--enter) 2350ms forwards}
+  /* at rest they are the faint ground; they light up as they set off, and dim
+     back into it over the last half of the way home */
   @keyframes boot-in{
-    0%{translate:0 0;scale:1;opacity:1}
+    0%{translate:0 0;scale:1;opacity:var(--rest)}
+    16%{opacity:1}
     82%{opacity:1}
     100%{translate:var(--tx) var(--ty);scale:.6;opacity:0}}
   @keyframes boot-out{
     0%{translate:var(--tx) var(--ty);scale:.6;opacity:0}
     18%{opacity:1}
-    100%{translate:0 0;scale:1;opacity:1}}
+    50%{opacity:1}
+    100%{translate:0 0;scale:1;opacity:var(--rest)}}
 
   /* only the dots a screen can show: the buckets are src/motion/boot.js's */
   @media (max-width:400px){html .boot-field :is(.bx1,.bx2,.bx3,.bx4,.bx5,.bx6){display:none}}
