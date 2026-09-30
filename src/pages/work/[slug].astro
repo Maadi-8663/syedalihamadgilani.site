@@ -1,0 +1,45 @@
+---
+import Site from '../../layouts/Site.astro';
+import system from '../../html/system.html?raw';
+import home from '../../html/home.html?raw';
+import { systemPage, systemMeta, SLUGS } from '../../systems/page.js';
+import { withWords } from '../../motion/words.js';
+import { withIntegrationsLink } from '../../integrations/nav.js';
+import { withBrandMark } from '../../brand/mark.js';
+import '../../styles/page-base.css';
+import '../../styles/page-system.css';
+import '../../styles/systems.css';
+import '../../styles/mobile.css';
+import '../../styles/motion.css';
+import '../../styles/brand.css';
+import '../../styles/theme.css'; // last: the theme overrides the page tokens
+
+/* The fifteen system pages that have no Artifact (2026-09-30): built from
+   src/systems/ at build time in the Lead-to-Cash page's clothes (page.js
+   says how). The Lead-to-Cash CRM keeps its own, ported, route. The title
+   rises word by word on load, as there; the problem's first sentence as it
+   scrolls in. */
+export function getStaticPaths() {
+  return SLUGS.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const body = withBrandMark(withIntegrationsLink(
+  withWords(withWords(systemPage(slug, { system, home }), [/<h1 class="serif"[^>]*>/], 'load'), [/<p class="sys-say serif">/])));
+
+const meta = systemMeta(slug);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: meta.name,
+  description: meta.description,
+  url: new URL(`/work/${slug}/`, Astro.site).href,
+  about: meta.about,
+  keywords: meta.keywords,
+  author: { '@id': new URL('/#person', Astro.site).href },
+};
+---
+
+<Site title={meta.title} description={meta.description} jsonLd={jsonLd}>
+  <Fragment set:html={body} />
+</Site>

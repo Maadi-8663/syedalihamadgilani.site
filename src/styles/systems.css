@@ -1,0 +1,196 @@
+/* systems.css — the fifteen system pages' own parts (2026-09-30).
+
+   The markup is src/systems/page.js. Everything the pages share with the
+   Lead-to-Cash page (head, spine, inventory, guards, tool badges) keeps
+   page-system.css's styles; this file adds what is new:
+
+   - How it runs: the system's steps. The base styles are a list — a ring,
+     the step's name, its sentence underneath — with every step lit: that is
+     what phones get, and what anyone gets without scroll timelines or with
+     motion reduced. On a desktop that has them, the list becomes a pinned
+     stage: the track is --n x 42vh of scroll, the stage is held mid-screen
+     for all of it, and each step owns an equal share (--a to --b, set by
+     page.js). In
+     its share the step's ring lights, its name steps forward, the wire to
+     the next ring draws on, and its sentence takes the right-hand side —
+     arriving from below and leaving upward within the step's own share, so
+     no two sentences ever overlap. One HTML list serves
+     both layouts, so a screen reader reads every step once, in order.
+   - The workflows, as exported: cards with each workflow drawn at its real
+     node positions. As a card crosses the screen its nodes light in the
+     order a run would reach them (--t, depth from the trigger) and the
+     wires draw between them (--t to --u).
+   - The head's small workflow runs once on load the same way.
+   - Limits: a numbered list.
+
+   Timings follow motion.css: eased reveals that finish before the reading
+   zone; lit wires and nodes are positions, so they are linear. Every
+   selector starts with `html`, for the reason theme.css gives. */
+
+/* ---- the head ----------------------------------------------------------- */
+html .sys-extra{margin-top:18px;max-width:660px;font-size:11px;line-height:1.65}
+html .sys-nofig{margin-top:34px;max-width:520px;padding-left:14px;border-left:2px solid var(--hair);
+  font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink3)}
+html .sysmini{max-width:304px}
+/* the provenance line wraps on a phone: its dot stays with the first line */
+html .sys-prov{align-items:flex-start!important}
+html .sys-prov .mk{flex:none;margin-top:3px}
+
+/* section labels are headings here (the ported page's are paragraphs): the
+   mono label style, not a bold h2 */
+html h2.slabel{font-weight:400}
+
+/* ---- a workflow, drawn -------------------------------------------------- */
+html svg .ed{fill:none;stroke:var(--accent);stroke-width:1.2;stroke-linecap:round}
+html svg .ed.ai{stroke:var(--viz3);stroke-width:1}
+html svg .nd rect,html svg .nd circle{fill:var(--paper2);stroke:var(--ink3);stroke-width:1}
+html svg .nd.k-trigger rect{fill:var(--accent);stroke:var(--accent)}
+html svg .nd.k-branch rect{fill:var(--wash);stroke:var(--accent);stroke-width:1.2}
+html svg .nd.k-ai circle{fill:var(--wash);stroke:var(--accent)}
+
+/* ---- the problem --------------------------------------------------------- */
+html .sys-say{margin-top:22px;max-width:30ch;font-size:clamp(26px,3vw,42px);line-height:1.16;color:var(--ink)}
+html .sys-body{margin-top:22px;max-width:680px}
+
+/* ---- how it runs: the list (phones, reduced motion, no scroll timelines) - */
+html .flow{margin-top:28px}
+html .flow-steps{list-style:none;margin:0;padding:0}
+html .fs{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:18px;padding-bottom:28px}
+html .fs:not(:last-child)::before{content:"";position:absolute;left:19px;top:44px;bottom:4px;width:2px;border-radius:1px;background:var(--accent);transform-origin:top}
+html .fs-ring{position:relative;z-index:1;grid-row:1 / span 2;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  border:1.5px solid var(--accent);background:var(--wash);color:var(--accent)}
+html .fs-w{display:none}
+html .fs-t{display:block;padding-top:9px;font-weight:500;font-size:16px;line-height:1.3;color:var(--ink)}
+html .fs-cap{grid-column:2;margin-top:6px}
+html .fs-n{font-family:var(--mono);font-size:11px;line-height:1.5;letter-spacing:.04em;color:var(--ink3)}
+html .fs-n span{color:var(--accent);letter-spacing:.08em;margin-right:4px}
+html .fs-lede{margin-top:8px;max-width:34ch;font-family:var(--serif);font-size:clamp(19px,1.9vw,22px);line-height:1.32;letter-spacing:-.01em;color:var(--ink)}
+html .fs-exit{display:inline-block;margin-top:12px;padding:5px 12px;border:1px dashed var(--accent);border-radius:14px;
+  font-family:var(--mono);font-size:11px;line-height:1.45;color:var(--accent)}
+html .fs-exit::before{content:"↳ "}
+
+/* ---- the workflows, as exported ---------------------------------------- */
+html .wfc-key{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;font-size:11px;color:var(--ink3)}
+html .wfc-key span{display:inline-flex;align-items:center}
+@media (hover:none){html .wfc-key .if-hover{display:none}}
+html .wfc-key i{display:inline-block;width:10px;height:10px;margin-right:8px;border:1px solid var(--ink3);border-radius:2px;background:var(--paper2)}
+html .wfc-key i.k-trigger{background:var(--accent);border-color:var(--accent)}
+html .wfc-key i.k-branch{background:var(--wash);border-color:var(--accent);transform:rotate(45deg) scale(.82)}
+html .wfc-key i.k-ai{background:var(--wash);border-color:var(--accent);border-radius:50%}
+html .wfcs{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+html .wfc{padding:18px 20px 20px;border:1px solid var(--hair);border-radius:14px;background:var(--paper2)}
+html .wfc-h{display:flex;align-items:baseline;gap:12px}
+html .wfc-h .mono{font-size:11px;letter-spacing:.08em;color:var(--accent)}
+html .wfc-h b{font-weight:500;font-size:16px;line-height:1.3;color:var(--ink)}
+html .wfc-c{margin:14px -4px 12px}
+html .wfc-svg{display:block;width:100%;height:auto;max-height:280px}
+html .wfc-m{font-size:11px;color:var(--ink3)}
+html .wfc .small{margin-top:4px}
+
+/* ---- limits ------------------------------------------------------------ */
+html .limits{list-style:none;margin:24px 0 0;padding:0;max-width:860px;counter-reset:lim}
+html .limits li{position:relative;padding:16px 0 16px 44px;border-top:1px solid var(--hair);counter-increment:lim;
+  font-size:15.5px;line-height:1.55;color:var(--ink2)}
+html .limits li:last-child{border-bottom:1px solid var(--hair)}
+html .limits li::before{content:counter(lim,decimal-leading-zero);position:absolute;left:0;top:19px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--accent)}
+
+@media (max-width:899px){
+  html .wfcs{grid-template-columns:1fr}
+}
+@media (max-width:719px){
+  html .sys-say{font-size:clamp(24px,7vw,30px)}
+  html .wfc{padding:14px 14px 16px;border-radius:12px}
+  html .fs{column-gap:14px;padding-bottom:24px}
+  html .fs-lede{font-size:18.5px}
+  html .limits li{padding-left:36px;font-size:15px}
+}
+
+/* ================================================================
+   MOTION — the base styles above are every end state
+   ================================================================ */
+@media (prefers-reduced-motion:no-preference){
+  /* the head's workflow runs once as the page opens: nodes light in the
+     order a run reaches them, wires draw behind them */
+  @keyframes sys-run{from{opacity:.16}}
+  @keyframes sys-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+  html .body-run.sys>.wrap>div>div+div .mini.sysmini{clip-path:none;animation:none}
+  html .sysmini .nd{animation:sys-run 420ms linear both;animation-delay:calc(820ms + var(--t) * 1100ms)}
+  html .sysmini .ed{stroke-dasharray:1;animation:sys-draw 360ms linear both;animation-delay:calc(880ms + var(--u) * 1100ms)}
+}
+
+@supports (animation-timeline: view()){
+@media (prefers-reduced-motion:no-preference){
+  @keyframes sf-unlit{from{border-color:var(--hair);background:var(--paper2);color:var(--ink3)}}
+  @keyframes sf-wire{from{transform:scaleY(0)}}
+  @keyframes cv-lit{from{opacity:.24}}
+  @keyframes cv-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+
+  /* the workflow cards rise a column at a time; each one runs as it crosses
+     the lower half of the screen, and has finished before its middle */
+  html .wfcs .wfc{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
+    animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
+  html .wfcs .wfc:nth-child(2n){--d:3}
+  html .wfc{view-timeline:--wfc block}
+  html .wfc .nd{animation:cv-lit linear both;animation-timeline:--wfc;
+    animation-range:cover calc(10% + var(--t) * 24%) cover calc(14% + var(--t) * 24%)}
+  html .wfc .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--wfc;
+    animation-range:cover calc(11% + var(--t) * 24%) cover calc(14% + var(--u) * 24%)}
+
+  /* the limits and the problem's second paragraph rise like every text block */
+  html .limits li{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
+  html .sys-body{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 26vh}
+
+  /* the tool badges sit just above the footer, where a tall screen cannot
+     scroll them past ~25vh: with nine of them (the weekly report), motion.css's
+     stagger ended the last at 25.6vh, and check-motion found it stuck at 95% at
+     1920x1080 (2026-09-30). A tighter stagger ends every one by 21vh. */
+  html .body-run.sys .tools .tnode{animation-range:entry calc(var(--d, 0) * .4vh) entry calc(18vh + var(--d, 0) * .4vh)}
+}
+
+/* phones and narrow windows: the list lights step by step as it is read */
+@media (prefers-reduced-motion:no-preference) and (max-width:899px){
+  html .fs-ring{animation:sf-unlit linear both;animation-timeline:view();animation-range:entry 100% cover 38%}
+  html .fs:not(:last-child)::before{animation:sf-wire linear both;animation-timeline:view();animation-range:cover 26% cover 58%}
+  html .fs-cap{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
+}
+
+/* desktop: the stage pins, and the scroll runs the system step by step */
+@media (prefers-reduced-motion:no-preference) and (min-width:900px){
+  @keyframes sf-name{0%{color:var(--ink3)}10%,90%{color:var(--ink)}100%{color:var(--ink2)}}
+  @keyframes sf-halo{0%,100%{box-shadow:0 0 0 0 var(--wash)}14%,86%{box-shadow:0 0 0 7px var(--wash)}}
+  @keyframes sf-cap{0%{opacity:0;translate:0 22px}13%,87%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -22px}}
+  @keyframes sf-cap-first{0%,87%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -22px}}
+  @keyframes sf-cap-last{0%{opacity:0;translate:0 22px}13%,100%{opacity:1;translate:0 0}}
+
+  /* The stage is only as tall as its rail (--sh), held at the middle of the
+     screen (--ti from the top). A full-screen stage left half a screen of
+     nothing under the last step when it let go (measured 2026-09-30: ~500px
+     at 1400px tall). The timeline is inset by the same amount, so the steps
+     run exactly while the stage is held. */
+  html .flow{--row:60px;--rail:300px;--gap:clamp(40px,5vw,84px);
+    --sh:calc(max(var(--n) * var(--row), 380px) + 48px);--ti:max(0px,calc(50vh - var(--sh) / 2));
+    position:relative;height:calc(var(--n) * 42vh + var(--sh));margin-top:12px;
+    view-timeline-name:--flow;view-timeline-axis:block;view-timeline-inset:var(--ti)}
+  html .flow-stage{position:sticky;top:var(--ti);height:var(--sh);display:flex;align-items:center}
+  html .flow-steps{width:var(--rail);flex:none}
+  html .fs{position:static;height:var(--row);padding:0;align-items:center;column-gap:16px}
+  html .fs:not(:last-child)::before{content:none}
+  html .fs-ring{grid-row:auto;
+    animation:sf-unlit linear both,sf-halo linear both;animation-timeline:--flow,--flow;
+    animation-range:contain calc(var(--a) * 1% - 2%) contain calc(var(--a) * 1% + 1%),contain calc(var(--a) * 1%) contain calc(var(--b) * 1%)}
+  html .fs-w{display:block;position:absolute;left:50%;top:calc(100% + 1.5px);width:2px;margin-left:-1px;height:calc(var(--row) - 43px);background:var(--hair)}
+  html .fs-w::after{content:"";position:absolute;inset:0;background:var(--accent);transform-origin:top;
+    animation:sf-wire linear both;animation-timeline:--flow;animation-range:contain calc(var(--b) * 1% - 5%) contain calc(var(--b) * 1% + 1%)}
+  html .fs:last-child .fs-w{display:none}
+  html .fs-t{padding:0;font-size:15px;
+    animation:sf-name linear both;animation-timeline:--flow;animation-range:contain calc(var(--a) * 1%) contain calc(var(--b) * 1%)}
+  /* every sentence sits in the same place, right of the rail, centred on the stage */
+  html .fs-cap{position:absolute;left:calc(var(--rail) + var(--gap));right:0;top:50%;margin:0;transform:translateY(-50%);
+    animation:sf-cap linear both;animation-timeline:--flow;animation-range:contain calc(var(--a) * 1%) contain calc(var(--b) * 1%)}
+  html .fs:first-child .fs-cap{animation-name:sf-cap-first}
+  html .fs:last-child .fs-cap{animation-name:sf-cap-last}
+  html .fs-lede{max-width:26ch;margin-top:14px;font-size:clamp(26px,2.6vw,38px);line-height:1.2;letter-spacing:-.015em}
+  html .fs-n{font-size:11.5px}
+  html .fs-exit{margin-top:18px;font-size:11.5px}
+}
+}

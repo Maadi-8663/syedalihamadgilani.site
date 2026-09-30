@@ -4,6 +4,7 @@ import ported from '../../html/work.html?raw';
 import { withWords } from '../../motion/words.js';
 import { withIntegrationsLink } from '../../integrations/nav.js';
 import { withBrandMark } from '../../brand/mark.js';
+import { withSystemLinks } from '../../systems/links.js';
 import '../../styles/page-base.css';
 import '../../styles/page-work.css';
 import '../../styles/mobile.css';
@@ -13,7 +14,8 @@ import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
 /* the headings, split into words for motion.css: the title on load, the
    group names as they scroll in */
-const body = withBrandMark(withIntegrationsLink(withWords(withWords(ported, [/<h1 class="serif"[^>]*>/], 'load'), [/<h2>/])));
+/* and every row links to its system's page (src/systems/links.js) */
+const body = withBrandMark(withIntegrationsLink(withSystemLinks(withWords(withWords(ported, [/<h1 class="serif"[^>]*>/], 'load'), [/<h2>/]), 'work')));
 
 const title = 'Work — sixteen systems by Syed Ali Hamad Gilani';
 const description =
