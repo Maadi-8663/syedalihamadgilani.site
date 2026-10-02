@@ -4,6 +4,7 @@ import system from '../../html/system.html?raw';
 import home from '../../html/home.html?raw';
 import { systemPage, systemMeta, SLUGS } from '../../systems/page.js';
 import { withWords } from '../../motion/words.js';
+import { registerScenes } from '../../motion/plans.js';
 import { withIntegrationsLink } from '../../integrations/nav.js';
 import { withBrandMark } from '../../brand/mark.js';
 import '../../styles/page-base.css';
@@ -11,6 +12,7 @@ import '../../styles/page-system.css';
 import '../../styles/systems.css';
 import '../../styles/mobile.css';
 import '../../styles/motion.css';
+import '../../styles/scenes.css';
 import '../../styles/brand.css';
 import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
@@ -24,8 +26,8 @@ export function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const body = withBrandMark(withIntegrationsLink(
-  withWords(withWords(systemPage(slug, { system, home }), [/<h1 class="serif"[^>]*>/], 'load'), [/<p class="sys-say serif">/])));
+const body = withBrandMark(withIntegrationsLink(registerScenes(
+  withWords(withWords(systemPage(slug, { system, home }), [/<h1 class="serif"[^>]*>/], 'load'), [/<p class="sys-say serif">/]))));
 
 const meta = systemMeta(slug);
 const jsonLd = {

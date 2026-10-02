@@ -7,10 +7,12 @@ import { withTnodeColours } from '../../pictures/brands.js';
 import { withIntegrationsLink } from '../../integrations/nav.js';
 import { withBrandMark } from '../../brand/mark.js';
 import { withSystemLinks } from '../../systems/links.js';
+import { registerScenes } from '../../motion/plans.js';
 import '../../styles/page-base.css';
 import '../../styles/page-sector.css';
 import '../../styles/mobile.css';
 import '../../styles/motion.css';
+import '../../styles/scenes.css';
 import '../../styles/brand.css';
 import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
@@ -19,8 +21,8 @@ import '../../styles/theme.css'; // last: the theme overrides the page tokens
    rest as they scroll in */
 /* and the tool marks in their brands' colours, and the nav's Integrations link */
 /* and its links to the systems pointed at their pages (src/systems/links.js) */
-const body = withBrandMark(withIntegrationsLink(withSystemLinks(withWords(withWords(withTouchCopy(withTnodeColours(withSectorFlow(ported))), [/<h1>/], 'load'),
-  [/<h2 class="serif"[^>]*>/, /<h2 class="serif-i"[^>]*>/]), 'sector')));
+const body = withBrandMark(withIntegrationsLink(registerScenes(withSystemLinks(withWords(withWords(withTouchCopy(withTnodeColours(withSectorFlow(ported))), [/<h1>/], 'load'),
+  [/<h2 class="serif"[^>]*>/, /<h2 class="serif-i"[^>]*>/]), 'sector'))));
 
 const title = 'Home services & construction — Syed Ali Hamad Gilani';
 const description =

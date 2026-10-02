@@ -10,10 +10,12 @@ import { withIntegrationsLink } from '../integrations/nav.js';
 import { withBoot } from '../motion/boot.js';
 import { withBrandMark } from '../brand/mark.js';
 import { withSystemLinks } from '../systems/links.js';
+import { homeScenes } from '../motion/plans.js';
 import '../styles/page-home.css';
 import '../styles/cards.css';
 import '../styles/mobile.css';
 import '../styles/motion.css';
+import '../styles/scenes.css';
 import '../styles/boot.css';
 import '../styles/brand.css';
 import '../styles/theme.css'; // last: the theme overrides the page tokens
@@ -24,9 +26,10 @@ import { site } from '../data/site.js';
    brand colours, the word-split headings and the opening animation go in
    here, at build time, so a re-port keeps them. The sector cards' links go
    to the systems' pages (src/systems/links.js) — after the photos, which
-   find their cards by the old anchors. */
-const body = withBoot(withBrandMark(withIntegrationsLink(
-  withWords(withSystemLinks(withSectorCards(withBrandColours(withToolCluster(withPictures(ported)))), 'home'), [/<h2 class="say rv">/, /<h2>/]))));
+   find their cards by the old anchors. Then every section becomes a
+   screen (src/motion/plans.js), before the boot, which wraps the page. */
+const body = withBoot(withBrandMark(withIntegrationsLink(homeScenes(
+  withWords(withSystemLinks(withSectorCards(withBrandColours(withToolCluster(withPictures(ported)))), 'home'), [/<h2 class="say rv">/, /<h2>/])))));
 
 const title = 'Syed Ali Hamad Gilani — AI Automation Engineer & Web Developer';
 /* His full name leads the description: it is the snippet Google shows under

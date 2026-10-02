@@ -23,8 +23,8 @@
    - The head's small workflow runs once on load the same way.
    - Limits: a numbered list.
 
-   Timings follow motion.css: eased reveals that finish before the reading
-   zone; lit wires and nodes are positions, so they are linear. Every
+   Entrances are scenes.css's (every section a screen, 2026-10-02); lit
+   wires and nodes are positions, so they are linear. Every
    selector starts with `html`, for the reason theme.css gives. */
 
 /* ---- the head ----------------------------------------------------------- */
@@ -120,41 +120,9 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   html .body-run>.wrap>div>div>:is(p.sys-extra,p.sys-nofig){animation:mo-in-rise 1000ms var(--mo-ease) 760ms both}
 }
 
-/* Entrances come in motion.css's tiers (its header says why, 2026-10-02):
-   timed where the browser has scroll triggers, scrubbed where it has only
-   scroll timelines. Lit nodes and wires, and the pinned sequence below, are
-   positions — scrubbed in both. */
-@supports (timeline-trigger: --mo view() entry 0% exit 100%) and (animation-trigger: --mo play-forwards){
-@media (prefers-reduced-motion:no-preference){
-  html :is(.wfcs .wfc,.wfc-key,.limits li){timeline-trigger:--mo view(block 0% 9%) entry 0% exit 100%}
-  /* the workflow cards rise a column at a time */
-  html .wfcs .wfc{animation:rv-rise var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 40ms)}
-  /* the key above them, and the limits one by one */
-  html .wfc-key,html .limits li{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards}
-}
-@media (prefers-reduced-motion:no-preference) and (max-width:899px){
-  html .fs-cap{timeline-trigger:--mo view(block 0% 9%) entry 0% exit 100%;animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards}
-}
-}
-@supports (animation-timeline: view()) and (not (timeline-trigger: --mo view() entry 0% exit 100%)){
-@media (prefers-reduced-motion:no-preference){
-  /* the workflow cards rise a column at a time; each one runs as it crosses
-     the lower half of the screen, and has finished before its middle */
-  html .wfcs .wfc{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
-    animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
-  /* the limits and the key rise like every text block */
-  html .limits li,html .wfc-key{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
-  /* the tool badges sit just above the footer, where a tall screen cannot
-     scroll them past ~25vh: with nine of them (the weekly report), motion.css's
-     stagger ended the last at 25.6vh, and check-motion found it stuck at 95% at
-     1920x1080 (2026-09-30). A tighter stagger ends every one by 21vh. */
-  html .body-run.sys .tools .tnode{animation-range:entry calc(var(--d, 0) * .4vh) entry calc(18vh + var(--d, 0) * .4vh)}
-}
-@media (prefers-reduced-motion:no-preference) and (max-width:899px){
-  html .fs-cap{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
-}
-}
-
+/* Entrances are src/styles/scenes.css's (2026-10-02): the workflow cards stand
+   up as cards, the limits come in as rows. The lit nodes and wires, and the
+   pinned sequence below, are positions. */
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){
   @keyframes sf-unlit{from{border-color:var(--hair);background:var(--paper2);color:var(--ink3)}}
@@ -162,14 +130,13 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   @keyframes cv-lit{from{opacity:.24}}
   @keyframes cv-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 
-  /* each workflow runs as it crosses the lower half of the screen: its
-     nodes light in the order a run reaches them, the wires draw behind */
-  html .wfcs .wfc:nth-child(2n){--d:3}
-  html .wfc{view-timeline:--wfc block}
-  html .wfc .nd{animation:cv-lit linear both;animation-timeline:--wfc;
-    animation-range:cover calc(10% + var(--t) * 24%) cover calc(14% + var(--t) * 24%)}
-  html .wfc .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--wfc;
-    animation-range:cover calc(11% + var(--t) * 24%) cover calc(14% + var(--u) * 24%)}
+  /* each workflow runs as its card arrives (scenes.css: on its screen, or as
+     it comes up the page): its nodes light in the order a run reaches them,
+     the wires draw behind */
+  html .wfc.it .nd{animation:cv-lit linear both;animation-timeline:var(--m-tl,--it);
+    animation-range:var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.42 + var(--t) * .5)) var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.5 + var(--t) * .5))}
+  html .wfc.it .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:var(--m-tl,--it);
+    animation-range:var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.44 + var(--t) * .5)) var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.5 + var(--u) * .5))}
 }
 
 /* phones and narrow windows: the list lights step by step as it is read */
