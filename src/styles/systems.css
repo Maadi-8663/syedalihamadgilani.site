@@ -116,6 +116,43 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   html .body-run.sys>.wrap>div>div+div .mini.sysmini{clip-path:none;animation:none}
   html .sysmini .nd{animation:sys-run 420ms linear both;animation-delay:calc(820ms + var(--t) * 1100ms)}
   html .sysmini .ed{stroke-dasharray:1;animation:sys-draw 360ms linear both;animation-delay:calc(880ms + var(--u) * 1100ms)}
+  /* the head's last lines arrive after its figures, like the rest of it */
+  html .body-run>.wrap>div>div>:is(p.sys-extra,p.sys-nofig){animation:mo-in-rise 1000ms var(--mo-ease) 760ms both}
+}
+
+/* Entrances come in motion.css's tiers (its header says why, 2026-10-02):
+   timed where the browser has scroll triggers, scrubbed where it has only
+   scroll timelines. Lit nodes and wires, and the pinned sequence below, are
+   positions — scrubbed in both. */
+@supports (timeline-trigger: --mo view() entry 0% exit 100%) and (animation-trigger: --mo play-forwards){
+@media (prefers-reduced-motion:no-preference){
+  html :is(.wfcs .wfc,.wfc-key,.limits li){timeline-trigger:--mo view(block 0% 9%) entry 0% exit 100%}
+  /* the workflow cards rise a column at a time */
+  html .wfcs .wfc{animation:rv-rise var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 40ms)}
+  /* the key above them, and the limits one by one */
+  html .wfc-key,html .limits li{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+}
+@media (prefers-reduced-motion:no-preference) and (max-width:899px){
+  html .fs-cap{timeline-trigger:--mo view(block 0% 9%) entry 0% exit 100%;animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+}
+}
+@supports (animation-timeline: view()) and (not (timeline-trigger: --mo view() entry 0% exit 100%)){
+@media (prefers-reduced-motion:no-preference){
+  /* the workflow cards rise a column at a time; each one runs as it crosses
+     the lower half of the screen, and has finished before its middle */
+  html .wfcs .wfc{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
+    animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
+  /* the limits and the key rise like every text block */
+  html .limits li,html .wfc-key{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
+  /* the tool badges sit just above the footer, where a tall screen cannot
+     scroll them past ~25vh: with nine of them (the weekly report), motion.css's
+     stagger ended the last at 25.6vh, and check-motion found it stuck at 95% at
+     1920x1080 (2026-09-30). A tighter stagger ends every one by 21vh. */
+  html .body-run.sys .tools .tnode{animation-range:entry calc(var(--d, 0) * .4vh) entry calc(18vh + var(--d, 0) * .4vh)}
+}
+@media (prefers-reduced-motion:no-preference) and (max-width:899px){
+  html .fs-cap{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
+}
 }
 
 @supports (animation-timeline: view()){
@@ -125,33 +162,20 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   @keyframes cv-lit{from{opacity:.24}}
   @keyframes cv-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 
-  /* the workflow cards rise a column at a time; each one runs as it crosses
-     the lower half of the screen, and has finished before its middle */
-  html .wfcs .wfc{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
-    animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
+  /* each workflow runs as it crosses the lower half of the screen: its
+     nodes light in the order a run reaches them, the wires draw behind */
   html .wfcs .wfc:nth-child(2n){--d:3}
   html .wfc{view-timeline:--wfc block}
   html .wfc .nd{animation:cv-lit linear both;animation-timeline:--wfc;
     animation-range:cover calc(10% + var(--t) * 24%) cover calc(14% + var(--t) * 24%)}
   html .wfc .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--wfc;
     animation-range:cover calc(11% + var(--t) * 24%) cover calc(14% + var(--u) * 24%)}
-
-  /* the limits and the problem's second paragraph rise like every text block */
-  html .limits li{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
-  html .sys-body{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 26vh}
-
-  /* the tool badges sit just above the footer, where a tall screen cannot
-     scroll them past ~25vh: with nine of them (the weekly report), motion.css's
-     stagger ended the last at 25.6vh, and check-motion found it stuck at 95% at
-     1920x1080 (2026-09-30). A tighter stagger ends every one by 21vh. */
-  html .body-run.sys .tools .tnode{animation-range:entry calc(var(--d, 0) * .4vh) entry calc(18vh + var(--d, 0) * .4vh)}
 }
 
 /* phones and narrow windows: the list lights step by step as it is read */
 @media (prefers-reduced-motion:no-preference) and (max-width:899px){
   html .fs-ring{animation:sf-unlit linear both;animation-timeline:view();animation-range:entry 100% cover 38%}
   html .fs:not(:last-child)::before{animation:sf-wire linear both;animation-timeline:view();animation-range:cover 26% cover 58%}
-  html .fs-cap{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 24vh}
 }
 
 /* desktop: the stage pins, and the scroll runs the system step by step */

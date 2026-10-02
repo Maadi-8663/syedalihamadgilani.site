@@ -1,26 +1,47 @@
-/* motion.css — the scroll choreography for all four pages (2026-09-28).
+/* motion.css — the scroll choreography for every page (2026-09-28; the
+   entrances re-timed 2026-10-02).
 
-   Syed: "the scrolling animations are not good. Use professional and fancy
-   scrolling animations throughout the portfolio." Measured first: the old
-   reveals were not broken, they were invisible. They ran over `entry 0% entry
-   55%` of each element's own height, so a label finished its 18px fade within
-   ~30px of scroll at the very bottom edge of the screen, before the eye got
-   there; the register pages had almost no reveal motion at all.
+   2026-10-02. Syed: "Apply the appropriate scrolling control. Like the items
+   should appear with proper smooth animations with scrolling one by one,.....
+   on every page." Measured first, with a probe over seven pages: every
+   content block already had an entrance — but every entrance was SCRUBBED:
+   its progress was the scroll position, over the bottom ~20–30vh of the
+   screen. An item moved only while the page did, one mouse-wheel notch
+   (~100px) took it most of the way, and it had finished by the time it
+   reached where the eye is. That reads as a twitch at the bottom edge, not as
+   items appearing one by one.
 
-   The language that replaces them, one grammar across the site:
-   - every reveal runs over a fixed stretch of scroll — from the moment an
-     element's top enters to ~30vh later — whatever its size, so it happens
-     in the lower third of the screen where it is seen, and is finished before
-     the element reaches the reading zone (a probe checks this, see HANDOFF);
-   - reveals are eased with the site's entering curve, so a thing moves most
-     as it enters and settles as you keep scrolling; only motion that IS a
-     position — parallax, drawn lines, the progress bar — stays linear;
-   - display headings rise word by word from behind a mask (the words are
-     split at build time by src/motion/words.js; still no JavaScript);
-   - cards rise a column at a time; photographs develop from monochrome into
-     colour and drift at a slower depth than the page; section rules draw out;
-   - pages without scroll timelines, and anyone who prefers reduced motion,
-     get every element at rest — the base styles here are always the end state.
+   So, where the browser can start an animation from scroll — CSS
+   scroll-triggered animations, `timeline-trigger` + `animation-trigger`
+   (Chrome 154 here: measured to play on the element itself, on a child from
+   its parent's trigger, on a ::after, with a delay, and to wait out an inset)
+   — an entrance is now TIMED: when an item's top comes 9% up the screen it
+   plays a ~1s eased entrance, whatever the scroll does next, once. Items side
+   by side go one after another (a delay per column); items in a column come
+   one by one because each triggers on its own position; headings rise word
+   by word. Three tiers, so no browser is worse off than it was:
+
+     1 scroll triggers (Chrome, Edge…)    timed entrances — the rv-* block
+     2 scroll timelines, no triggers      the scrubbed entrances of 2026-09-28,
+       (Safari 26, older Chrome)          unchanged — the mo-* block
+     3 neither, or reduced motion         every element at rest: the base
+                                          styles are always the end state
+
+   What IS a position stays scrubbed in tiers 1 and 2 — the reading-progress
+   hairline, the hero's exit, the photos' parallax, the phone carousel here;
+   the spine, lit rings, drawn wires and pinned diagrams in the page sheets.
+
+   2026-09-28, still true of tier 2. Syed: "the scrolling animations are not
+   good. Use professional and fancy scrolling animations throughout the
+   portfolio." The reveals before them ran over `entry 0% entry 55%` of each
+   element's own height, so a label finished its 18px fade within ~30px of
+   scroll at the very bottom edge; the register pages had almost none. Their
+   replacement: every reveal runs over a fixed stretch of scroll — from the
+   moment an element's top enters to ~30vh later — eased with the site's
+   entering curve, finished before the reading zone (scripts/check-motion.mjs
+   checks it); display headings rise word by word from behind a mask (split
+   at build time by src/motion/words.js); cards rise a column at a time;
+   photographs develop from monochrome and drift at a slower depth.
 
    Transforms use the individual `translate` / `scale` / `rotate` properties, so
    they compose with the hover transforms the pages already set on `transform`.
@@ -35,6 +56,9 @@ html:root{
   --mo-tilt:9deg;        /* the cards' hinge, desktop only */
 }
 @media (max-width:719px){html:root{--mo-lift:28px;--mo-card-lift:52px;--mo-tilt:0deg}}
+
+/* Printing must not catch an entrance waiting for its trigger. */
+@media print{html *,html *::before,html *::after{animation:none!important}}
 
 @media (prefers-reduced-motion:no-preference){
 
@@ -64,7 +88,179 @@ html:root{
   html .body-run>.wrap>div>div+div .mini{clip-path:inset(0);animation:mo-in-wipe 1400ms var(--mo-ease) 900ms both}
 }
 
+/* ==========================================================================
+   POSITIONS, and the stagger steps — tiers 1 and 2 alike
+   ========================================================================== */
 @supports (animation-timeline: view()){
+@media (prefers-reduced-motion:no-preference){
+
+  @keyframes mo-drift{from{translate:0 -6%}to{translate:0 6%}}
+  @keyframes mo-hero-copy{to{translate:0 -11vh;opacity:.12}}
+  @keyframes mo-hero-cluster{to{translate:0 -17vh;scale:1.12;opacity:0}}
+  @keyframes mo-carousel{0%{scale:.9;opacity:.5}32%,68%{scale:1;opacity:1}100%{scale:.9;opacity:.5}}
+  @keyframes mo-progress{from{scale:0 1}to{scale:1 1}}
+
+  /* ---- reading progress: a hairline of oxide across the top ------------- */
+  html body::before{content:"";position:fixed;left:0;right:0;top:0;height:2px;z-index:70;pointer-events:none;
+    background:var(--accent);transform-origin:0 50%;animation:mo-progress linear both;animation-timeline:scroll(root)}
+
+  /* ---- home: the name drifts up and the marks scatter as you leave ------- */
+  html .hero{view-timeline:--mo-hero block}
+  html .hero>div:first-child{animation:mo-hero-copy linear both;animation-timeline:--mo-hero;animation-range:exit 0% exit 100%}
+  html .hero>.cluster{animation:mo-hero-cluster linear both;animation-timeline:--mo-hero;animation-range:exit 0% exit 100%}
+
+  /* ---- home: the sector photographs drift behind their cards ------------ */
+  html .sect{view-timeline:--mo-sect block}
+  html .sect .sect-photo{animation:mo-drift linear both;animation-timeline:--mo-sect;animation-range:cover 0% cover 100%}
+
+  /* ---- stagger steps: a column's place in its row, an item's in its list.
+          Tier 2 reads them as vh of scroll, tier 1 as a multiple of a delay. */
+  html .skills .skill.rv:nth-child(3n+2){--d:3}
+  html .skills .skill.rv:nth-child(3n+3){--d:6}
+  html .sects .sect.rv:nth-child(3n+2){--d:3}
+  html .sects .sect.rv:nth-child(3n+3){--d:6}
+  html .icards .icard:nth-child(4n+2){--d:2}
+  html .icards .icard:nth-child(4n+3){--d:4}
+  html .icards .icard:nth-child(4n+4){--d:6}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(2){--d:1}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(3){--d:2}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(4){--d:3}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(5){--d:4}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(6){--d:5}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(7){--d:6}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(8){--d:7}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(9){--d:8}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(10){--d:9}
+  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(n+11){--d:10}
+  html .guards li:nth-child(2n){--d:4}
+}
+@media (max-width:719px) and (prefers-reduced-motion:no-preference){
+  /* the expertise row: the card in front is full size, its neighbours sit back */
+  html body .skills .skill.rv{animation:mo-carousel linear both;animation-timeline:view(inline);animation-range:cover 0% cover 100%}
+  html .hero>div:first-child{animation-name:mo-hero-copy-sm}
+  html .hero>.cluster{animation:none}
+  @keyframes mo-hero-copy-sm{to{translate:0 -6vh}}
+  /* the sector cards: two columns, so the second is the one a beat behind */
+  html .sects .sect.rv:nth-child(3n+2),html .sects .sect.rv:nth-child(3n+3){--d:0}
+  html .sects .sect.rv:nth-child(2n){--d:4}
+  /* one to a row here, so nothing waits for a neighbour */
+  html .guards li:nth-child(2n){--d:0}
+  html .icards .icard:nth-child(n){--d:0}
+}
+}
+
+/* ==========================================================================
+   TIER 1 — scroll triggers: timed entrances, one by one
+   ========================================================================== */
+@supports (timeline-trigger: --mo view() entry 0% exit 100%) and (animation-trigger: --mo play-forwards){
+@media (prefers-reduced-motion:no-preference){
+
+  html:root{--rv-text:1000ms;--rv-card:1150ms}
+  @keyframes rv-rise{from{opacity:0;translate:0 var(--mo-lift)}}
+  @keyframes rv-slide{from{opacity:0;translate:-30px 0}}
+  @keyframes rv-slide-r{from{opacity:0;translate:36px 0}}
+  @keyframes rv-fade{from{opacity:0}}
+  @keyframes rv-word{from{translate:0 110%}}
+  @keyframes rv-draw-x{from{scale:0 1}}
+  @keyframes rv-card{from{opacity:0;translate:0 var(--mo-card-lift);scale:.94;rotate:x var(--mo-tilt)}}
+  @keyframes rv-lift{from{opacity:0;translate:0 var(--mo-card-lift);scale:.965}}
+  @keyframes rv-pop{from{opacity:0;scale:.55}}
+  @keyframes rv-curtain{from{clip-path:inset(100% 0 0 0 round var(--r, 18px));translate:0 36px}}
+  @keyframes rv-develop{from{scale:1.24;filter:grayscale(1) saturate(.88) sepia(.3) contrast(1.03)}}
+  @keyframes rv-zoom{from{scale:1.16}}
+  @keyframes rv-wipe{from{clip-path:inset(0 100% 0 0)}}
+  @keyframes rv-dot{0%{scale:0}55%{scale:1.45}100%{scale:1;border-color:var(--accent);background:var(--accent)}}
+
+  /* The trigger: an element (or, for the pieces that ride it — a heading's
+     words, a label's rule, a card's photo — its parent) fires when its top
+     is 9% up the screen, and the entrance plays once. Everything that
+     animates below names --mo; the nearest element that declares it fires. */
+  html :is(.rv,.slabel,.row,.ghead .ring,section .legend>*,.body-run section p.body,.body-run section p.small,.prod>div,.start>div,
+    .trail>.label,.trail>.line,.cats li,.minibox .mini,.screen,div.dash,.tools .tnode,.gates li,.guards li,.inv,.invkey,
+    .icards .icard,.ways>*,.wsplit:not(.wload),.lab,.body-run section.run div[style*="text-align:right"]){timeline-trigger:--mo view(block 0% 9%) entry 0% exit 100%}
+
+  /* ---- the default entrance (everything the home page marks .rv) -------- */
+  html .rv{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 40ms)}
+
+  /* ---- section labels: the words slide in, then the rule draws out ------- */
+  html .lab.rv{animation:none}
+  html .lab>span{display:inline-block;animation:rv-slide 900ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .lab::after{transform-origin:0 50%;animation:rv-draw-x 1300ms var(--mo-ease) 140ms both;animation-trigger:--mo play-forwards}
+  html .slabel{animation:rv-slide 900ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+
+  /* ---- display headings, word by word ------------------------------------ */
+  html .wsplit.rv{animation:none}
+  html .wsplit:not(.wload) .w>span{animation:rv-word 1000ms var(--mo-ease) both;animation-trigger:--mo play-forwards;
+    animation-delay:calc(min(var(--i), 14) * 42ms)}
+
+  /* ---- home: the expertise cards rise off a hinge, a column at a time,
+          each picture settling out of a slow zoom ------------------------ */
+  html .skills{perspective:1400px}
+  html .skills .skill.rv{transform-origin:50% 100%;animation:rv-card var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards;
+    animation-delay:calc(var(--d, 0) * 40ms)}
+  html .skill .pic{overflow:hidden}
+  html .skill .pic svg{animation:rv-zoom 1700ms var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 40ms)}
+  /* page-home.css also fades each card's icon well in by scroll: the card
+     brings it in now, so only its ring's light stays with the scroll */
+  html .skill .g{animation:light linear both;animation-timeline:view();animation-range:cover 10% cover 26%}
+
+  /* ---- home: contact --------------------------------------------------- */
+  html .contact>div.rv{animation:none}
+  html .ways>*{animation:rv-slide 900ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .contact .compose.rv{transform-origin:50% 100%;animation:rv-lift var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+
+  /* ---- home: experience — each role slides in beside the line, then its
+          dot pops (the line itself still fills with the scroll) ---------- */
+  html .xp li.rv{animation:none}
+  html .xp li.rv>div{animation:rv-slide-r 1000ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .xp li.rv>div+div{animation-delay:120ms}
+  html .xp li .dot{animation:rv-dot 900ms var(--mo-ease) 220ms both;animation-trigger:--mo play-forwards}
+
+  /* ---- home: the sector cards open like a curtain, a column at a time; the
+          photograph develops into colour behind the words ---------------- */
+  html .sects .sect.rv{animation:rv-curtain var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards;
+    animation-delay:calc(var(--d, 0) * 40ms)}
+  html .sect .sect-photo img{animation:rv-develop 1800ms ease-out both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 40ms)}
+  html .sect .tx,html .sect .go{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards;
+    animation-delay:calc(180ms + var(--d, 0) * 40ms)}
+
+  /* ---- register pages ------------------------------------------------------ */
+  html .row{animation:rv-rise var(--rv-text) var(--mo-ease) 80ms both;animation-trigger:--mo play-forwards}
+  html .ghead .ring{animation:rv-pop 800ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html section .legend>*,html .body-run section p.body,html .body-run section p.small,html .prod>div,html .start>div,
+  html .trail>.label{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .trail>.line{transform-origin:0 50%;animation:rv-draw-x 1300ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .cats li{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 70ms)}
+  html .minibox .mini{clip-path:inset(0);animation:rv-wipe 1300ms var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .screen{--r:6px;clip-path:inset(0 round 6px);animation:rv-curtain var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html div.dash{--r:6px;clip-path:inset(0 round 6px);animation:rv-curtain var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html div.dash .tr{animation:rv-fade 700ms var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(320ms + var(--d, 0) * 60ms)}
+  html .tools .tnode{animation:rv-pop 800ms var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 60ms)}
+  /* a system page's "Next system", beside its tools */
+  html .body-run section.run div[style*="text-align:right"]{animation:rv-rise var(--rv-text) var(--mo-ease) 200ms both;animation-trigger:--mo play-forwards}
+  html .gates li{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 110ms)}
+  html .guards li{animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 30ms)}
+  html .inv span{transform-origin:0 50%;animation:rv-draw-x 900ms var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 70ms)}
+  html .invkey>span{animation:rv-fade 700ms var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(200ms + var(--d, 0) * 60ms)}
+
+  /* ---- Integrations: the cards rise one by one along each row of four ---- */
+  html .icards .icard{animation:rv-rise var(--rv-card) var(--mo-ease) both;animation-trigger:--mo play-forwards;animation-delay:calc(var(--d, 0) * 50ms)}
+}
+@media (max-width:719px) and (prefers-reduced-motion:no-preference){
+  /* the expertise row rises as one; inside it the carousel is a position */
+  html .skills{timeline-trigger:--mo view(block 0% 9%) entry 0% exit 100%;animation:rv-rise var(--rv-text) var(--mo-ease) both;animation-trigger:--mo play-forwards}
+  html .skill .pic svg{animation:none}
+  /* a role fills the width here, so it rises: sliding in from the right it
+     stuck out past the screen and let the page pan sideways (2026-09-28) */
+  html .xp li.rv>div{animation-name:rv-rise}
+}
+}
+
+/* ==========================================================================
+   TIER 2 — scroll timelines without triggers: the scrubbed entrances of
+   2026-09-28, as they were
+   ========================================================================== */
+@supports (animation-timeline: view()) and (not (timeline-trigger: --mo view() entry 0% exit 100%)){
 @media (prefers-reduced-motion:no-preference){
 
   @keyframes mo-rise{from{opacity:0;translate:0 var(--mo-lift)}}
@@ -78,18 +274,9 @@ html:root{
   @keyframes mo-pop{from{opacity:0;scale:.55}}
   @keyframes mo-curtain{from{clip-path:inset(100% 0 0 0 round var(--r, 18px));translate:0 36px}}
   @keyframes mo-develop{from{scale:1.24;filter:grayscale(1) saturate(.88) sepia(.3) contrast(1.03)}}
-  @keyframes mo-drift{from{translate:0 -6%}to{translate:0 6%}}
   @keyframes mo-zoom{from{scale:1.16}}
   @keyframes mo-wipe{from{clip-path:inset(0 100% 0 0)}}
   @keyframes mo-dot{0%{scale:0}55%{scale:1.45}100%{scale:1;border-color:var(--accent);background:var(--accent)}}
-  @keyframes mo-hero-copy{to{translate:0 -11vh;opacity:.12}}
-  @keyframes mo-hero-cluster{to{translate:0 -17vh;scale:1.12;opacity:0}}
-  @keyframes mo-carousel{0%{scale:.9;opacity:.5}32%,68%{scale:1;opacity:1}100%{scale:.9;opacity:.5}}
-  @keyframes mo-progress{from{scale:0 1}to{scale:1 1}}
-
-  /* ---- reading progress: a hairline of oxide across the top ------------- */
-  html body::before{content:"";position:fixed;left:0;right:0;top:0;height:2px;z-index:70;pointer-events:none;
-    background:var(--accent);transform-origin:0 50%;animation:mo-progress linear both;animation-timeline:scroll(root)}
 
   /* ---- the default reveal (everything the home page marks .rv) ----------- */
   html .rv{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
@@ -107,18 +294,11 @@ html:root{
   html .wsplit:not(.wload) .w>span{animation:mo-word var(--mo-ease) both;animation-timeline:--mo-words;
     animation-range:entry calc(min(var(--i), 12) * .8vh) entry calc(20vh + min(var(--i), 12) * .8vh)}
 
-  /* ---- home: the name drifts up and the marks scatter as you leave ------- */
-  html .hero{view-timeline:--mo-hero block}
-  html .hero>div:first-child{animation:mo-hero-copy linear both;animation-timeline:--mo-hero;animation-range:exit 0% exit 100%}
-  html .hero>.cluster{animation:mo-hero-cluster linear both;animation-timeline:--mo-hero;animation-range:exit 0% exit 100%}
-
   /* ---- home: the expertise cards rise off a hinge, a column at a time,
           while each picture settles out of a slow zoom ------------------- */
   html .skills{perspective:1400px}
   html .skills .skill.rv{transform-origin:50% 100%;animation:mo-card var(--mo-ease) both;animation-timeline:view();
     animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
-  html .skills .skill.rv:nth-child(3n+2){--d:3}
-  html .skills .skill.rv:nth-child(3n+3){--d:6}
   html .skill{view-timeline:--mo-card block}
   html .skill .pic{overflow:hidden}
   html .skill .pic svg{animation:mo-zoom var(--mo-ease) both;animation-timeline:--mo-card;animation-range:entry 0% entry 30vh}
@@ -140,13 +320,9 @@ html:root{
   html .sec.last .note.rv{animation-range:entry 0% entry 18vh}
 
   /* ---- home: the sector cards — each opens like a curtain, a column at a
-          time; its photograph develops into colour and drifts behind ------ */
+          time; its photograph develops into colour ---------------------- */
   html .sects .sect.rv{animation:mo-curtain var(--mo-ease) both;animation-timeline:view();
     animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
-  html .sects .sect.rv:nth-child(3n+2){--d:3}
-  html .sects .sect.rv:nth-child(3n+3){--d:6}
-  html .sect{view-timeline:--mo-sect block}
-  html .sect .sect-photo{animation:mo-drift linear both;animation-timeline:--mo-sect;animation-range:cover 0% cover 100%}
   /* a gentler curve than the rest: the expo curve front-loads the change, so the
      colour was nearly all in before the photo was seen; ease-out lets it develop */
   html .sect .sect-photo img{animation:mo-develop ease-out both;animation-timeline:--mo-sect;
@@ -180,6 +356,7 @@ html:root{
   /* tool marks pop in along each trail */
   html .tools .tnode{animation:mo-pop var(--mo-ease) both;animation-timeline:view();
     animation-range:entry calc(var(--d, 0) * .7vh) entry calc(20vh + var(--d, 0) * .7vh)}
+  html .body-run section.run div[style*="text-align:right"]{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 20vh}
 
   /* the guards: each one rises, the columns a beat apart */
   html .gates li,html .guards li{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
@@ -196,40 +373,12 @@ html:root{
      (2026-09-29); the last finishes 30vh after entering, like every reveal */
   html .icards .icard{animation:mo-rise var(--mo-ease) both;animation-timeline:view();
     animation-range:entry calc(var(--d, 0) * 1vh) entry calc(24vh + var(--d, 0) * 1vh)}
-  html .icards .icard:nth-child(4n+2){--d:2}
-  html .icards .icard:nth-child(4n+3){--d:4}
-  html .icards .icard:nth-child(4n+4){--d:6}
-
-  /* stagger steps, by position among siblings */
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(2){--d:1}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(3){--d:2}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(4){--d:3}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(5){--d:4}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(6){--d:5}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(7){--d:6}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(8){--d:7}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(9){--d:8}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(10){--d:9}
-  html :is(.cats li,.tools .tnode,.inv span,.invkey>span,.dash .tr,.gates li):nth-child(n+11){--d:10}
-  html .guards li:nth-child(2n){--d:4}
 }
-
-/* ---- phones ------------------------------------------------------------- */
 @media (max-width:719px) and (prefers-reduced-motion:no-preference){
-  /* the expertise row: the card in front is full size, its neighbours sit back */
   html .skills{animation:mo-rise var(--mo-ease) both;animation-timeline:view();animation-range:entry 0% entry 30vh}
-  html body .skills .skill.rv{animation:mo-carousel linear both;animation-timeline:view(inline);animation-range:cover 0% cover 100%}
-  /* the sector cards: two columns, so the second is the one a beat behind */
-  html .sects .sect.rv:nth-child(3n+2),html .sects .sect.rv:nth-child(3n+3){--d:0}
-  html .sects .sect.rv:nth-child(2n){--d:4}
+  html .skill .pic svg{animation:none}
   /* a role fills the width here, so it rises instead: sliding in from 36px
      right, it stuck out past the screen and let the page pan sideways 16px */
   html .xp li.rv>div{animation-name:mo-rise}
-  html .hero>div:first-child{animation-name:mo-hero-copy-sm}
-  html .hero>.cluster,html .skill .pic svg{animation:none}
-  @keyframes mo-hero-copy-sm{to{translate:0 -6vh}}
-  html .guards li:nth-child(2n){--d:0}
-  /* one card to a row here, so no card waits for another */
-  html .icards .icard:nth-child(n){--d:0}
 }
 }
