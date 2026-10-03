@@ -1,0 +1,124 @@
+/* navbar.css — the home page's nav, held at the top, and his name, which
+   goes up into it (2026-10-03). Only the home page imports this; the markup
+   is src/brand/navname.js.
+
+   His words: "make also make the nav bar stick to the top(Not for the first
+   viewport). One from there, we scroll up, the name should animatedly be
+   shorter and go on the nav bar......."
+
+   The nav is sticky all the way down. At the top it is clear, as it always
+   was; it frosts over before anything passes under it (where the first
+   screen is held, once the name has landed in it). Where the first
+   screen is held while "What I do" slides over it (a desktop at least
+   1024px wide and 620px tall — scenes.css), the name shrinks as one block
+   to the mark's side, and its second and third lines slide out and step up
+   into one line with the first; there they hand over to the nav's own
+   copy, which sits exactly where they
+   arrive (same face, optical size and letter-spacing, scaled from the same
+   size), so the handover does not show. Where the page simply scrolls,
+   each line of the big name fades as it passes under the bar, and the
+   bar's name comes in. With reduced motion, or without scroll timelines,
+   the bar is there from the start and the name stays in the hero.
+
+   The geometry the name travels is the hero's own, from page-home.css: the
+   nav is 80px; the hero's copy is centred under it, so the first line's top
+   is 80 + the hero's top padding + half of whatever the copy leaves of the
+   screen + the eyebrow (18.7px) + the heading's margin — measured against
+   the build at 1440×900, 1366×657, 1920×1080, 1536×730, 1280×720, 1024×700
+   and 1024×620 (2026-10-03: within 0.2px). The words' offsets in the line
+   (3.376em, 6.572em) are "Syed Ali " and "Syed Ali Hamad " measured in this
+   face at opsz 72 with the heading's -0.03em spacing. Every selector starts
+   with `html`, as in theme.css. */
+
+/* (body: mobile.css sets the phone nav's position at the same weight as html .nav) */
+html body .nav{position:sticky;top:0;z-index:60}
+html .nav::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% - 50vw);pointer-events:none;
+  background:rgba(250,249,246,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--hair)}
+html .navname{display:none}
+html .hero h1 .hn{display:block;font-weight:inherit}
+/* a link to a section — or the skip link, to main — lands below the bar,
+   not under it */
+html :is(.sec,main){scroll-margin-top:80px}
+@media (max-width:719px){html :is(.sec,main){scroll-margin-top:64px}}
+
+@supports (animation-timeline: scroll()){
+@media (prefers-reduced-motion:no-preference){
+  /* clear at the top; frosted before anything scrolls under it */
+  html .nav::before{opacity:0;animation:nb-bar linear both;animation-timeline:scroll(root);animation-range:0px 40px}
+  @keyframes nb-bar{to{opacity:1}}
+  /* the bar's name: one line beside the mark, in the heading's own face —
+     out of the flow, or, hidden at the top, it still took its width and
+     pushed the nav 5px past a 1024px screen (2026-10-03). The mark is the
+     badge and the photo over its edge (89px); the name starts 14px on. */
+  html .nav .mark{position:relative}
+  html .navname{display:block;position:absolute;left:calc(100% + 14px);top:calc(50% - .48em);white-space:nowrap;
+    font-family:var(--serif);font-style:italic;font-weight:400;
+    font-size:18px;line-height:.96;letter-spacing:-.03em;color:var(--ink);font-optical-sizing:none;font-variation-settings:"opsz" 72}
+
+  /* the page scrolls: each line fades as it passes under the bar, and the
+     bar's name comes in as the first goes (waiting for the last left
+     "Gilani" alone on the screen with no name in the bar, 2026-10-03) */
+  html{timeline-scope:--hname}
+  html .hero h1{view-timeline:--hname block;view-timeline-inset:80px 0px}
+  html .hero h1 .hn{transform-origin:0 50%;animation:nb-out linear both;animation-timeline:view(block 80px 0px);animation-range:exit -20% exit 80%}
+  @keyframes nb-out{to{opacity:0;scale:.82;translate:0 -10px}}
+  html .navname{animation:nb-in linear both;animation-timeline:--hname;animation-range:exit 15% exit 50%}
+  @keyframes nb-in{from{opacity:0;translate:0 6px}to{opacity:1;translate:none}}
+}
+@media (prefers-reduced-motion:no-preference) and (max-width:719px){
+  html .hero h1{view-timeline-inset:64px 0px}
+  html .hero h1 .hn{animation-timeline:view(block 64px 0px)}
+  html .navname{font-size:16px;left:calc(100% + 10px)}
+}
+@media (prefers-reduced-motion:no-preference) and (max-width:359px){html .navname{display:none}}
+
+/* ---- the first screen held (scenes.css): the name itself goes into the bar */
+@media (prefers-reduced-motion:no-preference) and (min-width:1024px) and (min-height:620px){
+  html:root{
+    --nb-F:clamp(48px,7.2vw,104px);                 /* the heading's size */
+    --nb-f:calc(var(--nb-F) * .2115);               /* the bar's: 22px beside a 104px heading */
+    --nb-S:calc(100svh - 80px);                     /* the screen under the bar */
+    --nb-pt:clamp(8px,2vw,24px);--nb-pb:clamp(36px,5vw,64px);--nb-mt:clamp(18px,2.4vw,30px);
+    --nb-copy:calc(18.7px + var(--nb-mt) + 2.88 * var(--nb-F) + clamp(22px,2.8vw,34px) + 2.68 * clamp(18px,2.3vw,26px) + clamp(22px,2.6vw,32px) + 47px);
+    --nb-top:calc(80px + var(--nb-pt) + max(0px, (100svh - 80px - var(--nb-pt) - var(--nb-pb) - var(--nb-copy)) / 2) + 18.7px + var(--nb-mt));
+    --nb-x:103px;                                   /* the badge, the photo over its edge, the gap */
+    --nb-y:calc(40px - .48 * var(--nb-f))}          /* centred in the 80px bar */
+  /* nothing passes under the bar until "What I do" reaches it, at the end of
+     the hold — except the name, which must not rise into a frosted bar: seen
+     through its blur it doubled itself at the handover (2026-10-03). So the
+     bar frosts after the name has landed. */
+  html .nav::before{animation-range:calc(var(--nb-S) * .6) calc(var(--nb-S) * .9)}
+  html .navname{font-size:var(--nb-f);animation:nb-show linear both;animation-timeline:scroll(root);
+    animation-range:calc(var(--nb-S) * .52) calc(var(--nb-S) * .56)}
+  @keyframes nb-show{from{opacity:0}to{opacity:1}}
+  html .hero h1 .hn{transform-origin:0 0;
+    animation:nb-m1 cubic-bezier(.55,0,.25,1) both,nb-hide linear both;animation-timeline:scroll(root),scroll(root);
+    animation-range:0px calc(var(--nb-S) * .52),calc(var(--nb-S) * .54) calc(var(--nb-S) * .58)}
+  html .hero h1 .hn2{animation-name:nb-m2,nb-hide}
+  html .hero h1 .hn3{animation-name:nb-m3,nb-hide}
+  /* the line above the name is gone before the name lifts off through it */
+  html .hero .eb{animation:nb-lift linear both;animation-timeline:scroll(root);animation-range:0px calc(var(--nb-S) * .08)}
+  @keyframes nb-lift{to{opacity:0;translate:0 -8px}}
+  @keyframes nb-hide{to{opacity:0}}
+  /* Two moves, so no word ever crosses another (a straight path for each
+     line ran "Hamad" and "Gilani" through "Syed Ali" on the way up,
+     2026-10-03). To 70%: the name shrinks as one block, its lines still
+     stacked, until "Syed Ali" sits where it will stay. Then "Hamad" and
+     "Gilani" slide out to the right along their own lines (transform, in
+     em of the heading: scaled, an em is the bar's em) and, once clear, step
+     up into the line (translate). */
+  @keyframes nb-m1{70%,to{scale:.2115;translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top))}}
+  @keyframes nb-m2{
+    70%{scale:.2115;translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top) - .96 * var(--nb-F) + .96 * var(--nb-f));transform:translateX(0);
+      animation-timing-function:cubic-bezier(.3,.6,.3,1)}
+    84%{translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top) - .96 * var(--nb-F) + .96 * var(--nb-f));animation-timing-function:cubic-bezier(.5,0,.3,1)}
+    86%{transform:translateX(3.376em)}
+    to{scale:.2115;translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top) - .96 * var(--nb-F));transform:translateX(3.376em)}}
+  @keyframes nb-m3{
+    70%{scale:.2115;translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top) - 1.92 * var(--nb-F) + 1.92 * var(--nb-f));transform:translateX(0);
+      animation-timing-function:cubic-bezier(.3,.6,.3,1)}
+    84%{translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top) - 1.92 * var(--nb-F) + 1.92 * var(--nb-f));animation-timing-function:cubic-bezier(.5,0,.3,1)}
+    86%{transform:translateX(6.572em)}
+    to{scale:.2115;translate:var(--nb-x) calc(var(--nb-y) - var(--nb-top) - 1.92 * var(--nb-F));transform:translateX(6.572em)}}
+}
+}

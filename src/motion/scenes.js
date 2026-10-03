@@ -1,13 +1,8 @@
-/* scenes.js — every section a screen (2026-10-02).
+/* scenes.js — the markup behind the scroll motion (2026-10-02, reworked
+   2026-10-03).
 
-   Syed, on the scroll motion: "I want that the items appear with scrolling
-   down... a card should keep moving towards its place and from faded to
-   visibile, when I scroll up, it should again, go back... The view port
-   should scroll up, when all items are visible on there...... then same
-   again for the next View port." Shown a prototype that did exactly that,
-   "This is good, but I want beautiful animatic appearances... not this
-   simple ones"; shown four styles on his own cards, "Use all four, as on the
-   page, and deploy". The four (src/styles/scenes.css runs them):
+   2026-10-02: "Use all four, as on the page" — four ways for items to
+   arrive, which src/styles/scenes.css runs:
 
      a  Stand up        cards           the card stands up off the floor, out
                                         of shadow; its picture rises, its
@@ -22,43 +17,30 @@
                                         the photo develops from black and white
      t  (text)          paragraphs      inks in, top to bottom
 
-   This module only writes markup, at build time — there is still no
-   JavaScript on any page. It wraps a run of a page's HTML in
+   That evening every section was a pinned screen the next one slid over.
+   2026-10-03 he turned that down: "It is like turning the pages... and is
+   not smooth. It should not like shifting the pages..... We should feel like
+   scrolling down, with the animated transitions of item first.... Just only
+   On Home Page, For the first page..... Keep the page turning animation.
+   But just for the First View Port....." So now the page scrolls as a page,
+   and each item arrives as it comes up the screen — still scrubbed by the
+   scroll, still running backwards when it is scrolled back. The one screen
+   left is the home page's first: it holds while the next section slides
+   over it (see src/motion/plans.js).
 
-     <div class="track pin-620" style="--hold:…">     the scroll it owns
-       <div class="scene">                            held still (sticky)
-         <div class="panel"> … </div>                 the screen itself
+   This module only writes markup, at build time — there is still no
+   JavaScript on any page. markItems() marks each item (class "it k-a" etc.)
+   and gives it what its kind needs; screen() wraps the home page's first
+   screen in
+
+     <div class="track pin-620 t-home first">          the scroll it owns
+       <div class="scene">                             held still (sticky)
+         <div class="panel"> … </div>                  the screen itself
        </div>
      </div>
 
-   and marks each item in it (class "it k-a" etc.) with its share of the
-   held scroll: --a to --b, in svh from the moment the screen starts to slide
-   in. Where the browser cannot pin (a phone, a short window, no scroll
-   timelines, reduced motion) the three wrappers are display:contents, so the
-   page lays out exactly as it did without them, and each item arrives on its
-   own view timeline instead.
-
-   Every pattern must match: a markup change throws here rather than quietly
-   losing a screen. */
-
-/* the held scroll, in svh: what each kind of item needs, and the still beat
-   after the last one before the next screen may cover it */
-export const WEIGHT = { a: 22, b: 12, c: 18, d: 20, t: 14 };
-const BASE = 34;
-/* Items start arriving while the screen is 72% of the way in, and are all in
-   place by 82% of the hold; each takes 36% of that span, so about two move at
-   once — the prototype's pacing, which he approved. */
-function windows(weights) {
-  const H = Math.round(weights.reduce((s, w) => s + w, 0) + BASE);
-  const start = 72, end = 100 + 0.82 * H, span = end - start, n = weights.length;
-  const win = n > 1 ? span * 0.36 : span * 0.7;
-  const cum = [];
-  let c = 0;
-  for (const w of weights) { cum.push(c); c += w; }
-  const last = cum[n - 1] || 1;
-  const r = (v) => Math.round(v * 10) / 10;
-  return { H, items: weights.map((w, i) => { const a = start + (n > 1 ? (span - win) * cum[i] / last : 0); return [r(a), r(a + win)]; }) };
-}
+   and own() wraps the section that slides over it. Every pattern must
+   match: a markup change throws here rather than quietly losing an item. */
 
 /* the end of the element whose opening tag starts at `start` (same-name
    nesting counted; the fragments are well formed) */
@@ -83,6 +65,21 @@ export function find(html, re, from = 0) {
   return { start: m.index, end: elementEnd(html, m.index) };
 }
 
+/* the elements matching `re` inside [start, end) of html, as {start, end} */
+export function within(html, start, end, re) {
+  const out = [];
+  const g = new RegExp(re.source, 'g');
+  g.lastIndex = start;
+  let m;
+  while ((m = g.exec(html)) && m.index < end) {
+    const e = elementEnd(html, m.index);
+    out.push({ start: m.index, end: e });
+    g.lastIndex = e;
+  }
+  if (!out.length) throw new Error(`scenes: nothing matched ${re}`);
+  return out;
+}
+
 function addClass(open, cls) {
   return /\sclass="/.test(open)
     ? open.replace(/\sclass="([^"]*)"/, (m, c) => ` class="${c} ${cls}"`)
@@ -92,6 +89,10 @@ function addStyle(open, css) {
   return /\sstyle="/.test(open)
     ? open.replace(/\sstyle="([^"]*)"/, (m, s) => ` style="${s.replace(/;?\s*$/, ';')}${css}"`)
     : open.replace(/^<([a-zA-Z0-9-]+)/, `<$1 style="${css}"`);
+}
+export function classAt(html, at, cls) {
+  const open = html.slice(at).match(/^<[^>]+>/)[0];
+  return html.slice(0, at) + addClass(open, cls) + html.slice(at + open.length);
 }
 
 /* a title's words, each in a mask, for the "comes up word by word" stage */
@@ -116,17 +117,17 @@ const PREP = {
   },
 };
 
-/* The items inside a screen's html, in document order: `items` is a list of
-   [opening-tag pattern, kind]. A pattern that finds nothing throws. */
+/* The items inside html, in document order: `items` is a list of
+   [opening-tag pattern, kind]. A pattern that finds nothing throws. An item
+   inside another (a card's own small print) belongs to the card. */
 function findItems(html, items) {
   const found = [];
-  for (const [re, kind, w] of items) {
+  for (const [re, kind] of items) {
     const g = new RegExp(re.source, 'g');
     let m, n = 0;
-    while ((m = g.exec(html))) { found.push({ at: m.index, kind, w: w || WEIGHT[kind] }); n++; }
+    while ((m = g.exec(html))) { found.push({ at: m.index, kind }); n++; }
     if (!n) throw new Error(`scenes: no item matched ${re}`);
   }
-  // an item inside another (a card's own small print) belongs to the card
   found.sort((x, y) => x.at - y.at);
   const out = [];
   let reach = -1;
@@ -138,78 +139,30 @@ function findItems(html, items) {
   return out;
 }
 
-/* A run of html as a screen. opts:
-     t      the page type, for how far the screen reaches past its column:
-            'home', 'reg' (a system or sector page), 'wrap' (Work, Integrations)
-     pin    the shortest window, in px, the screen fits in (pin-620 etc.):
-            shorter than that, it is not pinned
-     first  the page's first screen: on view when the page opens, so it
-            neither slides in nor is laid out anew
-     own    a section with a pinned stage of its own (How it runs, the
-            sector's hero, the architecture): it only slides in
-     items  [pattern, kind] pairs, matched inside the run
-     label  a copy of the section's label, shown in the screen only when it
-            is pinned (a section split over screens)
-     grid   wrap the run in a .pgrid, laid out only when pinned */
-export function build(inner, opts) {
-  if (opts.own) return `<div class="track own t-${opts.t}">${inner}</div>`;
-  const found = findItems(inner, opts.items || []);
-  const { H, items: w } = windows(found.map((f) => f.w));
+/* Mark the items in html (a section, usually) */
+export function markItems(html, items) {
   let out = '', last = 0;
-  found.forEach((f, i) => {
-    const open = inner.slice(f.at).match(/^<[^>]+>/)[0];
-    const iEnd = elementEnd(inner, f.at);
-    let item = inner.slice(f.at, iEnd);
-    const tagged = addStyle(addClass(open, `it k-${f.kind}`), `--i:${i};--a:${w[i][0]};--b:${w[i][1]}`);
-    item = tagged + item.slice(open.length);
+  findItems(html, items).forEach((f, i) => {
+    const open = html.slice(f.at).match(/^<[^>]+>/)[0];
+    const end = elementEnd(html, f.at);
+    let item = addStyle(addClass(open, `it k-${f.kind}`), `--i:${i}`) + html.slice(f.at + open.length, end);
     if (PREP[f.kind]) item = PREP[f.kind](item);
-    out += inner.slice(last, f.at) + item;
-    last = iEnd;
+    out += html.slice(last, f.at) + item;
+    last = end;
   });
-  out += inner.slice(last);
-  // a section that opens the screen and has an id (a nav link's target)
-  // says how long its items take, so the link can land with them all in
-  out = out.replace(/^(\s*)(<[a-zA-Z][^>]*\sid="[^"]*"[^>]*>)/, (m, ws, open) => ws + addStyle(open, `--anc:${found.length ? H : 0}`));
-  if (opts.grid) out = `<div class="pgrid">${out}</div>`;
-  const cls = ['track', `pin-${opts.pin || 620}`, `t-${opts.t}`, opts.first ? 'first' : ''].filter(Boolean).join(' ');
-  const label = opts.label ? `<div class="plab" aria-hidden="true">${opts.label}</div>` : '';
-  return `<div class="${cls}" style="--hold:${found.length ? H : 0}"><div class="scene"><div class="panel">${label}${out}</div></div></div>`;
+  return out + html.slice(last);
 }
 
-export function screen(html, start, end, opts) {
-  return html.slice(0, start) + build(html.slice(start, end), opts) + html.slice(end);
+/* The home page's first screen: held where it opened while the next section
+   slides over it, then let go. `t` is the page type, for how far the screen
+   reaches past its column. */
+export function screen(html, start, end, { t = 'home', pin = 620 } = {}) {
+  return html.slice(0, start)
+    + `<div class="track pin-${pin} t-${t} first"><div class="scene"><div class="panel">${html.slice(start, end)}</div></div></div>`
+    + html.slice(end);
 }
 
-/* Wrap the element that `re` finds (searching from `from`), or the run of
-   consecutive elements from it through the one `until` finds. */
-export function wrap(html, re, opts = {}, until = null, from = 0) {
-  const a = find(html, re, from);
-  const end = until ? find(html, until, a.start).end : a.end;
-  return screen(html, a.start, end, opts);
-}
-
-/* the elements matching `re` inside [start, end) of html, as {start, end} */
-export function within(html, start, end, re) {
-  const out = [];
-  const g = new RegExp(re.source, 'g');
-  g.lastIndex = start;
-  let m;
-  while ((m = g.exec(html)) && m.index < end) {
-    const e = elementEnd(html, m.index);
-    out.push({ start: m.index, end: e });
-    g.lastIndex = e;
-  }
-  if (!out.length) throw new Error(`scenes: nothing matched ${re}`);
-  return out;
-}
-
-/* add a class to the opening tag that starts at `at` */
-export function styleAt(html, at, css) {
-  const open = html.slice(at).match(/^<[^>]+>/)[0];
-  return html.slice(0, at) + addStyle(open, css) + html.slice(at + open.length);
-}
-
-export function classAt(html, at, cls) {
-  const open = html.slice(at).match(/^<[^>]+>/)[0];
-  return html.slice(0, at) + addClass(open, cls) + html.slice(at + open.length);
+/* the section that slides over it */
+export function own(html, start, end, { t = 'home' } = {}) {
+  return html.slice(0, start) + `<div class="track own t-${t}">${html.slice(start, end)}</div>` + html.slice(end);
 }
