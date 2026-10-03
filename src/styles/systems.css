@@ -130,13 +130,13 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   @keyframes cv-lit{from{opacity:.24}}
   @keyframes cv-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
 
-  /* each workflow runs as its card arrives (scenes.css: as it comes up the
-     page): its nodes light in the order a run reaches them, the wires draw
-     behind */
-  html .wfc.it .nd{animation:cv-lit linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.42 + var(--t) * .5)) entry calc(var(--p0) + var(--pw) * (.5 + var(--t) * .5))}
-  html .wfc.it .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.44 + var(--t) * .5)) entry calc(var(--p0) + var(--pw) * (.5 + var(--u) * .5))}
+  /* each workflow runs as its card arrives (scenes.css: on its screen, or as
+     it comes up the page): its nodes light in the order a run reaches them,
+     the wires draw behind */
+  html .wfc.it .nd{animation:cv-lit linear both;animation-timeline:var(--m-tl,--it);
+    animation-range:var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.42 + var(--t) * .5)) var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.5 + var(--t) * .5))}
+  html .wfc.it .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:var(--m-tl,--it);
+    animation-range:var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.44 + var(--t) * .5)) var(--m-rn,entry) calc(var(--p0) + var(--pw) * (.5 + var(--u) * .5))}
 }
 
 /* phones and narrow windows: the list lights step by step as it is read */

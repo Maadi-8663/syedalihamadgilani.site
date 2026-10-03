@@ -30,16 +30,28 @@
    face at opsz 72 with the heading's -0.03em spacing. Every selector starts
    with `html`, as in theme.css. */
 
+/* Since 2026-10-03 (later: "make nav stick to every page") every route
+   imports this; the name's parts only act on the home page, the one with
+   .navname. --navh is the nav's height per page type, and everything else
+   that holds at the top of the screen now holds below it. */
+html{--navh:72px}
+@media (max-width:899px){html{--navh:64px}}
+html:has(.navname){--navh:80px}
+@media (max-width:719px){html:has(.navname){--navh:64px}}
 /* (body: mobile.css sets the phone nav's position at the same weight as html .nav) */
 html body .nav{position:sticky;top:0;z-index:60}
+html body .ghead{top:var(--navh)}
+html body .stage{top:var(--navh);height:calc(100vh - var(--navh))}
+html body .arch-stage{top:var(--navh);min-height:calc(100vh - var(--navh))}
+@media (min-width:900px){html body .arch-stage .arch{max-height:calc(100vh - 48px - var(--navh))}}
+html body .flow{--ti:max(var(--navh),calc(50vh + var(--navh) / 2 - var(--sh) / 2))}
 html .nav::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% - 50vw);pointer-events:none;
   background:rgba(250,249,246,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--hair)}
 html .navname{display:none}
 html .hero h1 .hn{display:block;font-weight:inherit}
 /* a link to a section — or the skip link, to main — lands below the bar,
    not under it */
-html :is(.sec,main){scroll-margin-top:80px}
-@media (max-width:719px){html :is(.sec,main){scroll-margin-top:64px}}
+html :is(.sec,main){scroll-margin-top:var(--navh)}
 
 @supports (animation-timeline: scroll()){
 @media (prefers-reduced-motion:no-preference){
@@ -87,7 +99,9 @@ html :is(.sec,main){scroll-margin-top:80px}
      the hold — except the name, which must not rise into a frosted bar: seen
      through its blur it doubled itself at the handover (2026-10-03). So the
      bar frosts after the name has landed. */
-  html .nav::before{animation-range:calc(var(--nb-S) * .6) calc(var(--nb-S) * .9)}
+  html:has(.navname) .nav::before{animation-range:calc(var(--nb-S) * .6) calc(var(--nb-S) * .9)}
+  /* the held screen clips what leaves it; the name must leave it */
+  html .first.t-home .panel{overflow:visible}
   html .navname{font-size:var(--nb-f);animation:nb-show linear both;animation-timeline:scroll(root);
     animation-range:calc(var(--nb-S) * .52) calc(var(--nb-S) * .56)}
   @keyframes nb-show{from{opacity:0}to{opacity:1}}
