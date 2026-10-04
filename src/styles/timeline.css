@@ -1,0 +1,106 @@
+/* timeline.css — the home page's numerals and its experience, drawn to scale
+   (2026-10-04). Home only, like cards.css.
+
+   Syed: "I want to keep visuals instead of text everywhere, that too modern
+   and professional", then "Do all four". Two of the four are on this page:
+
+     the hero's figures   numerals (src/pictures/numerals.js): the number in
+                          the display face, what it counts beside it
+     the experience       a timeline (src/pictures/timeline.js): a column a
+                          month, a bar for each role, and the covers of the
+                          systems that role produced
+
+   Colours are theme tokens. The thumbnails sit on the pigments, which are
+   imagery and never a UI colour; the bars are the one accent (a role that
+   continues) and a grey (one that ended). Every selector starts with
+   `html`, for the reason theme.css gives. */
+
+/* ---- the hero's figures ---------------------------------------------------
+   Where the first screen is held, his name flies to the nav from a start
+   computed from the hero's geometry (navbar.css, --nb-copy), in which this
+   block is 47px tall — the height the plain line had. So it is exactly that
+   there: one row, the numeral with its label beside it. */
+html .hero .facts.big{display:flex;flex-wrap:nowrap;align-items:center;gap:0 12px;height:47px;font-family:var(--mono);font-size:9.5px;color:var(--ink3)}
+/* (no shrinking: a label is two lines at most, whatever the column's width) */
+html .hero .facts.big span{display:flex;flex:none;align-items:center;gap:7px}
+html .hero .facts.big b{font-family:var(--serif);font-weight:400;font-size:42px;line-height:1;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:lining-nums}
+/* (17.5ch: fifteen letters and their spacing, "platforms under") */
+html .hero .facts.big i{font-style:normal;width:max-content;max-width:17.5ch;line-height:1.45;letter-spacing:.08em;text-transform:uppercase}
+html .hero .facts.big span+span{padding-left:12px;border-left:1px solid var(--hair)}
+
+/* ---- the timeline ----------------------------------------------------------
+   --cols is the number of months, set by timeline.js; --who is the width of
+   the column the roles are named in. Every track is the same grid of months,
+   so the bars and the years above them line up. */
+html .tl{--who:270px;--gap:clamp(20px,3vw,40px);margin-top:clamp(26px,3vw,40px);border:1px solid var(--hair);border-radius:18px;background:var(--paper2);padding:6px clamp(16px,2.4vw,28px) 4px}
+html .tl-axis{display:grid;grid-template-columns:var(--who) minmax(0,1fr);column-gap:var(--gap);align-items:end;padding:14px 0 10px;border-bottom:1px solid var(--hair)}
+html .tl-key{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0;font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--ink3)}
+html .tl-key span{display:inline-flex;align-items:center;gap:7px}
+html .tl-key i{display:block;width:20px;height:8px;border-radius:4px;background:var(--ink3)}
+html .tl-key i.now{background:var(--accent);border-radius:4px 0 0 4px}
+html .tl-years{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));font-family:var(--mono);font-size:10.5px;line-height:1.5;color:var(--ink3)}
+html .tl-years span{padding-left:7px;border-left:1px solid var(--hair)}
+html .tl-rows{list-style:none;margin:0;padding:0}
+/* (the bar's row is as tall as the bar: what the role's name adds goes below it) */
+html .tl-row{display:grid;grid-template-columns:var(--who) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:var(--gap);row-gap:12px;padding:20px 0;border-bottom:1px solid var(--hair)}
+html .tl-row:last-child{border-bottom:0}
+html .tl-who{grid-row:1 / span 2;min-width:0}
+html .tl-who h3{margin:0;font-weight:500;font-size:16px;line-height:1.3;letter-spacing:-.005em;color:var(--ink);text-wrap:balance}
+html .tl-who .org{margin:5px 0 0;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--ink3);text-wrap:pretty}
+html .tl-who .when{margin-top:8px;font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;color:var(--ink2)}
+html .tl-who .stack{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;color:var(--ink3)}
+html .tl-who .stack i{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--ink3)}
+/* a track: the months as a grid, a rail through them, a tick where a year
+   turns, and the role's bar over the months it covers */
+html .tl-track{position:relative;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));align-items:center;height:22px}
+html .tl-track::before{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:var(--hair)}
+html .tl-track>i{grid-row:1;justify-self:start;width:1px;height:14px;background:var(--hair)}
+html .tl-bar{grid-row:1;position:relative;height:10px;border-radius:5px;background:var(--ink3)}
+html .tl-bar.now{background:var(--accent);border-radius:5px 0 0 5px}
+/* what the role produced: the systems' covers, then its sentence */
+html .tl-did{display:flex;flex-wrap:wrap;align-items:center;align-self:start;gap:12px 18px;min-width:0}
+html .tl-did p{flex:1 1 300px;margin:0;font-size:14px;line-height:1.55;color:var(--ink2);max-width:62ch;text-wrap:pretty}
+html .tl-thumbs{display:flex;flex-wrap:wrap;gap:8px;flex:none}
+html .tl-thumb{position:relative;display:block;overflow:hidden;width:92px;aspect-ratio:16/10;border:1px solid var(--hair);border-radius:8px;
+  background-color:var(--pic);background-image:url(/texture.webp);background-size:375px 278px;background-blend-mode:multiply;
+  transition:border-color 200ms var(--enter),transform 200ms var(--enter)}
+html .tl-thumb svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+html .tl-thumb text{font-family:var(--sans)}
+html .tl-thumb .m{font-family:var(--mono)}
+html .tl-thumb .n{font-family:var(--serif)}
+html .tl-thumb:hover{border-color:var(--accent);transform:translateY(-2px)}
+html .tl-thumb:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html #experience .edu{padding-left:0}
+
+@media (max-width:899px){
+  html .tl{--who:200px}
+}
+/* Phones: a role, then its bar across the full width, then what it made */
+@media (max-width:719px){
+  html .hero .facts.big{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start;gap:0 14px;height:auto}
+  html .hero .facts.big span{flex-direction:column;align-items:flex-start;gap:6px}
+  html .hero .facts.big span+span{padding-left:14px}
+  html .hero .facts.big b{font-size:38px}
+  html .hero .facts.big i{width:auto;max-width:100%;font-size:9px;letter-spacing:.06em}
+  html .tl{padding:2px 14px 2px;border-radius:16px}
+  html .tl-axis{grid-template-columns:minmax(0,1fr);row-gap:10px;padding:12px 0 8px}
+  html .tl-row{grid-template-columns:minmax(0,1fr);grid-template-rows:none;row-gap:10px;padding:18px 0}
+  html .tl-who{grid-row:auto}
+  html .tl-did p{flex-basis:100%;font-size:14px}
+  /* four to a row, whatever the phone's width */
+  html .tl-thumbs{flex:1 1 100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+  html .tl-thumb{width:auto}
+}
+@media (prefers-reduced-motion:reduce){html .tl-thumb{transition:none}}
+
+/* ---- arrivals: a role comes in as a row does (scenes.css, kind c); its bar
+        is drawn across its months, and its covers come up after it --------- */
+@supports (animation-timeline: view()){
+@media (prefers-reduced-motion:no-preference){
+  html .tl-row.it .tl-bar{transform-origin:0 50%;animation:s-draw-x linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.3,.6,.3,1);
+    animation-range:entry calc(var(--p0) + var(--pw) * .2) entry calc(var(--p0) + var(--pw) * .85)}
+  html .tl-row.it .tl-thumb{animation:s-rise linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * (.4 + var(--k,0) * .08)) entry calc(var(--p0) + var(--pw) * (.7 + var(--k,0) * .08))}
+  html .tl-thumb:nth-child(2){--k:1}html .tl-thumb:nth-child(3){--k:2}html .tl-thumb:nth-child(4){--k:3}
+}
+}

@@ -8,11 +8,17 @@
 
    They wear the register's clothes, so they read as part of the site: the
    nav and footer are cut from work.html at build time, so they cannot drift
-   apart; the spine and its section nodes, the section labels and the project
-   rows are the register's own markup, so page-base.css, page-work.css,
-   mobile.css and scenes.css treat them as they treat /work/. The card's
-   picture (src/pictures/expertise.js) heads the page it opens. Styles of
-   their own are in src/styles/expertise.css.
+   apart; the spine and its section nodes and the section labels are the
+   register's own markup, so page-base.css, page-work.css, mobile.css and
+   scenes.css treat them as they treat /work/. The card's picture
+   (src/pictures/expertise.js) heads the page it opens. Styles of their own
+   are in src/styles/expertise.css.
+
+   Since 2026-10-04 the pages use the gallery's parts ("visuals instead of
+   text everywhere"): the stack is cards that turn, a tool's mark on the face
+   and what it is used for on the back, as on the Integrations page; and the
+   projects are the cards /work/ shows (src/work/cards.js), each with its
+   cover and its line about this expertise.
 
    Nothing here is typed twice. A project's name, sector and tools come from
    src/systems/data.js; its figure and where that was counted from come from
@@ -33,6 +39,9 @@ import { BRAND } from '../pictures/brands.js';
 import { expertisePictures } from '../pictures/expertise.js';
 import { withIntegrationsLink } from '../integrations/nav.js';
 import { withBrandMark } from '../brand/mark.js';
+import { registerRows, text } from '../work/register.js';
+import { projectCard } from '../work/cards.js';
+import { siteCover } from '../systems/cover.js';
 import { site } from '../data/site.js';
 import pkg from '../../package.json';
 
@@ -44,9 +53,6 @@ const cut = (page, open, close) => {
   if (a === -1 || b === -1) throw new Error(`expertise: ${open} not found in work.html`);
   return page.slice(a, b + close.length);
 };
-/* a fragment's text, as a reader sees it: tags out, entities back */
-const text = (html) => html.replace(/<(svg|style)[\s\S]*?<\/\1>/g, ' ').replace(/<[^>]+>/g, ' ')
-  .replace(/&amp;/g, '&').replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
 /* every string in a system's entry, as one text */
 const strings = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(strings).join(' \n ') : v && typeof v === 'object' ? Object.values(v).map(strings).join(' \n ') : '');
 
@@ -54,34 +60,12 @@ const strings = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(str
    in a stack must be one of these or have a mark, so a typo cannot ship. */
 const TYPESET = new Set(['OpenAI', 'Twilio', 'GoHighLevel', 'HouseCall Pro', 'CallRail', 'Skyvern', 'Apify', 'Slack', 'PandaDoc', 'AssemblyAI']);
 
-/* ---- the register's rows: figures, sources and the ported system --------- */
+/* ---- the register's rows: figures, sources and the ported system ---------
+   (read by src/work/register.js, which /work/ itself is built from) */
 
-const ROW = /<a class="row" id="([^"]+)" href="[^"]*" data-prov="(Delivered|Built)">([\s\S]*?)<\/a>/g;
-function registerRows(work) {
-  const rows = new Map();
-  for (const [, slug, prov, body] of work.matchAll(ROW)) {
-    const one = (re, what) => {
-      const m = body.match(re);
-      if (!m) throw new Error(`expertise: the register's row for ${slug} has no ${what}`);
-      return m[1];
-    };
-    rows.set(slug, {
-      prov,
-      dot: one(/<span style="padding-top:5px">(<svg[\s\S]*?<\/svg>)<\/span>/, 'dot'),
-      name: one(/<span class="name">([\s\S]*?)<\/span>/, 'name'),
-      sector: one(/<div class="sector">([\s\S]*?)<\/div>/, 'sector'),
-      /* the figure and where it was counted from, exactly as the register prints them */
-      col3: one(/<span class="col3">([\s\S]*?)<\/span>\s*<span class="col4">/, 'figure column'),
-      marked: [...body.matchAll(/<span title="([^"]+)">/g)].map((m) => m[1]),
-      texts: (body.match(/<div class="texts">([\s\S]*?)<\/div>/) || [, ''])[1].split(/\s*·\s*/).filter(Boolean),
-      text: text(body),
-    });
-  }
-  return rows;
-}
-
-/* What a page needs of each system. `blob` is the system's published text,
-   lower-cased: what a project's line and a tool's note are checked against. */
+/* What a page needs of each system. `row` is its row on the register, which
+   its card is built from; `blob` is the system's published text, lower-cased:
+   what a project's line and a tool's note are checked against. */
 function records({ work, system, sector }) {
   const rows = registerRows(work);
   const out = new Map();
@@ -93,13 +77,13 @@ function records({ work, system, sector }) {
   for (const sys of SYSTEMS) {
     const r = row(sys.slug);
     if ((sys.prov === 'delivered') !== (r.prov === 'Delivered')) throw new Error(`expertise: ${sys.slug} is ${sys.prov} in data.js and ${r.prov} on the register`);
-    out.set(sys.slug, { slug: sys.slug, n: sys.n, name: sys.name, sub: sys.sub, prov: r.prov, dot: r.dot, col3: r.col3,
+    out.set(sys.slug, { slug: sys.slug, n: sys.n, name: sys.name, sub: sys.sub, prov: r.prov, dot: r.dot, col3: r.col3, row: r,
       tools: sys.tools, href: `/work/${sys.slug}/`, blob: strings(sys).toLowerCase() });
   }
   /* the ported system: its row is its record, its own page and the sector
      page are its text */
   const r = row(PORTED.slug);
-  out.set(PORTED.slug, { slug: PORTED.slug, n: PORTED.n, name: PORTED.name, sub: text(r.sector), prov: r.prov, dot: r.dot, col3: r.col3,
+  out.set(PORTED.slug, { slug: PORTED.slug, n: PORTED.n, name: PORTED.name, sub: text(r.sector), prov: r.prov, dot: r.dot, col3: r.col3, row: r,
     tools: [...r.marked, ...r.texts], href: `/work/${PORTED.slug}/`, blob: `${r.text} \n ${text(system)} \n ${text(sector)}`.toLowerCase() });
   return out;
 }
@@ -193,18 +177,23 @@ function head(x, projects, picture) {
     </div>`;
 }
 
+/* The stack, as cards that turn (the Integrations page's card, so its
+   styles, its arrival and its phone layout are that page's): a tool's mark
+   in its brand's colour, its name, and the layer of the stack it belongs
+   to; on the back, what it is used for. A tool with no published mark is
+   set in type. */
 function stack(n, x, marks) {
-  const tool = ([name, note]) => {
+  const tool = (layer) => ([name, note]) => {
     const svg = marks.get(name);
-    const disc = svg
-      ? `<span class="ex-disc ring">${sized(svg, 22)}</span>`
-      : `<span class="ex-disc ring type" aria-hidden="true">${esc(name[0])}</span>`;
-    return `<li class="ex-tool"${svg ? ` style="--brand:${brandOf(name)}"` : ''}>${disc}<b>${esc(name)}</b><p>${esc(note)}</p></li>`;
+    const front = svg
+      ? `<span class="mark">${svg}</span><h3 class="nm">${esc(name)}</h3>`
+      : `<h3 class="nm type">${esc(name)}</h3>`;
+    return `<li class="icard" tabindex="0"${svg ? ` style="--brand:${brandOf(name)}"` : ''}><div class="flip">`
+      + `<div class="side front">${front}<p class="lay">${esc(layer)}</p></div>`
+      + `<div class="side back"><p class="bt" aria-hidden="true">${svg || ''}<span>${esc(name)}</span></p><p class="tx">${esc(note)}</p></div>`
+      + `</div></li>`;
   };
-  const layers = x.stack.map((l) => `<div class="ex-layer">
-          <h3 class="ex-layer-h"><span>${esc(l.label)}</span></h3>
-          <ul class="ex-tools">${l.tools.map(tool).join('')}</ul>
-        </div>`).join('\n        ');
+  const cards = x.stack.flatMap((l) => l.tools.map(tool(l.label))).join('');
 
   let also = '';
   if (x.also?.length) {
@@ -220,25 +209,19 @@ function stack(n, x, marks) {
         </div>`;
   }
   const [, many] = x.noun || ['system', 'systems'];
-  return section(n, 'Tools and stack', `<p class="body ex-intro">What this work is built on. Every tool below is part of at least one of the ${many} further down this page.</p>
-        ${layers}
+  return section(n, 'Tools and stack', `<p class="body ex-intro">What this work is built on. Every tool below is part of at least one of the ${many} further down this page.<span class="int-hint"> <span class="if-hover">Hover</span><span class="if-touch">Tap</span> a card to see what it is used for.</span></p>
+        <ul class="icards ex-stack">${cards}</ul>
         ${also}`, { id: 'stack' });
 }
 
-function rows(list, marks) {
-  return list.map(({ p, line }) => {
-    const marked = p.tools.filter((t) => marks.has(t)), typed = [...p.tools.filter((t) => !marks.has(t)), ...(p.texts || [])];
-    const icons = marked.map((t) => `<span title="${esc(t)}">${sized(marks.get(t), 16)}</span>`).join('');
-    const inner = `
-          <span style="padding-top:5px">${p.dot}</span>
-          <span><span class="name">${esc(p.name)}</span><div class="sector">${esc(p.sub)}</div><div class="line">${esc(line)}</div></span>
-          <span class="col3">${p.col3}</span>
-          <span class="col4"><div class="stack">${icons}</div>${typed.length ? `<div class="texts">${typed.map(esc).join(' · ')}</div>` : ''}<div class="prov ${p.prov === 'Delivered' ? 'd' : 'b'}">${p.prov}</div></span>
-        `;
-    return p.href
-      ? `<a class="row" href="${p.href}" data-prov="${p.prov}">${inner}</a>`
-      : `<div class="row ex-self" data-prov="${p.prov}">${inner}</div>`;
-  }).join('\n        ');
+/* The projects, as the cards /work/ shows: each system's cover, and the line
+   that says what it shows about this expertise. The one project that is not
+   a system — this site — gets the home card's picture of it, and no link. */
+function cards(list, marks, sources) {
+  return list.map(({ p, line }) => (p.row
+    ? projectCard({ ...p.row, tools: p.tools, href: p.href }, sources, marks, { line: esc(line), ids: 'ex' })
+    : projectCard({ slug: 'site', prov: p.prov, groupTitle: esc(p.sub.split(' · ')[0]), name: esc(p.name), dot: p.dot, col3: p.col3, tools: p.tools, href: null },
+      sources, marks, { line: esc(line), cover: siteCover(sources.home, { id: 'ex-site', fig: p.fig }) }))).join('\n        ');
 }
 
 function booking(n, x) {
@@ -302,13 +285,14 @@ export function expertisePage(slug, { work, home, system, sector }) {
 
   let n = 1;
   const parts = [head(x, projects, picture), stack(n++, x, marks)];
-  parts.push(section(n++, 'Delivered', `<div class="ex-rows">
-        ${rows(delivered, marks)}
+  const sources = { home, system };
+  parts.push(section(n++, 'Delivered', `<div class="gallery ex-gallery">
+        ${cards(delivered, marks, sources)}
         </div>`, { id: 'delivered' }));
   if (built.length) {
     parts.push(section(n++, 'Built, not yet deployed', `<p class="small ex-built-note">The workflow JSON is in the repository and imports into n8n; the node counts are taken from it. None of these has yet run against live accounts.</p>
-        <div class="ex-rows">
-        ${rows(built, marks)}
+        <div class="gallery ex-gallery">
+        ${cards(built, marks, sources)}
         </div>`, { id: 'built' }));
   }
   parts.push(booking(n++, x), others(x));

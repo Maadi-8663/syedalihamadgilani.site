@@ -18,15 +18,21 @@
                    lights up in the order a run would reach each node.
    Limits        what the system does not do, from its own write-up.
 
+   Since 2026-10-04 a page opens on its system's cover (cover.js) where the
+   small workflow diagram was — every system has one, export or not — and
+   its guards are cards that turn (guards.js): "visuals instead of text".
+
    Every count is read from graphs.json (scripts/extract-systems.mjs), never
    typed; the few that data.js does type in prose are asserted below. Text
    comes from data.js, whose header names the sources. */
 
 import { SYSTEMS, GROUPS, PORTED } from './data.js';
-import { glyph } from './glyphs.js';
+import { glyph, GLYPHS } from './glyphs.js';
 import GRAPHS from './graphs.json';
 import { toolMarks } from '../pictures/cluster.js';
 import { integrationMarks } from '../integrations/marks.js';
+import { headCover } from './cover.js';
+import { guardCards } from './guards.js';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const pad = (n) => String(n).padStart(2, '0');
@@ -100,7 +106,7 @@ function depths(wf) {
 
 /* The canvas at its exported positions, scaled into `width` units. Node
    sizes follow the scale, within limits, so a long ribbon stays legible
-   and nodes never touch. `cls` picks the look (the head's mini, or a card). */
+   and nodes never touch. `cls` is the drawing's class (a workflow's card). */
 function canvas(wf, { width, maxScale, cls, names }) {
   const unit = Math.min(maxScale, (width - 40) / Math.max(wf.w, 1));
   const node = Math.max(6, Math.min(13, 176 * unit * 0.62));
@@ -138,7 +144,7 @@ const section = (label, inner, { ghost = false, id } = {}) =>
       <div class="wrap">${inner}</div>
     </section>`;
 
-function head(sys, g, order) {
+function head(sys, g, sources) {
   const crumb = `<p class="label"><a href="/work/" style="color:var(--ink3)">Work</a> &nbsp;/&nbsp; `
     + `<a href="/work/#${sys.group}" style="color:var(--ink3)">${esc(GROUPS[sys.group])}</a> &nbsp;/&nbsp; <span style="color:var(--maroon)">${pad(sys.n)}</span>`
     + (sys.sector ? ` &nbsp;·&nbsp; <a href="/sectors/home-services/" style="color:var(--ink3)">Home services &amp; construction</a>` : '')
@@ -167,22 +173,16 @@ function head(sys, g, order) {
       + (sys.extra ? `<p class="mono dim sys-extra">${esc(sys.extra)}</p>` : '')
     : '<p class="sys-nofig">No figures on this page: without an export there is nothing to count, and nothing is estimated.</p>';
 
-  let right = '';
-  if (g && sys.mini != null) {
-    const wf = g.workflows[sys.mini];
-    right = `<div><p class="label">${esc(sys.flows[sys.mini][0])}, as exported</p><div style="margin-top:10px">`
-      + canvas(wf, { width: 304, maxScale: 0.13, cls: 'mini sysmini' })
-      + `</div><p class="mono dim" style="font-size:10.5px;margin-top:8px">${wf.nodes.length} nodes · ${wf.edges.length} connections · from the ${sys.prov === 'built' ? 'JSON in the repo' : 'exported JSON'}</p></div>`;
-  }
   return `<div class="wrap" style="padding-top:48px">
       ${crumb}
-      <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px 64px;align-items:end">
+      <div class="sys-head">
         <div>
           <h1 class="serif" style="font-size:clamp(34px,4.2vw,60px);line-height:1.05;margin-top:22px;max-width:18ch">${esc(sys.name)}</h1>
           <p class="body" style="margin-top:22px">${sub}</p>
           <p class="label-m sys-prov" style="margin-top:28px;display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.08em">${dot} <span>${esc(prov)}</span></p>
           ${figHtml}
-        </div>${right}
+        </div>
+        ${headCover(sys.slug, sources)}
       </div>
     </div>`;
 }
@@ -261,8 +261,11 @@ function inventory(sys, g) {
 }
 
 function guards(sys) {
-  const items = sys.guards.map((x) => `<li><span class="ring">${glyph(x.g, 22)}</span><span><b>${esc(x.t)}</b><p>${esc(x.d)}</p></span></li>`).join('');
-  return section('The guards, and what each one prevents', `<ul class="guards">${items}</ul>`);
+  const items = sys.guards.map((x) => {
+    if (!GLYPHS[x.g]) throw new Error(`systems: no drawing for the guard icon "${x.g}" (${sys.slug})`);
+    return { icon: GLYPHS[x.g], t: esc(x.t), d: esc(x.d) };
+  });
+  return section('The guards, and what each one prevents', guardCards(items));
 }
 
 function limits(sys) {
@@ -306,7 +309,7 @@ export function systemPage(slug, { system, home }) {
   const nav = cut(system, '<nav class="nav"', '</nav>');
   const footer = cut(system, '<footer>', '</footer>');
 
-  const parts = [head(sys, g), problem(sys), flow(sys, g)];
+  const parts = [head(sys, g, { system, home }), problem(sys), flow(sys, g)];
   if (g) parts.push(workflows(sys, g), inventory(sys, g));
   parts.push(guards(sys), limits(sys), builtWith(sys, marks, nextOf(slug)));
 

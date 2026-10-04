@@ -13,8 +13,13 @@ import { withSystemLinks } from '../systems/links.js';
 import { homeScenes } from '../motion/plans.js';
 import { withNavName } from '../brand/navname.js';
 import { withExpertiseLinks } from '../expertise/links.js';
+import { withNumerals } from '../pictures/numerals.js';
+import { withTimeline } from '../pictures/timeline.js';
+import work from '../html/work.html?raw';
+import system from '../html/system.html?raw';
 import '../styles/page-home.css';
 import '../styles/cards.css';
+import '../styles/timeline.css';
 import '../styles/mobile.css';
 import '../styles/motion.css';
 import '../styles/scenes.css';
@@ -35,9 +40,13 @@ import { site } from '../data/site.js';
    as they scroll in, and the first screen is held while the next slides
    over it (src/motion/plans.js); his name gets its place in the nav
    (src/brand/navname.js, after the mark it sits beside); the boot wraps
-   the page last. */
+   the page last. Since 2026-10-04 the hero's three figures are numerals
+   (src/pictures/numerals.js) and the experience is a timeline to scale, with
+   the covers of the systems each role produced (src/pictures/timeline.js):
+   both go in first, on the ported markup they read. */
+const visual = withTimeline(withNumerals(ported), { home: ported, system, work });
 const body = withBoot(withNavName(withBrandMark(withIntegrationsLink(homeScenes(
-  withWords(withSystemLinks(withSectorCards(withBrandColours(withToolCluster(withExpertiseLinks(withPictures(ported))))), 'home'), [/<h2 class="say rv">/, /<h2>/]))))));
+  withWords(withSystemLinks(withSectorCards(withBrandColours(withToolCluster(withExpertiseLinks(withPictures(visual))))), 'home'), [/<h2 class="say rv">/, /<h2>/]))))));
 
 const title = 'Syed Ali Hamad Gilani — AI Automation Engineer & Web Developer';
 /* His full name leads the description: it is the snippet Google shows under

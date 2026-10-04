@@ -3,10 +3,11 @@
    The markup is src/expertise/page.js; what the pages say is
    src/expertise/data.js, which has his words. The pages wear the register's
    clothes — page-base.css and page-work.css give the nav, the spine and its
-   nodes, the section labels and the project rows; integrations.css gives the
-   booking form — so only what is theirs alone is here: the head with the
-   card's picture, the stack (each tool with its mark and what it is used
-   for), the "also offered" names, and the links to the other five.
+   nodes and the section labels; integrations.css gives the booking form and,
+   since 2026-10-04, the stack's cards that turn; gallery.css gives the
+   projects' cards — so only what is theirs alone is here: the head with the
+   card's picture, the stack's own sizes, the "also offered" names, and the
+   links to the other five.
 
    Colours are theme tokens; a tool's brand colour arrives as --brand, as on
    the Integrations page, and paints its mark only (imagery, not UI colour:
@@ -17,7 +18,7 @@
 html main.ex h3{margin:0}
 html h2.slabel{font-weight:400}
 /* no last line of a single word, and headings that break evenly */
-html main.ex :is(.body,.small,.ex-tool p,.row .line){text-wrap:pretty}
+html main.ex :is(.body,.small){text-wrap:pretty}
 html main.ex :is(h1,.more-h){text-wrap:balance}
 
 /* ---- the head: the title, what the work is, and the card's picture ------- */
@@ -61,17 +62,20 @@ html .ex-pic .m{font-family:var(--mono)}
 html .ex-pic .s{font-family:var(--serif);font-style:italic}
 html .ex-pic .n{font-family:var(--serif)}
 
-/* ---- the stack: layers of tools, each with what it is used for ----------- */
+/* ---- the stack: a card for each tool, which turns to say what it is used
+        for. The card is the Integrations page's (integrations.css), a size
+        smaller, with the layer of the stack the tool belongs to under its
+        name. Five to a row, so a stack of eight to fourteen fills its rows. */
 html .ex-intro{margin-top:22px;max-width:720px}
-html .ex-layer{margin-top:38px}
-html .ex-layer-h{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-weight:400;font-size:11px;line-height:1.6;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
-html .ex-layer-h::after{content:"";flex:1;height:1px;background:var(--hair)}
-html .ex-tools{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 64px}
-html .ex-tool{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:16px;row-gap:3px;align-content:start}
-html .ex-disc{grid-row:1 / span 2;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--hair);background:var(--paper2);color:var(--brand,var(--ink2))}
-html .ex-disc.type{font-family:var(--serif);font-style:italic;font-size:21px;line-height:1;color:var(--ink2)}
-html .ex-tool b{font-weight:500;font-size:16px;line-height:1.35;color:var(--ink)}
-html .ex-tool p{font-size:14px;line-height:1.5;color:var(--ink2)}
+html .icards.ex-stack{grid-template-columns:repeat(5,minmax(0,1fr));gap:14px;margin:26px 0 0}
+html .ex-stack .front{min-height:186px;gap:12px;padding:24px 14px 20px}
+html .ex-stack .mark{width:46px;height:46px}
+html .ex-stack .nm{font-size:19px}
+html .ex-stack .nm.type{font-size:25px}
+html .ex-stack .lay{margin:0;font-family:var(--mono);font-size:9.5px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);text-align:center;text-wrap:balance}
+html .ex-stack .back{padding:18px 16px 20px;gap:10px}
+html .ex-stack .bt{font-size:10.5px}
+html .ex-stack .tx{font-size:13px;line-height:1.5}
 
 /* what he offers beyond it: names, each linking to its card on Integrations */
 html .ex-also{margin-top:44px;padding-top:26px;border-top:1px solid var(--hair)}
@@ -83,11 +87,8 @@ html .ex-pill:hover{border-color:var(--accent);color:var(--accent)}
 html .ex-pill .br{flex:none;color:var(--brand,var(--ink2))}
 html .ex-also-note{margin-top:16px;color:var(--ink3)}
 
-/* ---- the projects: the register's rows ----------------------------------- */
-html .ex-rows{margin-top:18px;border-top:1px solid var(--hair)}
+/* ---- the projects: the gallery's cards (gallery.css) ---------------------- */
 html .ex-built-note{margin-top:18px;max-width:720px;color:var(--ink3)}
-/* the one row that is not a system with a page of its own: this site */
-html .row.ex-self:hover .name{color:var(--ink)}
 
 /* ---- the booking: the Integrations page's form, without its rule --------- */
 html .more.ex-book{margin:28px 0 0;padding-top:0;border-top:0}
@@ -100,10 +101,13 @@ html .ex-others{margin-top:22px}
 html .ex-other .mono{font-size:10.5px;letter-spacing:.08em;color:var(--ink3)}
 html .ex-other:hover .mono{color:var(--accent)}
 
+@media (max-width:1179px){
+  html .icards.ex-stack{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
 @media (max-width:899px){
   html .ex-head{grid-template-columns:minmax(0,1fr);gap:32px}
   html .ex-pic{max-width:520px}
-  html .ex-tools{grid-template-columns:minmax(0,1fr);gap:22px}
+  html .icards.ex-stack{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 @media (max-width:719px){
   html .ex-top{padding-top:28px}
@@ -111,9 +115,16 @@ html .ex-other:hover .mono{color:var(--accent)}
   html .ex-head .body{margin-top:18px}
   html .ex-facts{margin-top:22px;gap:8px 18px;font-size:11px}
   html .ex-cta{margin-top:24px}
-  html .ex-layer{margin-top:30px}
-  html .ex-tools{margin-top:18px;gap:20px}
-  html .ex-tool{column-gap:14px}
+  /* a plain card here, as on the Integrations page: mark, name and the
+     layer on top, what the tool is used for below */
+  html .icards.ex-stack{grid-template-columns:minmax(0,1fr);gap:10px;margin-top:20px}
+  html .ex-stack .front{flex-wrap:wrap;min-height:0;gap:6px 12px;padding:16px 16px 0}
+  html .ex-stack .mark{width:30px;height:30px}
+  html .ex-stack .nm{font-size:19px}
+  html .ex-stack .nm.type{font-size:21px}
+  html .ex-stack .lay{margin-left:auto;text-align:right;font-size:9px}
+  html .ex-stack .back{padding:10px 16px 18px}
+  html .ex-stack .tx{font-size:14px}
   html .ex-also{margin-top:34px}
   html .ex-pill{min-height:40px}
   html .ex-book .more-h{font-size:clamp(30px,8.6vw,38px)}
@@ -121,10 +132,10 @@ html .ex-other:hover .mono{color:var(--accent)}
 }
 
 /* ---- arrivals -------------------------------------------------------------
-   The tools arrive as rows do everywhere on the site (scenes.css, kind c:
-   the row slides in, its mark pops, its name comes up, its note inks in), a
-   column apart where there are two; a layer's label slides in and draws its
-   rule, as the home page's section labels do. */
+   The stack's cards turn over and are traced, as the Integrations cards do
+   (scenes.css, kind b), a column apart; the projects stand up as cards
+   (kind a; gallery.css). The layer under a tool's name is written in with
+   the name. */
 /* on load the head comes in as the system pages' does (motion.css); the
    jump link follows the facts */
 @media (prefers-reduced-motion:no-preference){
@@ -132,11 +143,18 @@ html .ex-other:hover .mono{color:var(--accent)}
 }
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){
-  html .ex-layer-h{view-timeline:--hd block}
-  html .ex-layer-h>span{display:inline-block;animation:s-slide linear both;animation-timeline:--hd;animation-range:entry 0vh entry 15vh}
-  html .ex-layer-h::after{transform-origin:0 50%;animation:s-draw-x linear both;animation-timeline:--hd;animation-range:entry 2vh entry 24vh}
+  html .ex-stack .icard.it .lay{animation:s-fade-x linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * .6) entry calc(var(--p0) + var(--pw) * .92)}
 }
-@media (prefers-reduced-motion:no-preference) and (min-width:900px){
-  html .ex-tools>.it:nth-child(2n){--col:1}
+/* (the stack's cards follow the section's first item, its opening sentence:
+   so a card's place in its row is its index less one) */
+@media (prefers-reduced-motion:no-preference) and (min-width:1180px){
+  html .icards.ex-stack>.it:nth-child(n){--col:mod(calc(var(--i) - 1),5)}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:900px) and (max-width:1179px){
+  html .icards.ex-stack>.it:nth-child(n){--col:mod(calc(var(--i) - 1),4)}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:720px) and (max-width:899px){
+  html .icards.ex-stack>.it:nth-child(n){--col:mod(calc(var(--i) - 1),3)}
 }
 }

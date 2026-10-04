@@ -40,7 +40,8 @@ function homeScenes_(page) {
    parts; each part's items arrive in its kind. */
 const PARTS = [
   [/<li class="wfc"/, 'a'],
-  [/<li><span class="ring">/, 'c'],          // guards, gates, the lead's path
+  [/<li class="gcard"/, 'b'],                 // the guards, since 2026-10-04: cards that turn
+  [/<li><span class="ring">/, 'c'],          // gates, the lead's path
   [/<li>(?=[^<])/, 'c'],                      // limits: a sentence each
   [/<a class="row/, 'c'],
   [/<li class="tnode/, 'b'],
@@ -76,7 +77,7 @@ function registerScenes_(page) {
   return page;
 }
 
-/* ---- /work/ and /integrations/: groups under sticky headers -------------- */
+/* ---- /integrations/: groups under sticky headers; /work/: one gallery ---- */
 function groupScenes(page, item, kind) {
   const run = find(page, /<div class="body-run[^"]*">/);
   let from = run.start;
@@ -95,16 +96,18 @@ function groupScenes(page, item, kind) {
   }
   return page;
 }
-const workScenes_ = (page) => groupScenes(page, /<a class="row/, 'c');
+/* the systems are cards with a cover (src/work/gallery.js): they stand up */
+const workScenes_ = (page) => groupScenes(page, /<a class="pcard/, 'a');
 const integrationsScenes_ = (page) => groupScenes(page, /<li class="icard/, 'b');
 
 /* ---- /expertise/<slug>/ ----------------------------------------------------
    Sections like the register pages', with parts of their own: the stack's
-   tools and the project rows arrive as rows, the notes ink in, and the
-   booking form stands up as a card (src/expertise/page.js). */
+   tools turn over and are traced, as logos do; the projects stand up as
+   cards; the notes ink in, and the booking form stands up too
+   (src/expertise/page.js). */
 const EXPERTISE_PARTS = [
-  [/<li class="ex-tool"/, 'c'],
-  [/<(?:a|div) class="row[ "]/, 'c'],
+  [/<li class="icard/, 'b'],
+  [/<(?:a|div) class="pcard/, 'a'],
   [/<p class="body ex-intro"/, 't'],
   [/<div class="ex-also"/, 't'],
   [/<p class="small ex-built-note"/, 't'],

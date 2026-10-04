@@ -20,7 +20,9 @@
      node positions. As a card crosses the screen its nodes light in the
      order a run would reach them (--t, depth from the trigger) and the
      wires draw between them (--t to --u).
-   - The head's small workflow runs once on load the same way.
+   - (Until 2026-10-04 the head had a small workflow that ran once on load;
+     the head now opens on the system's cover, whose run path draws on load:
+     gallery.css.)
    - Limits: a numbered list.
 
    Entrances are scenes.css's (every section a screen, 2026-10-02); lit
@@ -31,7 +33,6 @@
 html .sys-extra{margin-top:18px;max-width:660px;font-size:11px;line-height:1.65}
 html .sys-nofig{margin-top:34px;max-width:520px;padding-left:14px;border-left:2px solid var(--hair);
   font-family:var(--mono);font-size:12px;line-height:1.6;color:var(--ink3)}
-html .sysmini{max-width:304px}
 /* the provenance line wraps on a phone: its dot stays with the first line */
 html .sys-prov{align-items:flex-start!important}
 html .sys-prov .mk{flex:none;margin-top:3px}
@@ -109,13 +110,6 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
    MOTION — the base styles above are every end state
    ================================================================ */
 @media (prefers-reduced-motion:no-preference){
-  /* the head's workflow runs once as the page opens: nodes light in the
-     order a run reaches them, wires draw behind them */
-  @keyframes sys-run{from{opacity:.16}}
-  @keyframes sys-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-  html .body-run.sys>.wrap>div>div+div .mini.sysmini{clip-path:none;animation:none}
-  html .sysmini .nd{animation:sys-run 420ms linear both;animation-delay:calc(820ms + var(--t) * 1100ms)}
-  html .sysmini .ed{stroke-dasharray:1;animation:sys-draw 360ms linear both;animation-delay:calc(880ms + var(--u) * 1100ms)}
   /* the head's last lines arrive after its figures, like the rest of it */
   html .body-run>.wrap>div>div>:is(p.sys-extra,p.sys-nofig){animation:mo-in-rise 1000ms var(--mo-ease) 760ms both}
 }

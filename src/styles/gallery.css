@@ -1,0 +1,222 @@
+/* gallery.css — covers, the cards that carry them, and the cards that turn
+   (2026-10-04).
+
+   Syed: "I want to keep visuals instead of text everywhere, that too modern
+   and professional", and of the proposal that answered it, "Do all four".
+   Three parts, used by /work/, the sixteen system pages and the six
+   expertise pages:
+
+     a cover      a system's picture (src/pictures/covers.js, chosen by
+                  src/systems/cover.js) on its group's pigment, with the
+                  plaster texture over it as under the expertise pictures
+     a card       a system: its cover, then its words (src/work/cards.js);
+                  the gallery is a grid of them (src/work/gallery.js)
+     a guard      a card that turns: symbol and name on the face, what the
+                  guard prevents on the back (src/systems/guards.js). On a
+                  phone nothing turns: symbol, name and text together.
+
+   Colours are theme tokens; the pigments are imagery, never a UI colour, and
+   the one accent stays the one accent. Every selector starts with `html`,
+   for the reason theme.css gives: the build can emit this file before the
+   page stylesheets. The home page does not load this file: its timeline's
+   thumbnails carry their own few rules (timeline.css), so its stylesheets
+   stay in the order they were. */
+
+/* ---- a cover ------------------------------------------------------------- */
+html .cover{position:relative;display:block;overflow:hidden;aspect-ratio:16/10;
+  background-color:var(--pic);background-image:url(/texture.webp);background-size:375px 278px;background-blend-mode:multiply}
+html .cover svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+html .cover.pic--1{--pic:var(--pic-1)}
+html .cover.pic--2{--pic:var(--pic-2)}
+html .cover.pic--3{--pic:var(--pic-3)}
+html .cover.pic--4{--pic:var(--pic-4)}
+html .cover.pic--5{--pic:var(--pic-5)}
+html .cover.pic--6{--pic:var(--pic-6)}
+html .cover text{font-family:var(--sans)}
+html .cover .m{font-family:var(--mono)}
+html .cover .s{font-family:var(--serif);font-style:italic}
+html .cover .n{font-family:var(--serif)}
+html .cover .cv-narrow{display:none}
+
+/* ---- the gallery, and a system's card ------------------------------------ */
+html .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:28px}
+html .group.gal{padding-top:8px;padding-bottom:96px}
+html .gal-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html .pcard{position:relative;display:flex;flex-direction:column;min-width:0;border:1px solid var(--hair);border-radius:18px;background:var(--paper2);
+  overflow:hidden;color:inherit;text-decoration:none;scroll-margin-top:calc(var(--navh,72px) + 20px);
+  transition:border-color 240ms var(--enter),box-shadow 240ms var(--enter),transform 240ms var(--enter)}
+html .pcard .cover{border-bottom:1px solid var(--hair)}
+html .pcard .lift{transition:transform 480ms var(--enter)}
+html a.pcard:hover{border-color:var(--accent);box-shadow:0 20px 36px -24px rgba(48,44,36,.45);transform:translateY(-3px)}
+html a.pcard:hover .lift{transform:translateY(-4px)}
+html a.pcard:hover .pname{color:var(--accent)}
+html a.pcard:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+html .ganchor{position:absolute;top:0;left:0;width:0;height:0;scroll-margin-top:calc(var(--navh,72px) + 20px)}
+
+html .pbody{display:flex;flex-direction:column;gap:10px;flex:1;min-width:0;padding:18px 20px 20px}
+html .pmeta{display:flex;justify-content:space-between;gap:12px;margin:0;font-family:var(--mono);font-size:10px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+html .pmeta .d{color:var(--accent)}
+html .pname{margin:0;font-family:var(--serif);font-weight:400;font-size:22px;line-height:1.16;letter-spacing:-.012em;color:var(--ink);text-wrap:balance;
+  transition:color 200ms var(--enter)}
+html .pline{margin:0;font-size:13.5px;line-height:1.5;color:var(--ink2);text-wrap:pretty}
+/* the figure, the legend's mark beside it, and where it was counted from */
+/* (the tools under the figure; beside it on a wide card, where both fit) */
+html .pfoot{display:flex;flex-direction:column;align-items:flex-start;gap:12px 16px;margin-top:auto;padding-top:14px;border-top:1px solid var(--hair);min-width:0}
+html .pfig{display:flex;gap:9px;min-width:0;color:var(--accent)}
+html .pfig .mk{flex:none;width:10px;height:10px;margin-top:3px}
+html .pfig .fig{font-family:var(--mono);font-size:11px;line-height:1.45;color:var(--ink)}
+html .pfig .src{font-family:var(--mono);font-size:9.5px;line-height:1.45;color:var(--ink3);margin-top:3px}
+html .pcard .stack{display:flex;align-items:center;gap:7px;flex:none;color:var(--ink2)}
+html .pcard .stack span{display:inline-flex}
+
+/* the two flagships: two columns, a wider cover, the line beside the name */
+html .pcard.wide{grid-column:span 2}
+html .pcard.wide .cover{aspect-ratio:780/300}
+html .pcard.wide .pbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:32px;row-gap:10px;align-content:start;padding:20px 24px 22px}
+html .pcard.wide :is(.pmeta,.pname){grid-column:1}
+html .pcard.wide .pname{font-size:28px}
+html .pcard.wide .pline{grid-column:2;grid-row:1 / span 2;font-size:14.5px;align-self:center}
+html .pcard.wide .pfoot{grid-column:1 / -1;flex-direction:row;align-items:flex-end;justify-content:space-between}
+
+/* the register's filter: Delivered / Built */
+html .reg:has(#f-delivered:checked) .pcard[data-prov=Built],html .reg:has(#f-built:checked) .pcard[data-prov=Delivered]{display:none}
+
+/* ---- the head of a system's page: its cover beside the title -------------- */
+html .sys-head{display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,35vw,500px);gap:40px 64px;align-items:center}
+html .sys-head .figs{gap:24px 36px}
+html .sys-cover{border:1px solid var(--hair);border-radius:16px;box-shadow:0 28px 54px -34px rgba(48,44,36,.5)}
+
+/* ---- the guards: cards that turn ------------------------------------------ */
+html .gcards{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+html .gcard{grid-column:span 4;position:relative;min-width:0;border-radius:16px;perspective:1200px;outline:none}
+html .gcards[data-n="4"] .gcard{grid-column:span 3}
+html .gcards[data-n="5"] .gcard:nth-child(n+4){grid-column:span 6}
+html .gcard .flip{position:relative;display:grid;height:100%;transform-style:preserve-3d;transition:transform 720ms var(--enter)}
+/* both sides share one grid cell, so a card is as tall as its longer side */
+html .gcard .side{grid-area:1/1;display:flex;flex-direction:column;min-width:0;border:1px solid var(--hair);border-radius:16px;
+  -webkit-backface-visibility:hidden;backface-visibility:hidden}
+html .gcard .front{align-items:center;justify-content:center;gap:16px;min-height:204px;padding:28px 22px;background:var(--paper2);text-align:center}
+html .gcard .back{justify-content:flex-start;gap:12px;padding:22px 22px 24px;background:var(--wash);border-color:var(--accent);transform:rotateY(180deg)}
+html .gring{display:grid;place-items:center;flex:none;width:64px;height:64px;border-radius:50%;border:1.5px solid var(--accent);background:var(--wash);color:var(--accent)}
+html .gname{display:block;font-family:var(--serif);font-weight:400;font-size:20px;line-height:1.2;letter-spacing:-.01em;color:var(--ink);text-wrap:balance}
+html .gcard .bt{display:flex;align-items:flex-start;gap:9px;margin:0;font-family:var(--mono);font-size:10.5px;line-height:1.5;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+html .gcard .bt .sy{flex:none}
+html .gcard .tx{margin:0;font-size:14px;line-height:1.55;color:var(--ink2);text-wrap:pretty}
+/* a pointer turns a card on hover; focus turns it too, for keyboards */
+@media (hover:hover){html .gcard:hover .flip{transform:rotateY(180deg)}}
+html .gcard:focus .flip{transform:rotateY(180deg)}
+html .gcard:focus-visible{box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--accent)}
+html .g-hint{margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:1.5;letter-spacing:.04em;color:var(--ink3)}
+
+@media (prefers-reduced-motion:reduce){html .gcard .flip,html .pcard,html .pcard .lift{transition:none}}
+
+/* ---- narrower -------------------------------------------------------------- */
+@media (max-width:1179px){
+  html .gallery{grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* two columns: no card spans, so none is left alone in a row */
+  html .pcard.wide{grid-column:auto}
+  html .pcard.wide .cover{aspect-ratio:16/10}
+  html .cover .cv-wide{display:none}
+  html .cover .cv-narrow{display:block}
+  html .pcard.wide .pbody{display:flex;padding:18px 20px 20px}
+  html .pcard.wide .pname{font-size:22px}
+  html .pcard.wide .pline{font-size:13.5px;align-self:auto}
+  html .pcard.wide .pfoot{flex-direction:column;align-items:flex-start;justify-content:flex-start}
+  html .gcards[data-n="4"] .gcard{grid-column:span 6}
+}
+@media (max-width:1023px){
+  /* the picture first, then the title: a page still opens on its cover */
+  html .sys-head{grid-template-columns:minmax(0,1fr);gap:30px}
+  html .sys-cover{order:-1;max-width:560px;margin-top:22px}
+  html .sys-head h1{margin-top:0!important}
+}
+@media (max-width:899px){
+  html .gcards .gcard,html .gcards[data-n="5"] .gcard:nth-child(n+4){grid-column:span 6}
+  html .gcards .gcard:last-child:nth-child(odd){grid-column:span 12}
+}
+/* Phones: no hover, and a card turned by a tap hides what it says. So a
+   guard does not turn here: one plain card, symbol and name on top, what it
+   prevents below, nothing to tap (as the Integrations cards do). */
+@media (max-width:719px){
+  html .gallery{grid-template-columns:minmax(0,1fr);gap:16px;margin-top:22px}
+  html .group.gal{padding-bottom:64px}
+  html .pbody{padding:16px 16px 18px}
+  html .pname{font-size:21px}
+  html .pline{font-size:14px}
+  html .sys-cover{margin-top:18px;border-radius:14px}
+  html .gcards{grid-template-columns:minmax(0,1fr);gap:10px;margin-top:20px}
+  html .gcards .gcard,html .gcards[data-n] .gcard:nth-child(n){grid-column:auto}
+  html .gcard{perspective:none;overflow:hidden;border:1px solid var(--hair);background:var(--paper2)}
+  /* one grid: the symbol on the left, the name and then the text beside it,
+     the same distance apart whether the name takes one line or two (the two
+     sides are no boxes here) */
+  html .gcard .flip{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:14px;row-gap:7px;align-items:start;height:auto;padding:16px 16px 18px;
+    transform:none!important;transition:none}
+  html .gcard .side{display:contents}
+  html .gring{grid-row:1 / span 2;width:44px;height:44px}
+  html .gring .sy{width:21px;height:21px}
+  html .gname{grid-column:2;padding-top:2px;font-size:18.5px;text-align:left}
+  html .gcard .tx{grid-column:2;font-size:14.5px}
+  html .gcard .bt,html .g-hint{display:none}
+}
+
+/* ---- motion ---------------------------------------------------------------
+   On load, at the head of a system's page, the cover's run path draws on,
+   hop by hop from the trigger. Arrivals with the scroll are scenes.css's:
+   a system's card stands up (kind a) and its run path draws as it lands; a
+   guard turns over from an oxide back (kind b), its symbol drawn stroke by
+   stroke and its name written in. */
+@media (prefers-reduced-motion:no-preference){
+  @keyframes cover-run{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+  html .sys-cover .wire{stroke-dasharray:1;animation:cover-run 420ms var(--mo-ease) both;animation-delay:calc(1150ms + var(--w,0) * 170ms)}
+}
+@supports (animation-timeline: view()){
+@media (prefers-reduced-motion:no-preference){
+  /* a card's words follow its picture */
+  html .pcard.it .pmeta{animation:s-fade-x linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * .36) entry calc(var(--p0) + var(--pw) * .66)}
+  html .pcard.it .pline{
+    -webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
+    animation:s-ink linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * .55) entry calc(var(--p0) + var(--pw) * .95)}
+  html .pcard.it .pfig{animation:s-rise linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * .62) entry calc(var(--p0) + var(--pw) * .96)}
+  /* the run path, a hop at a time */
+  html .pcard.it .cover .wire{animation-range:entry calc(var(--p0) + var(--pw) * (.4 + var(--w,0) * .07)) entry calc(var(--p0) + var(--pw) * (.56 + var(--w,0) * .07))}
+
+  /* a guard turns over, as the logos do */
+  html .gcard.it .side{position:relative}
+  html .gcard.it .flip{animation:s-b-flip linear both;animation-timeline:--it;
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
+  html .gcard.it .back>*{animation:s-b-hide linear both;animation-timeline:--it;
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
+  html .gcard.it .back::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--accent);animation:s-b-oxide linear both;animation-timeline:--it;
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
+  html .gcard.it .gring :is(path,circle,rect,ellipse){stroke-dasharray:1;animation:s-a-wire linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * .38) entry calc(var(--p0) + var(--pw) * .92)}
+  html .gcard.it .gname{
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(90deg,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
+    animation:s-ink linear both;animation-timeline:--it;
+    animation-range:entry calc(var(--p0) + var(--pw) * .5) entry calc(var(--p0) + var(--pw) * .9)}
+}
+/* side by side: a beat apart, left to right */
+@media (prefers-reduced-motion:no-preference) and (min-width:1180px){
+  html .gallery>.it{--col:var(--c3,0)}
+  html .ex-gallery>.it:nth-child(3n+2){--col:1}
+  html .ex-gallery>.it:nth-child(3n+3){--col:2}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:720px) and (max-width:1179px){
+  html .gallery>.it{--col:var(--c2,0)}
+  html .ex-gallery>.it:nth-child(2n){--col:1}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:900px){
+  html .gcards>.it{--col:mod(var(--i),3)}
+  html .gcards[data-n="4"]>.it{--col:var(--i)}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:720px) and (max-width:1179px){
+  html .gcards[data-n="4"]>.it{--col:mod(var(--i),2)}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:720px) and (max-width:899px){
+  html .gcards>.it{--col:mod(var(--i),2)}
+}
+}

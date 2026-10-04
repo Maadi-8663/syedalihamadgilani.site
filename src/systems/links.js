@@ -5,9 +5,12 @@
    (/work/#adwash), because only the Lead-to-Cash CRM had a page. Now all
    sixteen do, so at build time — like the site's other additions, leaving
    the ported fragments as the port script writes them — this points those
-   links at the pages. The rows keep their ids, so an old /work/#adwash still
-   lands on the row. It throws unless it finds every link it expects, so a
-   markup change cannot silently leave one behind. */
+   links at the pages. It throws unless it finds every link it expects, so a
+   markup change cannot silently leave one behind.
+
+   /work/ itself is not here any more: since 2026-10-04 its rows are cards
+   built with their links (src/work/gallery.js). The cards keep the rows'
+   ids, so an old /work/#adwash still lands on AdWash. */
 
 import { SLUGS, nextOf } from './page.js';
 import { PORTED } from './data.js';
@@ -15,14 +18,6 @@ import { PORTED } from './data.js';
 const count = (page, s) => page.split(s).length - 1;
 
 export function withSystemLinks(page, where) {
-  if (where === 'work') {
-    for (const slug of SLUGS) {
-      const from = `<a class="row" id="${slug}" href="#${slug}"`;
-      if (count(page, from) !== 1) throw new Error(`links: the register row for ${slug} was not found once`);
-      page = page.replace(from, `<a class="row" id="${slug}" href="/work/${slug}/"`);
-    }
-    return page;
-  }
   if (where === 'system') {
     /* the Lead-to-Cash page's "next system" pointed at the register's group */
     const next = nextOf(PORTED.slug);
