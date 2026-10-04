@@ -6,9 +6,10 @@
    Three parts, used by /work/, the sixteen system pages and the six
    expertise pages:
 
-     a cover      a system's picture (src/pictures/covers.js, chosen by
-                  src/systems/cover.js) on its group's pigment, with the
-                  plaster texture over it as under the expertise pictures
+     a cover      a system's picture — a scene (src/pictures/scenes.js),
+                  shown as an image by src/systems/cover.js — on its
+                  group's pigment, with the plaster texture over it as
+                  under the expertise pictures
      a card       a system: its cover, then its words (src/work/cards.js);
                   the gallery is a grid of them (src/work/gallery.js)
      a guard      a card that turns: symbol and name on the face, what the
@@ -25,18 +26,13 @@
 /* ---- a cover ------------------------------------------------------------- */
 html .cover{position:relative;display:block;overflow:hidden;aspect-ratio:16/10;
   background-color:var(--pic);background-image:url(/texture.webp);background-size:375px 278px;background-blend-mode:multiply}
-html .cover svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+html .cover img{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover}
 html .cover.pic--1{--pic:var(--pic-1)}
 html .cover.pic--2{--pic:var(--pic-2)}
 html .cover.pic--3{--pic:var(--pic-3)}
 html .cover.pic--4{--pic:var(--pic-4)}
 html .cover.pic--5{--pic:var(--pic-5)}
 html .cover.pic--6{--pic:var(--pic-6)}
-html .cover text{font-family:var(--sans)}
-html .cover .m{font-family:var(--mono)}
-html .cover .s{font-family:var(--serif);font-style:italic}
-html .cover .n{font-family:var(--serif)}
-html .cover .cv-narrow{display:none}
 
 /* ---- the gallery, and a system's card ------------------------------------ */
 html .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:28px}
@@ -46,9 +42,9 @@ html .pcard{position:relative;display:flex;flex-direction:column;min-width:0;bor
   overflow:hidden;color:inherit;text-decoration:none;scroll-margin-top:calc(var(--navh,72px) + 20px);
   transition:border-color 240ms var(--enter),box-shadow 240ms var(--enter),transform 240ms var(--enter)}
 html .pcard .cover{border-bottom:1px solid var(--hair)}
-html .pcard .lift{transition:transform 480ms var(--enter)}
+html .pcard .cover img{transition:transform 700ms var(--enter)}
 html a.pcard:hover{border-color:var(--accent);box-shadow:0 20px 36px -24px rgba(48,44,36,.45);transform:translateY(-3px)}
-html a.pcard:hover .lift{transform:translateY(-4px)}
+html a.pcard:hover .cover img{transform:scale(1.035)}
 html a.pcard:hover .pname{color:var(--accent)}
 html a.pcard:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 html .ganchor{position:absolute;top:0;left:0;width:0;height:0;scroll-margin-top:calc(var(--navh,72px) + 20px)}
@@ -108,7 +104,7 @@ html .gcard:focus .flip{transform:rotateY(180deg)}
 html .gcard:focus-visible{box-shadow:0 0 0 3px var(--paper),0 0 0 5px var(--accent)}
 html .g-hint{margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:1.5;letter-spacing:.04em;color:var(--ink3)}
 
-@media (prefers-reduced-motion:reduce){html .gcard .flip,html .pcard,html .pcard .lift{transition:none}}
+@media (prefers-reduced-motion:reduce){html .gcard .flip,html .pcard,html .pcard .cover img{transition:none}}
 
 /* ---- narrower -------------------------------------------------------------- */
 @media (max-width:1179px){
@@ -116,8 +112,6 @@ html .g-hint{margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:
   /* two columns: no card spans, so none is left alone in a row */
   html .pcard.wide{grid-column:auto}
   html .pcard.wide .cover{aspect-ratio:16/10}
-  html .cover .cv-wide{display:none}
-  html .cover .cv-narrow{display:block}
   html .pcard.wide .pbody{display:flex;padding:18px 20px 20px}
   html .pcard.wide .pname{font-size:22px}
   html .pcard.wide .pline{font-size:13.5px;align-self:auto}
@@ -161,15 +155,10 @@ html .g-hint{margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:
 }
 
 /* ---- motion ---------------------------------------------------------------
-   On load, at the head of a system's page, the cover's run path draws on,
-   hop by hop from the trigger. Arrivals with the scroll are scenes.css's:
-   a system's card stands up (kind a) and its run path draws as it lands; a
-   guard turns over from an oxide back (kind b), its symbol drawn stroke by
-   stroke and its name written in. */
-@media (prefers-reduced-motion:no-preference){
-  @keyframes cover-run{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-  html .sys-cover .wire{stroke-dasharray:1;animation:cover-run 420ms var(--mo-ease) both;animation-delay:calc(1150ms + var(--w,0) * 170ms)}
-}
+   Arrivals with the scroll are scenes.css's: a system's card stands up
+   (kind a), its picture with it and its words after; a guard turns over
+   from an oxide back (kind b), its symbol drawn stroke by stroke and its
+   name written in. */
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){
   /* a card's words follow its picture */
@@ -181,8 +170,6 @@ html .g-hint{margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:
     animation-range:entry calc(var(--p0) + var(--pw) * .55) entry calc(var(--p0) + var(--pw) * .95)}
   html .pcard.it .pfig{animation:s-rise linear both;animation-timeline:--it;
     animation-range:entry calc(var(--p0) + var(--pw) * .62) entry calc(var(--p0) + var(--pw) * .96)}
-  /* the run path, a hop at a time */
-  html .pcard.it .cover .wire{animation-range:entry calc(var(--p0) + var(--pw) * (.4 + var(--w,0) * .07)) entry calc(var(--p0) + var(--pw) * (.56 + var(--w,0) * .07))}
 
   /* a guard turns over, as the logos do */
   html .gcard.it .side{position:relative}

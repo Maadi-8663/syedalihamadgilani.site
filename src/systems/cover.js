@@ -1,43 +1,38 @@
-/* cover.js — which picture covers which system (2026-10-04).
+/* cover.js — the picture that stands for a system, wherever the site shows one
+   (2026-10-04).
 
-   The drawing is src/pictures/covers.js (its header has his words and the
-   rule: nothing in a cover is invented). This module chooses, for each of
-   the sixteen systems, what its cover is drawn from, and checks that every
-   word a cover prints is already on that system's own page:
+   Every system has a cover: on its card in the gallery (/work/ and the
+   expertise pages), at the head of its own page, and beside the role that
+   produced it on the home page's timeline. The first covers were the
+   system's workflow in a dark window; of the Shopify one Syed said: "This
+   picture ... is not good. I want a real picture, like a modern thumbnail of
+   the project which should be explaining that what have we done", and sent
+   an isometric illustration as the kind he meant. So a cover is now a scene
+   (src/pictures/scenes.js, drawn with iso.js): what the system handles and
+   the real marks of the tools it is built from.
 
-     an export in graphs.json   the workflow its page's head names (data.js
-                                `mini`), close up, with its counted nodes
-     Lead-to-Cash (ported)      its Stage Change Router, which the ported
-                                page names and counts; the graph is the
-                                partial entry scripts/extract-systems.mjs
-                                writes from src/data/instance.json
-     AdWash                     the Platform Engineering picture (figures
-                                measured against its live database)
-     Just Grade Metrics         the scorecard, with the figure its page prints
-     no export                  the steps of its write-up
+   The scenes are files, not markup: src/pages/covers/[file].svg.js writes
+   each one out at build time, and a page shows it as an image. That keeps a
+   page's HTML small (the first gallery carried sixteen drawings inline), lets
+   the browser fetch a picture once for every page that shows it, and gives
+   each picture a description of its own. An image cannot use the page's
+   fonts, so a scene has no words in it.
 
-   and the card over it is the system's first guard, word for word. A cover
-   belongs to the system's group on the register, whose pigment it sits on
-   (--pic-1 … --pic-6: imagery only, never a UI colour).
-
-   Ids inside an <svg> are the page's, so every cover on a page needs its
-   own: pass `id` when a system's cover is on the page twice (a wide and a
-   narrow one on /work/, the head and a card on an expertise page). */
+   A cover sits on the pigment of its system's group on the register
+   (--pic-1 … --pic-6: imagery only, never a UI colour). */
 
 import { SYSTEMS, PORTED } from './data.js';
-import { GLYPHS } from './glyphs.js';
-import GRAPHS from './graphs.json';
-import { canvasCover, stepsCover, gradeCover, pictureCover } from '../pictures/covers.js';
-import { expertisePictures } from '../pictures/expertise.js';
+import { SCENES, WIDE, ALT } from '../pictures/scenes.js';
+import { registerRows } from '../work/register.js';
 
 /* the register's seven groups on the six pigments */
 export const PIGMENT = { lead: 1, voice: 2, support: 3, backoffice: 4, content: 2, data: 6, product: 5 };
 /* the two that take two columns in a gallery: the largest delivered system,
-   and the platform built end to end */
+   and the platform built end to end. Each has a wide scene as well. */
 export const FEATURED = new Set([PORTED.slug, 'adwash']);
+for (const slug of FEATURED) if (!WIDE.has(slug)) throw new Error(`cover: ${slug} takes two columns but has no wide scene`);
 
-const decode = (s) => s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ');
-const strings = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(strings).join(' \n ') : v && typeof v === 'object' ? Object.values(v).map(strings).join(' \n ') : '');
+const attr = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
 /* The Lead-to-Cash page is ported, so its guards are read from its markup:
    [{ icon: the ring's drawing, t: the name, d: what it prevents }], as HTML. */
@@ -50,104 +45,78 @@ export function portedGuards(system) {
   return items;
 }
 
-/* a picture from expertise.js as a drawing with ids of its own */
-function borrowed(home, card, from, id) {
-  const p = expertisePictures(home)[card];
-  if (!p) throw new Error(`cover: no expertise picture "${card}"`);
-  const body = p[1].replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
-  if (body === p[1] || !body.includes(`${from}-`)) throw new Error(`cover: the "${card}" picture is not the drawing this expects`);
-  return body.split(`${from}-`).join(`${id}-p-`);
+/* The picture, as an image. `described` gives it its description: where the
+   picture stands alone (the head of a system's page). Inside a card or a
+   link that already names the system it is left empty, so the name is not
+   read twice. `eager` is for a picture in the first screen, which should not
+   wait to be scrolled to; `first` for the one a page opens on. */
+function picture(file, { described = false, eager = false, first = false, wide = false } = {}) {
+  if (!ALT[file]) throw new Error(`cover: the picture "${file}" has no description`);
+  const img = `<img src="/covers/${file}.svg" alt="${described ? attr(ALT[file]) : ''}" width="480" height="300" ${first ? 'fetchpriority="high" ' : ''}${eager || first ? '' : 'loading="lazy" '}decoding="async">`;
+  /* two columns wide, the picture is the scene's wide drawing; on a narrower screen the card is one column and the picture the usual one */
+  return wide ? `<picture><source media="(min-width:1180px)" srcset="/covers/${file}-wide.svg" width="780" height="300">${img}</picture>` : img;
 }
 
-/* The cover of a system: { svg, pigment, alt }. `alt` says what the picture
-   is, for the one place it stands alone (the head of the system's page). */
-export function systemCover(slug, { home, system }, { id = `cv-${slug}`, wide = false, thumb = false } = {}) {
-  const W = wide ? 780 : 480, opts = { W, thumb };
-
-  if (slug === PORTED.slug) {
-    const wf = GRAPHS[slug]?.workflows[0];
-    /* the ported page names this workflow and counts it; the picture must agree */
-    if (!wf || wf.name !== 'Stage Change Router' || !system.includes(`Stage Change Router, as exported`) || !system.includes(`${wf.nodes.length} nodes · ${wf.edges.length} connections`)) {
-      throw new Error('cover: the Lead-to-Cash page and graphs.json disagree about the Stage Change Router');
-    }
-    const g = portedGuards(system)[0];
-    return {
-      pigment: PIGMENT.lead,
-      alt: `The Stage Change Router workflow, as exported: ${wf.nodes.length} nodes`,
-      svg: canvasCover(id, wf, GLYPHS, { ...opts, title: wf.name, note: `${wf.nodes.length} nodes, as exported`, guard: { t: decode(g.t), icon: g.icon } }),
-    };
-  }
-
-  const sys = SYSTEMS.find((s) => s.slug === slug);
-  if (!sys) throw new Error(`cover: no system ${slug}`);
-  const pigment = PIGMENT[sys.group];
-  if (!pigment) throw new Error(`cover: no pigment for the group ${sys.group}`);
-  const first = sys.guards[0];
-  if (!GLYPHS[first.g]) throw new Error(`cover: no drawing for the guard icon "${first.g}"`);
-  const guard = { t: first.t, icon: GLYPHS[first.g] };
-
-  if (slug === 'adwash') {
-    /* its picture closes with "measured against the live database,
-       2026-09-04", which the cover's frame cuts: so the pill says it, short
-       enough to sit beside the guard */
-    const note = 'measured 2026-09-04';
-    const body = borrowed(home, 'Platform Engineering', 'px5', id);
-    if (!body.includes('measured against the live database, 2026-09-04')) throw new Error('cover: the AdWash picture no longer says when it was measured');
-    /* its window starts 22px lower than a cover's, and is 470 wide: on a
-       wide cover it sits in the middle */
-    return { pigment, alt: 'AdWash: its workspaces, campaigns and tracked ad spend, measured against the live database on 2026-09-04',
-      svg: pictureCover(id, body, { ...opts, note, guard, dy: -22, dx: wide ? (W - 470) / 2 - 48 : 0 }) };
-  }
-  if (slug === 'just-grade-metrics') {
-    const note = '31 tables under row-level security';
-    if (!strings(sys).includes('31 tables')) throw new Error('cover: Just Grade Metrics no longer says 31 tables');
-    return { pigment, alt: 'A graded call: a score that rests on a quote found verbatim in the transcript, or the call goes to a person', svg: gradeCover(id, { ...opts, title: sys.link ? sys.link[1] : sys.name, note, guard }) };
-  }
-
-  const g = GRAPHS[slug];
-  if (g) {
-    if (sys.mini == null) throw new Error(`cover: ${slug} has an export but names no workflow for its head`);
-    const wf = g.workflows[sys.mini], name = sys.flows[sys.mini][0], how = sys.prov === 'built' ? 'built' : 'exported';
-    return {
-      pigment,
-      alt: `The ${name} workflow, as ${how}: ${wf.nodes.length} nodes`,
-      svg: canvasCover(id, wf, GLYPHS, { ...opts, title: name, note: `${wf.nodes.length} nodes, as ${how}`, guard }),
-    };
-  }
-  return {
-    pigment,
-    alt: `How it runs, in ${sys.steps.length} steps`,
-    svg: stepsCover(id, sys.steps, GLYPHS, { ...opts, title: 'How it runs', note: `${sys.steps.length} steps, from the write-up`, guard }),
-  };
+/* The cover of a system: { html, pigment }. */
+export function systemCover(slug, opts = {}) {
+  if (!SCENES[slug]) throw new Error(`cover: no scene for ${slug}`);
+  const group = slug === PORTED.slug ? 'lead' : SYSTEMS.find((s) => s.slug === slug)?.group;
+  const pigment = PIGMENT[group];
+  if (!pigment) throw new Error(`cover: no pigment for ${slug}`);
+  if (opts.wide && !WIDE.has(slug)) throw new Error(`cover: ${slug} has no wide scene`);
+  return { pigment, html: picture(slug, opts) };
 }
 
-/* The cover as it heads a system's page: the picture stands alone there,
-   so it says what it is. */
-const attr = (s) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-export function headCover(slug, sources) {
-  const c = systemCover(slug, sources, { id: `hd-${slug}` });
-  return `<div class="sys-cover cover pic pic--${c.pigment}" role="img" aria-label="${attr(c.alt)}">${c.svg}</div>`;
+/* The cover as it heads a system's page: in the first screen, and described. */
+export function headCover(slug) {
+  const c = systemCover(slug, { described: true, first: true });
+  return `<div class="sys-cover cover pic pic--${c.pigment}">${c.html}</div>`;
 }
 
 /* The ported Lead-to-Cash page opened on a small drawing of its Stage Change
-   Router beside the title; the cover is that workflow close up, in its
-   place. The head's grid becomes the one the built pages use. */
-export function withSystemCover(page, sources) {
+   Router beside the title; the cover takes its place. The head's grid becomes
+   the one the built pages use. */
+export function withSystemCover(page) {
   const grid = '<div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:40px 64px;align-items:end">';
   const mini = /<div><p class="label">Stage Change Router, as exported<\/p>[\s\S]*?from the exported JSON<\/p><\/div>/;
   const at = page.indexOf(grid);
   if (at === -1 || at > page.indexOf('<section class="run"') || !mini.test(page)) throw new Error('cover: the Lead-to-Cash page\'s head has changed');
-  const cover = headCover(PORTED.slug, { ...sources, system: page });
-  return (page.slice(0, at) + '<div class="sys-head">' + page.slice(at + grid.length)).replace(mini, cover);
+  return (page.slice(0, at) + '<div class="sys-head">' + page.slice(at + grid.length)).replace(mini, headCover(PORTED.slug));
+}
+
+/* A picture is a claim, as the cluster's logos are: a scene may carry a
+   tool's mark only if its system's own page lists that tool (data.js; for
+   the ported Lead-to-Cash page, its row on the register). Three scenes also
+   carry the mark of where their leads are found — not a tool of the system,
+   but named in its own text, and the phrase is checked here. The route that
+   writes the pictures (src/pages/covers/[file].svg.js) calls this with the
+   marks a scene drew, so a mark nobody can account for stops the build. */
+const SOURCE_MARKS = {
+  'lsa-lead-responder': ['Google Search', 'Google Local Services'],   // the Google G on the phone: the leads are Google's
+  'construction-lead-outreach': ['Google Maps', 'Google Maps'],
+  'linkedin-lead-pipeline': ['LinkedIn', 'LinkedIn'],
+};
+/* this site's scene: what it is built with, and the mark of what it ships none of (struck out) */
+const SITE_MARKS = ['Astro', 'JavaScript'];
+export function checkSceneMarks(slug, used, work) {
+  let listed, said = '';
+  if (slug === 'this-site') listed = SITE_MARKS;
+  else {
+    const row = registerRows(work).get(slug), sys = SYSTEMS.find((s) => s.slug === slug);
+    if (!row || (!sys && slug !== PORTED.slug)) throw new Error(`cover: no system ${slug} to check its scene against`);
+    listed = sys ? sys.tools : [...row.marked, ...row.texts];
+    said = `${row.text} ${sys ? JSON.stringify(sys) : ''}`;
+  }
+  for (const mark of used) {
+    if (listed.includes(mark)) continue;
+    const from = SOURCE_MARKS[slug];
+    if (from && from[0] === mark && said.includes(from[1])) continue;
+    throw new Error(`cover: the scene for ${slug} carries the mark of ${mark}, which its page does not list`);
+  }
 }
 
 /* this site, for the one project that is not on the register (the Web
-   Development page): the home card's picture of it, with its one figure */
-export function siteCover(home, { id = 'cv-site', fig }) {
-  let body = borrowed(home, 'Web Development', 'px4', id);
-  /* the picture's own figure sits below the cover's frame: it becomes the pill */
-  const own = /<g><rect x="40" y="316"[\s\S]*?<\/g>$/;
-  if (!own.test(body) || !body.includes(fig)) throw new Error('cover: the Web Development picture no longer closes with its figure');
-  body = body.replace(own, '');
-  return { pigment: 4, svg: pictureCover(id, body, { note: fig, dy: -12 }) };
+   Development page): its own scene, on the ochre the home card's picture has */
+export function siteCover() {
+  return { pigment: 4, html: picture('this-site') };
 }

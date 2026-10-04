@@ -2,7 +2,6 @@
 import Site from '../../layouts/Site.astro';
 import ported from '../../html/work.html?raw';
 import home from '../../html/home.html?raw';
-import system from '../../html/system.html?raw';
 import { withWords } from '../../motion/words.js';
 import { withIntegrationsLink } from '../../integrations/nav.js';
 import { withBrandMark } from '../../brand/mark.js';
@@ -19,11 +18,11 @@ import '../../styles/brand.css';
 import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
 /* work.html is the register as ported: rows under group headers. Since
-   2026-10-04 the page shows it as a gallery — a card for every system, its
-   cover drawn from its own data — built from those rows at build time
+   2026-10-04 the page shows it as a gallery — a card for every system, with
+   the picture that covers it — built from those rows at build time
    (src/work/gallery.js), each card opening its system's page. The title is
    split into words for motion.css, and rises on load. */
-const body = withBrandMark(withIntegrationsLink(workScenes(withWords(withGallery(ported, { home, system }), [/<h1 class="serif"[^>]*>/], 'load'))));
+const body = withBrandMark(withIntegrationsLink(workScenes(withWords(withGallery(ported, { home }), [/<h1 class="serif"[^>]*>/], 'load'))));
 
 const title = 'Work — sixteen systems by Syed Ali Hamad Gilani';
 const description =

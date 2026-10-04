@@ -16,13 +16,16 @@
      arriving from below and leaving upward within the step's own share, so
      no two sentences ever overlap. One HTML list serves
      both layouts, so a screen reader reads every step once, in order.
-   - The workflows, as exported: cards with each workflow drawn at its real
-     node positions. As a card crosses the screen its nodes light in the
-     order a run would reach them (--t, depth from the trigger) and the
+   - The workflows, as exported: a card each, the workflow drawn on a canvas
+     at its real node positions, every node with its icon (canvas.js). A
+     drawing is as wide as its workflow: a short one sits in the middle of
+     its canvas, a long one fills it, and where the card is narrower than
+     the drawing can go the canvas scrolls sideways, its edges fading while
+     there is more that way. As a card crosses the screen its nodes light in
+     the order a run would reach them (--t, depth from the trigger) and the
      wires draw between them (--t to --u).
    - (Until 2026-10-04 the head had a small workflow that ran once on load;
-     the head now opens on the system's cover, whose run path draws on load:
-     gallery.css.)
+     the head now opens on the system's cover: gallery.css.)
    - Limits: a numbered list.
 
    Entrances are scenes.css's (every section a screen, 2026-10-02); lit
@@ -41,13 +44,16 @@ html .sys-prov .mk{flex:none;margin-top:3px}
    mono label style, not a bold h2 */
 html h2.slabel{font-weight:400}
 
-/* ---- a workflow, drawn -------------------------------------------------- */
-html svg .ed{fill:none;stroke:var(--accent);stroke-width:1.2;stroke-linecap:round}
-html svg .ed.ai{stroke:var(--viz3);stroke-width:1}
-html svg .nd rect,html svg .nd circle{fill:var(--paper2);stroke:var(--ink3);stroke-width:1}
-html svg .nd.k-trigger rect{fill:var(--accent);stroke:var(--accent)}
-html svg .nd.k-branch rect{fill:var(--wash);stroke:var(--accent);stroke-width:1.2}
-html svg .nd.k-ai circle{fill:var(--wash);stroke:var(--accent)}
+/* ---- a workflow, drawn (canvas.js) ----------------------------------------
+   The canvas's own greys for wires and node boxes; an icon keeps its
+   vendor's colour, or n8n's for the node — imagery, like the cluster's marks. */
+html :is(.wfc-svg,.wfc-key) .ed{fill:none;stroke:#B4B0A6;stroke-width:1.4;stroke-linecap:round}
+html :is(.wfc-svg,.wfc-key) .ed.ai{stroke-width:1.2;stroke-dasharray:2.4 3}
+html :is(.wfc-svg,.wfc-key) .nb{fill:var(--paper2);stroke:#C4C0B6;stroke-width:1.2}
+html :is(.wfc-svg,.wfc-key) .bolt{fill:var(--accent)}
+/* a name has the ground's colour around it, so no dot or wire runs through it */
+html .wfc-svg .nl{font-family:var(--sans);font-size:var(--fs,8px);fill:var(--ink2);text-anchor:middle;
+  paint-order:stroke;stroke:var(--paper);stroke-width:2.6px;stroke-linejoin:round}
 
 /* ---- the problem --------------------------------------------------------- */
 html .sys-say{margin-top:22px;max-width:30ch;font-size:clamp(26px,3vw,42px);line-height:1.16;color:var(--ink)}
@@ -71,22 +77,36 @@ html .fs-exit{display:inline-block;margin-top:12px;padding:5px 12px;border:1px d
 html .fs-exit::before{content:"↳ "}
 
 /* ---- the workflows, as exported ---------------------------------------- */
-html .wfc-key{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;font-size:11px;color:var(--ink3)}
+html .wfc-key{display:flex;flex-wrap:wrap;align-items:center;gap:8px 24px;margin-top:22px;font-size:11px;color:var(--ink3)}
 html .wfc-key span{display:inline-flex;align-items:center}
+html .wfc-key svg{flex:none;margin-right:8px}
 @media (hover:none){html .wfc-key .if-hover{display:none}}
-html .wfc-key i{display:inline-block;width:10px;height:10px;margin-right:8px;border:1px solid var(--ink3);border-radius:2px;background:var(--paper2)}
-html .wfc-key i.k-trigger{background:var(--accent);border-color:var(--accent)}
-html .wfc-key i.k-branch{background:var(--wash);border-color:var(--accent);transform:rotate(45deg) scale(.82)}
-html .wfc-key i.k-ai{background:var(--wash);border-color:var(--accent);border-radius:50%}
-html .wfcs{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
-html .wfc{padding:18px 20px 20px;border:1px solid var(--hair);border-radius:14px;background:var(--paper2)}
-html .wfc-h{display:flex;align-items:baseline;gap:12px}
-html .wfc-h .mono{font-size:11px;letter-spacing:.08em;color:var(--accent)}
+/* one to a row: a workflow is long, and its nodes should be big enough to read */
+html .wfcs{list-style:none;margin:20px 0 0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+html .wfc{min-width:0;padding:18px 20px 20px;border:1px solid var(--hair);border-radius:14px;background:var(--paper2)}
+html .wfc-h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 24px}
+html .wfc-h p{margin:0}
+html .wfc-h p:first-child{display:flex;align-items:baseline;gap:12px;min-width:0}
+html .wfc-h p:first-child .mono{flex:none;font-size:11px;letter-spacing:.08em;color:var(--accent)}
 html .wfc-h b{font-weight:500;font-size:16px;line-height:1.3;color:var(--ink)}
-html .wfc-c{margin:14px -4px 12px}
-html .wfc-svg{display:block;width:100%;height:auto;max-height:280px}
 html .wfc-m{font-size:11px;color:var(--ink3)}
-html .wfc .small{margin-top:4px}
+/* the canvas: the page's ground with a grid of dots, as n8n's has */
+html .wfc-c{position:relative;margin:14px 0 14px;border:1px solid var(--hair);border-radius:10px;overflow:hidden}
+html .wfc-s{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--hair) transparent;
+  background:var(--paper) radial-gradient(circle,var(--hair) .8px,transparent 1.3px) 0 0/16px 16px local}
+html .wfc-s:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+/* As wide as the workflow (--w), shrunk to the card where the card is
+   narrower, but not past --wm: under that the canvas scrolls instead. A card
+   within an eighth of --wm is fitted all the same — a drawing that scrolls by
+   a few pixels is worse than one a little smaller. (The max() is a step: its
+   second term is far above --wm until the card is within that eighth.) */
+html .wfc-svg{display:block;margin:0 auto;width:calc(var(--w) * 1px);max-width:100%;height:auto;
+  min-width:min(calc(var(--wm) * 1px),max(100%,calc((var(--wm) * .875px - 100%) * 1000 + 100%)))}
+/* more canvas that way: an edge fades while there is */
+html .wfc-c::before,html .wfc-c::after{content:"";position:absolute;top:0;bottom:0;z-index:1;width:40px;opacity:0;pointer-events:none}
+html .wfc-c::before{left:0;background:linear-gradient(to right,var(--paper) 12%,transparent)}
+html .wfc-c::after{right:0;background:linear-gradient(to left,var(--paper) 12%,transparent)}
+html .wfc .small{margin-top:0;max-width:76ch}
 
 /* ---- limits ------------------------------------------------------------ */
 html .limits{list-style:none;margin:24px 0 0;padding:0;max-width:860px;counter-reset:lim}
@@ -95,12 +115,10 @@ html .limits li{position:relative;padding:16px 0 16px 44px;border-top:1px solid 
 html .limits li:last-child{border-bottom:1px solid var(--hair)}
 html .limits li::before{content:counter(lim,decimal-leading-zero);position:absolute;left:0;top:19px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--accent)}
 
-@media (max-width:899px){
-  html .wfcs{grid-template-columns:1fr}
-}
 @media (max-width:719px){
   html .sys-say{font-size:clamp(24px,7vw,30px)}
   html .wfc{padding:14px 14px 16px;border-radius:12px}
+  html .wfc-c{margin:12px 0}
   html .fs{column-gap:14px;padding-bottom:24px}
   html .fs-lede{font-size:18.5px}
   html .limits li{padding-left:36px;font-size:15px}
@@ -127,10 +145,21 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   /* each workflow runs as its card arrives (scenes.css: as it comes up the
      page): its nodes light in the order a run reaches them, the wires draw
      behind */
-  html .wfc.it .nd{animation:cv-lit linear both;animation-timeline:--it;
+  html .wfc.it :is(.nd,.ed.ai){animation:cv-lit linear both;animation-timeline:--it;
     animation-range:entry calc(var(--p0) + var(--pw) * (.42 + var(--t) * .5)) entry calc(var(--p0) + var(--pw) * (.5 + var(--t) * .5))}
-  html .wfc.it .ed{stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--it;
+  /* (a dashed wire to a model lights with its node: it has dashes of its own to keep) */
+  html .wfc.it .ed:not(.ai){stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--it;
     animation-range:entry calc(var(--p0) + var(--pw) * (.44 + var(--t) * .5)) entry calc(var(--p0) + var(--pw) * (.5 + var(--u) * .5))}
+
+  /* a canvas that scrolls: its right edge fades until the end is reached, its
+     left once the start is left. A canvas that fits has no scroll timeline,
+     so neither shows. */
+  @keyframes wf-more{from,82%{opacity:1}to{opacity:0}}
+  @keyframes wf-less{from{opacity:0}18%,to{opacity:1}}
+  html .wfc-c{timeline-scope:--wfx}
+  html .wfc-s{scroll-timeline:--wfx inline}
+  html .wfc-c::after{animation:wf-more linear both;animation-timeline:--wfx}
+  html .wfc-c::before{animation:wf-less linear both;animation-timeline:--wfx}
 }
 
 /* phones and narrow windows: the list lights step by step as it is read */

@@ -75,18 +75,18 @@ function packed(recs) {
   return out;
 }
 
-export function withGallery(page, { home, system }) {
+export function withGallery(page, { home }) {
   const recs = systemRecords(page);
   const marks = allMarks(home);
-  const sources = { home, system };
 
   const seen = new Set();
   const cards = packed(recs).map(({ r, col }, i) => {
     /* the register's old group anchor, in the group's first card */
     const anchor = seen.has(r.group) ? '' : `<span class="ganchor" id="${r.group}"></span>`;
     seen.add(r.group);
-    return projectCard(r, sources, marks, {
+    return projectCard(r, marks, {
       wide: FEATURED.has(r.slug),
+      eager: i < 2,                    // the first row is on screen when the page opens
       attrs: ` id="${r.slug}" style="--c3:${col};--c2:${i % 2}"`,
       inner: anchor,
     });

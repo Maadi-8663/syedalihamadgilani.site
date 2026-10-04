@@ -64,10 +64,7 @@ html .tl-thumbs{display:flex;flex-wrap:wrap;gap:8px;flex:none}
 html .tl-thumb{position:relative;display:block;overflow:hidden;width:92px;aspect-ratio:16/10;border:1px solid var(--hair);border-radius:8px;
   background-color:var(--pic);background-image:url(/texture.webp);background-size:375px 278px;background-blend-mode:multiply;
   transition:border-color 200ms var(--enter),transform 200ms var(--enter)}
-html .tl-thumb svg{position:absolute;inset:0;display:block;width:100%;height:100%}
-html .tl-thumb text{font-family:var(--sans)}
-html .tl-thumb .m{font-family:var(--mono)}
-html .tl-thumb .n{font-family:var(--serif)}
+html .tl-thumb img{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover}
 html .tl-thumb:hover{border-color:var(--accent);transform:translateY(-2px)}
 html .tl-thumb:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
 html #experience .edu{padding-left:0}

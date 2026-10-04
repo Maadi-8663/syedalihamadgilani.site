@@ -216,12 +216,12 @@ function stack(n, x, marks) {
 
 /* The projects, as the cards /work/ shows: each system's cover, and the line
    that says what it shows about this expertise. The one project that is not
-   a system — this site — gets the home card's picture of it, and no link. */
-function cards(list, marks, sources) {
+   a system — this site — has a scene of its own, and no link. */
+function cards(list, marks) {
   return list.map(({ p, line }) => (p.row
-    ? projectCard({ ...p.row, tools: p.tools, href: p.href }, sources, marks, { line: esc(line), ids: 'ex' })
+    ? projectCard({ ...p.row, tools: p.tools, href: p.href }, marks, { line: esc(line) })
     : projectCard({ slug: 'site', prov: p.prov, groupTitle: esc(p.sub.split(' · ')[0]), name: esc(p.name), dot: p.dot, col3: p.col3, tools: p.tools, href: null },
-      sources, marks, { line: esc(line), cover: siteCover(sources.home, { id: 'ex-site', fig: p.fig }) }))).join('\n        ');
+      marks, { line: esc(line), cover: siteCover() }))).join('\n        ');
 }
 
 function booking(n, x) {
@@ -285,14 +285,13 @@ export function expertisePage(slug, { work, home, system, sector }) {
 
   let n = 1;
   const parts = [head(x, projects, picture), stack(n++, x, marks)];
-  const sources = { home, system };
   parts.push(section(n++, 'Delivered', `<div class="gallery ex-gallery">
-        ${cards(delivered, marks, sources)}
+        ${cards(delivered, marks)}
         </div>`, { id: 'delivered' }));
   if (built.length) {
     parts.push(section(n++, 'Built, not yet deployed', `<p class="small ex-built-note">The workflow JSON is in the repository and imports into n8n; the node counts are taken from it. None of these has yet run against live accounts.</p>
         <div class="gallery ex-gallery">
-        ${cards(built, marks, sources)}
+        ${cards(built, marks)}
         </div>`, { id: 'built' }));
   }
   parts.push(booking(n++, x), others(x));

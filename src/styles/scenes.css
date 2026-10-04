@@ -328,7 +328,7 @@ html .track,html .scene,html .panel{display:contents}
      badges stopped 50-90% in (2026-10-03). So the foot gets room that grows
      with the screen: none at 600px tall, ~120px at 900, ~190px at 1080. */
   html main:has(.body-run){padding-bottom:max(0px, calc(40vh - 240px))}
-  html :is(.wfcs,.guards)>.it:nth-child(2n){--col:1}
+  html .guards>.it:nth-child(2n){--col:1}   /* (.wfcs too until 2026-10-04: its cards were two to a row) */
   html .gates>.it:nth-child(4n+2){--col:1}html .gates>.it:nth-child(4n+3){--col:2}html .gates>.it:nth-child(4n+4){--col:3}
   html .cats>.it{--cs:3vh}
   html .cats>.it:nth-child(2){--col:1}html .cats>.it:nth-child(3){--col:2}html .cats>.it:nth-child(4){--col:3}

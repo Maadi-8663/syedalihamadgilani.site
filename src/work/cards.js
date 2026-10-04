@@ -13,7 +13,7 @@
    are the ones the system's own page lists (src/systems/data.js), shown as
    marks only: a tool the site sets in type is on the system's page. Styles
    are src/styles/gallery.css; a card arrives standing up, as cards do
-   (scenes.js kind a), its cover's run path drawing as it lands. */
+   (scenes.js kind a). */
 
 import { systemCover } from '../systems/cover.js';
 
@@ -26,20 +26,17 @@ export function toolIcons(tools, marks, max = 6) {
 
 /* rec:  the system's row (register.js) with `tools` (names) and `href`
    opts: line   the card's sentence, as HTML (the row's own unless given)
-         wide   two columns: a wider cover beside the usual one, which
-                narrower screens show
-         ids    a prefix for the cover's ids, when the system's cover is
-                elsewhere on the page too
+         wide   two columns, and the scene's wide drawing where it is
          attrs  what else the card's tag carries (its id, its column)
-         inner  markup to open the card with (the register's old anchors) */
-export function projectCard(rec, sources, marks, { line = rec.line, wide = false, ids = 'cv', attrs = '', inner = '', cover } = {}) {
-  const c = cover || systemCover(rec.slug, sources, { id: `${ids}-${rec.slug}` });
-  const pics = wide
-    ? systemCover(rec.slug, sources, { id: `${ids}w-${rec.slug}`, wide: true }).svg.replace('<svg ', '<svg class="cv-wide" ') + c.svg.replace('<svg ', '<svg class="cv-narrow" ')
-    : c.svg;
+         inner  markup to open the card with (the register's old anchors)
+         cover  a cover other than the system's own (this site's)
+         eager  the card is in the page's first screen: its picture is
+                fetched with the page, not when it is scrolled to */
+export function projectCard(rec, marks, { line = rec.line, wide = false, attrs = '', inner = '', cover, eager = false } = {}) {
+  const c = cover || systemCover(rec.slug, { wide, eager });
   const delivered = rec.prov === 'Delivered';
   const body = `${inner}
-          <div class="cover pic pic--${c.pigment}">${pics}</div>
+          <div class="cover pic pic--${c.pigment}">${c.html}</div>
           <div class="pbody">
             <p class="pmeta"><span class="pst ${delivered ? 'd' : 'b'}">${rec.prov}</span><span>${rec.groupTitle}</span></p>
             <h3 class="pname">${rec.name}</h3>

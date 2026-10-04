@@ -18,9 +18,8 @@
      none.
 
    Rows run from the earliest start to the latest, so the bars read as a
-   chart. A thumbnail is the system's cover (src/systems/cover.js) drawn
-   small: the corner of its window, without words. home.html stays as
-   ported; styles are src/styles/timeline.css. */
+   chart. A thumbnail is the system's cover (src/systems/cover.js), small.
+   home.html stays as ported; styles are src/styles/timeline.css. */
 
 import { systemCover } from '../systems/cover.js';
 import { registerRows, text } from '../work/register.js';
@@ -60,7 +59,7 @@ function span(when, now) {
   return { a, b, live: Boolean(m[3]) };
 }
 
-export function withTimeline(page, { home, system, work }, today = new Date()) {
+export function withTimeline(page, { work }, today = new Date()) {
   const sec = page.match(/<section class="sec" id="experience">[\s\S]*?<\/section>/);
   if (!sec) throw new Error('timeline: the experience section was not found');
   const list = sec[0].match(/<ul class="xp">([\s\S]*?)<\/ul>/);
@@ -100,9 +99,9 @@ export function withTimeline(page, { home, system, work }, today = new Date()) {
     if (!`${text(role.org)} ${text(role.say)}`.includes(phrase)) throw new Error(`timeline: "${role.key}" no longer says “${phrase}”, which placed ${slug} beside it`);
     const row = names.get(slug);
     if (!row) throw new Error(`timeline: ${slug} is not on the register`);
-    const c = systemCover(slug, { home, system }, { id: `tl-${slug}`, thumb: true });
+    const c = systemCover(slug);
     const name = text(row.name).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-    return `<a class="tl-thumb pic--${c.pigment}" href="/work/${slug}/" title="${name}" aria-label="${name}">${c.svg}</a>`;
+    return `<a class="tl-thumb pic--${c.pigment}" href="/work/${slug}/" title="${name}" aria-label="${name}">${c.html}</a>`;
   };
 
   const rows = [...roles].sort((x, y) => x.a - y.a || x.i - y.i).map((r) => {

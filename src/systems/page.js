@@ -14,8 +14,10 @@
                    timelines, or with motion reduced, it is a plain list with
                    every step lit. One list in the HTML serves both.
    The workflows every exported workflow drawn at its real node positions,
-                   gates as diamonds, triggers filled; as it scrolls in it
-                   lights up in the order a run would reach each node.
+                   each node with the icon n8n gives it — a vendor's own mark,
+                   or n8n's sign for the node (canvas.js; since 2026-10-04:
+                   until then the nodes were empty shapes); as it scrolls in
+                   it lights up in the order a run would reach each node.
    Limits        what the system does not do, from its own write-up.
 
    Since 2026-10-04 a page opens on its system's cover (cover.js) where the
@@ -33,6 +35,8 @@ import { toolMarks } from '../pictures/cluster.js';
 import { integrationMarks } from '../integrations/marks.js';
 import { headCover } from './cover.js';
 import { guardCards } from './guards.js';
+import { workflowCanvas } from './canvas.js';
+import { logoSet } from '../pictures/logos.js';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const pad = (n) => String(n).padStart(2, '0');
@@ -80,61 +84,6 @@ function check(sys, g) {
   });
 }
 
-/* ---- drawing a workflow ------------------------------------------------ */
-
-/* Depth of each node in a run: breadth-first from the triggers along the
-   main connections. A model or parser wired into an agent lights with it. */
-function depths(wf) {
-  const n = wf.nodes.length, d = new Array(n).fill(-1), next = Array.from({ length: n }, () => []);
-  for (const [a, b, ai] of wf.edges) if (!ai) next[a].push(b);
-  const queue = [];
-  wf.nodes.forEach((node, i) => { if (node[2] === 'trigger') { d[i] = 0; queue.push(i); } });
-  if (!queue.length) { d[0] = 0; queue.push(0); }
-  while (queue.length) {
-    const a = queue.shift();
-    for (const b of next[a]) if (d[b] === -1) { d[b] = d[a] + 1; queue.push(b); }
-  }
-  for (let pass = 0; pass < n && d.includes(-1); pass++) {
-    for (const [a, b] of wf.edges) {
-      if (d[a] === -1 && d[b] !== -1) d[a] = d[b];
-      else if (d[b] === -1 && d[a] !== -1) d[b] = d[a] + 1;
-    }
-  }
-  const max = Math.max(1, ...d);
-  return d.map((v) => (v < 0 ? 1 : v / max));
-}
-
-/* The canvas at its exported positions, scaled into `width` units. Node
-   sizes follow the scale, within limits, so a long ribbon stays legible
-   and nodes never touch. `cls` is the drawing's class (a workflow's card). */
-function canvas(wf, { width, maxScale, cls, names }) {
-  const unit = Math.min(maxScale, (width - 40) / Math.max(wf.w, 1));
-  const node = Math.max(6, Math.min(13, 176 * unit * 0.62));
-  const m = 14, h = r2(wf.h * unit + node + m * 2);
-  const off = r2((width - (wf.w * unit + node)) / 2);
-  const P = wf.nodes.map(([x, y]) => [r2(off + x * unit), r2(m + y * unit)]);
-  const t = depths(wf);
-  const edges = wf.edges.map(([a, b, ai]) => {
-    const [x1, y1] = P[a], [x2, y2] = P[b];
-    const tt = `--t:${r2(t[a])};--u:${r2(Math.max(t[a], t[b]))}`;   // a wire back up the canvas draws in place
-    if (ai) return `<path class="ed ai" pathLength="1" style="${tt}" d="M${r2(x1 + node / 2)} ${y1} L${r2(x2 + node / 2)} ${r2(y2 + node)}"/>`;
-    const sx = x1 + node, sy = y1 + node / 2, ex = x2, ey = y2 + node / 2, mx = r2((sx + ex) / 2);
-    return `<path class="ed" pathLength="1" style="${tt}" d="M${r2(sx)} ${r2(sy)} C${mx} ${r2(sy)} ${mx} ${r2(ey)} ${r2(ex)} ${r2(ey)}"/>`;
-  }).join('');
-  const nodes = wf.nodes.map(([, , k, type, name], i) => {
-    const [x, y] = P[i], c = r2(node / 2);
-    const tip = `<title>${esc(names && name ? `${name} · ${type}` : type)}</title>`;
-    const st = `style="--t:${r2(t[i])}"`;
-    if (k === 'branch') {
-      const s = r2(node * 0.74);
-      return `<g class="nd k-branch" ${st}>${tip}<rect x="${r2(x + c - s / 2)}" y="${r2(y + c - s / 2)}" width="${s}" height="${s}" rx="1.5" transform="rotate(45 ${r2(x + c)} ${r2(y + c)})"/></g>`;
-    }
-    if (k === 'ai') return `<g class="nd k-ai" ${st}>${tip}<circle cx="${r2(x + c)}" cy="${r2(y + c)}" r="${c}"/></g>`;
-    return `<g class="nd k-${k}" ${st}>${tip}<rect x="${x}" y="${y}" width="${r2(node)}" height="${r2(node)}" rx="${r2(node / 4)}"/></g>`;
-  }).join('');
-  return `<svg class="${cls}" viewBox="0 0 ${width} ${h}" aria-hidden="true">${edges}${nodes}</svg>`;
-}
-
 /* ---- the page's parts -------------------------------------------------- */
 
 const dot = '<svg class="mk" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5"/></svg>';
@@ -144,7 +93,7 @@ const section = (label, inner, { ghost = false, id } = {}) =>
       <div class="wrap">${inner}</div>
     </section>`;
 
-function head(sys, g, sources) {
+function head(sys, g) {
   const crumb = `<p class="label"><a href="/work/" style="color:var(--ink3)">Work</a> &nbsp;/&nbsp; `
     + `<a href="/work/#${sys.group}" style="color:var(--ink3)">${esc(GROUPS[sys.group])}</a> &nbsp;/&nbsp; <span style="color:var(--maroon)">${pad(sys.n)}</span>`
     + (sys.sector ? ` &nbsp;·&nbsp; <a href="/sectors/home-services/" style="color:var(--ink3)">Home services &amp; construction</a>` : '')
@@ -182,7 +131,7 @@ function head(sys, g, sources) {
           <p class="label-m sys-prov" style="margin-top:28px;display:flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.08em">${dot} <span>${esc(prov)}</span></p>
           ${figHtml}
         </div>
-        ${headCover(sys.slug, sources)}
+        ${headCover(sys.slug)}
       </div>
     </div>`;
 }
@@ -219,24 +168,63 @@ function flow(sys, g) {
       </div>`, { id: 'how-it-runs' });
 }
 
-function workflows(sys, g) {
-  const built = sys.prov === 'built';
-  const cards = g.workflows.map((wf, i) => {
-    const [name, role] = sys.flows[i];
-    const state = built ? '' : ` · ${wf.active ? 'live' : 'standby'}`;
-    return `<li class="wfc">
-          <p class="wfc-h"><span class="mono">${pad(i + 1)}</span><b>${esc(name)}</b></p>
-          <div class="wfc-c">${canvas(wf, { width: 560, maxScale: 0.2, cls: 'wfc-svg', names: built })}</div>
-          <p class="wfc-m mono">${wf.nodes.length} nodes · ${wf.edges.length} connections${wf.notes ? ` · ${wf.notes} ${wf.notes === 1 ? 'note' : 'notes'}` : ''}${state}</p>
-          <p class="small">${esc(role)}</p>
+/* one workflow's card: its name and counts, the drawing, and what it does
+   (`n`, its number among the system's workflows, where there are several) */
+function workflowCard(wf, name, role, logos, { built = false, n } = {}) {
+  const state = built ? '' : ` · ${wf.active ? 'live' : 'standby'}`;
+  const c = workflowCanvas(wf, logos, { names: built, label: `The ${name} workflow` });
+  return `<li class="wfc">
+          <div class="wfc-h"><p>${n ? `<span class="mono">${pad(n)}</span>` : ''}<b>${esc(name)}</b></p><p class="wfc-m mono">${wf.nodes.length} nodes · ${wf.edges.length} connections${wf.notes ? ` · ${wf.notes} ${wf.notes === 1 ? 'note' : 'notes'}` : ''}${state}</p></div>
+          <div class="wfc-c"><div class="wfc-s" style="--w:${c.width};--wm:${c.narrow}">${c.svg}</div></div>
+          ${role ? `<p class="small">${esc(role)}</p>` : ''}
         </li>`;
-  }).join('\n        ');
-  const key = `<p class="wfc-key mono"><span><i class="k-trigger"></i>trigger</span><span><i class="k-branch"></i>gate (if, switch, filter)</span><span><i class="k-ai"></i>model</span><span><i class="k-io"></i>everything else</span>${built ? '<span class="if-hover">Hover a node for its name</span>' : ''}</p>`;
+}
+/* the key above the cards; its round node is left out where no workflow
+   on the page has a model or a parser in it */
+const MODEL_KEY = /<span><svg [^>]*>(?:(?!<\/svg>).)*<\/svg>a model or a parser, wired into the node above it<\/span>/;
+const workflowKey = (built, wfs) => {
+  const key = keyAll(built);
+  if (wfs.some((w) => w.edges.some((e) => e[2]))) return key;
+  if (!MODEL_KEY.test(key)) throw new Error('page: the workflow key has changed; update MODEL_KEY');
+  return key.replace(MODEL_KEY, '');
+};
+const keyAll = (built) => `<p class="wfc-key mono"><span>Every node with its icon, as on the n8n canvas</span><span><svg viewBox="0 0 26 16" width="26" height="16" aria-hidden="true"><path class="bolt" d="M5.6 3 2.4 8h2.3l-1 4.6L7.4 7H5z"/><path class="nb" d="M17 1.6h4.4a3 3 0 0 1 3 3v6.8a3 3 0 0 1-3 3H17a6.4 6.4 0 0 1 0-12.8z"/></svg>starts a run</span><span><svg viewBox="0 0 26 16" width="26" height="16" aria-hidden="true"><path class="ed ai" d="M13 0v4.5"/><circle class="nb" cx="13" cy="10" r="5.2"/></svg>a model or a parser, wired into the node above it</span><span class="if-hover">Hover a node for its ${built ? 'name and type' : 'type'}</span></p>`;
+
+function workflows(sys, g, logos) {
+  const built = sys.prov === 'built';
+  const cards = g.workflows.map((wf, i) => workflowCard(wf, sys.flows[i][0], sys.flows[i][1], logos, { built, n: i + 1 })).join('\n        ');
   const count = WORDS[g.workflows.length] || g.workflows.length;
   return section(`The ${count} workflows, as ${built ? 'built' : 'exported'}`,
-    `${key}<ul class="wfcs">
+    `${workflowKey(built, g.workflows)}<ul class="wfcs">
         ${cards}
       </ul>`);
+}
+
+/* The ported Lead-to-Cash page drew its Stage Change Router small beside its
+   title, and the first cover drew it large; once the covers became scenes
+   (2026-10-04, night) it was drawn nowhere, and Syed asked for it back: "Yes
+   add it back". It goes in as the other pages' workflow card, after the
+   shape of the system and before its node inventory, from the one workflow
+   graphs.json keeps for this page — shape and types only, a client's, so its
+   nodes say their type and not their name. The line under it is the page's
+   own words for the router, from its architecture. */
+const ROUTER_SAYS = ['two triggers, one bus', 'webhook for human edits', 'direct call for n8n’s own changes'];
+export function withPortedWorkflow(page, home) {
+  const g = GRAPHS[PORTED.slug];
+  if (!g || g.workflows.length !== 1 || g.workflows[0].name !== 'Stage Change Router') throw new Error('page: graphs.json should keep the Stage Change Router, and only it, for the Lead-to-Cash page');
+  for (const t of ROUTER_SAYS) if (!page.includes(`>${t}</text>`)) throw new Error(`page: the Lead-to-Cash architecture no longer says "${t}"`);
+  const role = `${ROUTER_SAYS[0]}: ${ROUTER_SAYS[1]}, ${ROUTER_SAYS[2]}`;
+  const label = '<p class="label-m slabel">482 executing nodes, by type</p>';
+  const at = page.indexOf('    <section class="run">\n      <span class="snode " aria-hidden="true"></span>' + label);
+  if (at === -1 || page.indexOf(label) !== page.lastIndexOf(label)) throw new Error('page: the Lead-to-Cash node inventory has moved');
+  const card = workflowCard(g.workflows[0], 'Stage Change Router', role, logoSet(home));
+  return page.slice(0, at) + `    <section class="run">
+      <span class="snode " aria-hidden="true"></span><p class="label-m slabel">Stage Change Router, as exported</p>
+      <div class="wrap">${workflowKey(false, g.workflows)}<ul class="wfcs">
+        ${card}
+      </ul></div>
+    </section>
+` + page.slice(at);
 }
 
 function inventory(sys, g) {
@@ -306,11 +294,12 @@ export function systemPage(slug, { system, home }) {
   if (g) check(sys, g);
 
   const marks = new Map([...toolMarks(home), ...integrationMarks()]);
+  const logos = logoSet(home);
   const nav = cut(system, '<nav class="nav"', '</nav>');
   const footer = cut(system, '<footer>', '</footer>');
 
-  const parts = [head(sys, g, { system, home }), problem(sys), flow(sys, g)];
-  if (g) parts.push(workflows(sys, g), inventory(sys, g));
+  const parts = [head(sys, g), problem(sys), flow(sys, g)];
+  if (g) parts.push(workflows(sys, g, logos), inventory(sys, g));
   parts.push(guards(sys), limits(sys), builtWith(sys, marks, nextOf(slug)));
 
   return `<div class="page">
