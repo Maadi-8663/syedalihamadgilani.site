@@ -341,7 +341,12 @@ const svg = (body) => `<svg viewBox="0 0 480 360" aria-hidden="true" focusable="
 
 /* Keys are the card titles exactly as they appear in the ported HTML. */
 /* brand: the name the Web Development picture draws in its mock of the site. */
-export function withPictures(page, brand = { mark: 'Gilani', lines: ['Syed Ali', 'Hamad', 'Gilani'] }) {
+const BRAND = { mark: 'Gilani', lines: ['Syed Ali', 'Hamad', 'Gilani'] };
+
+/* The six pictures by card title: [panel number, the drawing as a whole
+   <svg>]. The expertise pages (src/expertise/page.js) show each card's
+   picture again at the head of its page, so they are made in one place. */
+export function expertisePictures(page, brand = BRAND) {
   const pictures = {
     'AI Automation': [1, pictureAutomation()],
     'Voice &amp; Chat Agents': [2, pictureVoice()],
@@ -350,12 +355,17 @@ export function withPictures(page, brand = { mark: 'Gilani', lines: ['Syed Ali',
     'Platform Engineering': [5, picturePlatform()],
     'CRM &amp; API Integration': [6, pictureCRM(page)],
   };
+  return Object.fromEntries(Object.entries(pictures).map(([title, [n, body]]) => [title, [n, svg(body)]]));
+}
+
+export function withPictures(page, brand = BRAND) {
+  const pictures = expertisePictures(page, brand);
   let placed = 0;
   const out = page.replace(/<article class="skill rv"><span class="g">[\s\S]*?<\/span><h3>([^<]+)<\/h3>/g, (m, title) => {
     const p = pictures[title];
     if (!p) throw new Error(`expertise pictures: no picture for the card "${title}"`);
     placed++;
-    return `<article class="skill rv"><div class="pic pic--${p[0]}">${svg(p[1])}</div><h3>${title}</h3>`;
+    return `<article class="skill rv"><div class="pic pic--${p[0]}">${p[1]}</div><h3>${title}</h3>`;
   });
   if (placed !== Object.keys(pictures).length) {
     throw new Error(`expertise pictures: placed ${placed} of ${Object.keys(pictures).length} — the card markup changed`);

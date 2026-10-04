@@ -98,6 +98,39 @@ function groupScenes(page, item, kind) {
 const workScenes_ = (page) => groupScenes(page, /<a class="row/, 'c');
 const integrationsScenes_ = (page) => groupScenes(page, /<li class="icard/, 'b');
 
+/* ---- /expertise/<slug>/ ----------------------------------------------------
+   Sections like the register pages', with parts of their own: the stack's
+   tools and the project rows arrive as rows, the notes ink in, and the
+   booking form stands up as a card (src/expertise/page.js). */
+const EXPERTISE_PARTS = [
+  [/<li class="ex-tool"/, 'c'],
+  [/<(?:a|div) class="row[ "]/, 'c'],
+  [/<p class="body ex-intro"/, 't'],
+  [/<div class="ex-also"/, 't'],
+  [/<p class="small ex-built-note"/, 't'],
+  [/<p class="body ex-book-p"/, 't'],
+  [/<form class="more-form/, 'a'],
+  [/<ul class="ex-pills ex-others"/, 't'],
+];
+function expertiseScenes_(page) {
+  const run = find(page, /<div class="body-run[^"]*">/);
+  let from = run.start, sections = 0;
+  for (;;) {
+    const g = /<section class="run[^"]*"[^>]*>/g;
+    g.lastIndex = from;
+    const m = g.exec(page);
+    if (!m) break;
+    const end = elementEnd(page, m.index);
+    const html = page.slice(m.index, end);
+    const out = markItems(html, EXPERTISE_PARTS.filter(([re]) => has(html, re)));
+    page = page.slice(0, m.index) + out + page.slice(end);
+    from = m.index + out.length;
+    sections++;
+  }
+  if (sections < 4) throw new Error(`plans: an expertise page has ${sections} sections; expected the stack, the projects, the booking and the others`);
+  return page;
+}
+
 /* Every plan must leave the page's elements as balanced as it found them: a
    wrapper that closed one tag too many would quietly pull the next section
    into it (it did, once, 2026-10-02). */
@@ -118,3 +151,4 @@ export const homeScenes = checked('homeScenes', homeScenes_);
 export const registerScenes = checked('registerScenes', registerScenes_);
 export const workScenes = checked('workScenes', workScenes_);
 export const integrationsScenes = checked('integrationsScenes', integrationsScenes_);
+export const expertiseScenes = checked('expertiseScenes', expertiseScenes_);

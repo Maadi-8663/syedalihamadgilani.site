@@ -3,8 +3,8 @@
 The source of **https://syedalihamadgilani.site** — AI automation engineer and
 web developer.
 
-Astro 5, static: twenty pages — sixteen of them one per system — and **zero
-JavaScript shipped**. Every effect is CSS — items arrive one by one as the
+Astro 5, static: twenty-six pages — sixteen of them one per system, six one
+per area of expertise — and **zero JavaScript shipped**. Every effect is CSS — items arrive one by one as the
 page scrolls (cards stand up, logos turn over and are traced, rows are inked
 in, photographs come out of depth), all of it scrubbed and reversible; on the
 home page the first screen holds while the next slides over it, and the name

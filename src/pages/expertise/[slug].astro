@@ -1,0 +1,62 @@
+---
+import Site from '../../layouts/Site.astro';
+import work from '../../html/work.html?raw';
+import home from '../../html/home.html?raw';
+import system from '../../html/system.html?raw';
+import sector from '../../html/sector.html?raw';
+import { expertisePage, expertiseMeta, SLUGS } from '../../expertise/page.js';
+import { withWords } from '../../motion/words.js';
+import { expertiseScenes } from '../../motion/plans.js';
+import '../../styles/page-base.css';
+import '../../styles/page-work.css';
+import '../../styles/integrations.css';
+import '../../styles/expertise.css';
+import '../../styles/mobile.css';
+import '../../styles/motion.css';
+import '../../styles/scenes.css';
+import '../../styles/navbar.css';
+import '../../styles/brand.css';
+import '../../styles/theme.css'; // last: the theme overrides the page tokens
+
+/* The six expertise pages (2026-10-04): one for each card of the home
+   page's "What I do", built from src/expertise/ at build time in the
+   register's clothes (page.js says how; data.js has his words). The title
+   rises word by word on load, as on the system pages; the booking's question
+   as it scrolls in. integrations.css is here for the booking form, which is
+   the Integrations page's. cards.css is deliberately not: it is the home
+   page's alone, and a stylesheet shared between routes is split into its own
+   file, which would change the order of the home page's stylesheets — where
+   several rules only tie (see CLAUDE.md on the theme). expertise.css carries
+   the picture's few rules itself; with it left out, every existing page
+   loads exactly the stylesheets it did before (compared by content hash,
+   2026-10-04). */
+export function getStaticPaths() {
+  return SLUGS.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const sources = { work, home, system, sector };
+const body = expertiseScenes(withWords(withWords(expertisePage(slug, sources), [/<h1 class="serif"[^>]*>/], 'load'),
+  [/<h3 class="more-h serif"[^>]*>/]));
+
+const meta = expertiseMeta(slug, sources);
+const url = (path) => new URL(path, Astro.site).href;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: meta.title,
+  description: meta.description,
+  url: url(`/expertise/${slug}/`),
+  about: { '@type': 'Thing', name: meta.name },
+  keywords: meta.tools.join(', '),
+  author: { '@id': url('/#person') },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: meta.projects.map((p, i) => ({ '@type': 'ListItem', position: i + 1, name: p.name, url: url(p.href) })),
+  },
+};
+---
+
+<Site title={meta.title} description={meta.description} jsonLd={jsonLd}>
+  <Fragment set:html={body} />
+</Site>

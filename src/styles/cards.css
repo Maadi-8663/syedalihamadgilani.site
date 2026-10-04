@@ -36,6 +36,22 @@ html .skill:hover .pic .lift{transform:translateY(-5px)}
 
 @media (max-width:719px){html .skill{--pad:14px}}
 
+/* A card opens its expertise page (2026-10-04; src/expertise/links.js): the
+   title is the link, stretched over the whole card, and an arrow at the end
+   of the title's line says that it goes somewhere. */
+html .skill h3{display:flex;align-items:center;justify-content:space-between;gap:12px}
+html .skill-a{color:inherit;text-decoration:none;transition:color 200ms var(--enter)}
+html .skill-a::after{content:"";position:absolute;inset:0;z-index:1}
+html .skill-a:focus-visible{outline:none}
+html .skill:has(.skill-a:focus-visible){outline:2px solid var(--accent);outline-offset:4px}
+html .skill-go{flex:none;display:grid;place-items:center;width:32px;height:32px;margin:-6px 0;border-radius:50%;border:1px solid var(--hair);color:var(--ink2);
+  transition:background 240ms var(--enter),border-color 240ms var(--enter),color 240ms var(--enter)}
+html .skill-go svg{transition:translate 320ms var(--enter)}
+html .skill:hover .skill-a{color:var(--accent)}
+html .skill:hover .skill-go,html .skill:has(.skill-a:focus-visible) .skill-go{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+html .skill:hover .skill-go svg{translate:2px 0}
+@media (max-width:719px){html .skill-go{width:28px;height:28px;margin:-5px 0}html .skill-go svg{width:14px;height:14px}}
+
 /* ---- the sector cards (2026-09-28) --------------------------------------
    Syed asked for the sectors at the foot of the home page, until then a list
    of icon rows, to become one card each with a picture. Each card is a full-

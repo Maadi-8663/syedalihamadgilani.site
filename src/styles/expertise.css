@@ -1,0 +1,142 @@
+/* expertise.css — the six expertise pages (2026-10-04).
+
+   The markup is src/expertise/page.js; what the pages say is
+   src/expertise/data.js, which has his words. The pages wear the register's
+   clothes — page-base.css and page-work.css give the nav, the spine and its
+   nodes, the section labels and the project rows; integrations.css gives the
+   booking form — so only what is theirs alone is here: the head with the
+   card's picture, the stack (each tool with its mark and what it is used
+   for), the "also offered" names, and the links to the other five.
+
+   Colours are theme tokens; a tool's brand colour arrives as --brand, as on
+   the Integrations page, and paints its mark only (imagery, not UI colour:
+   the one-accent rule stands). Every selector starts with `html`, for the
+   reason theme.css gives: the build can emit this file before the page
+   stylesheets. */
+
+html main.ex h3{margin:0}
+html h2.slabel{font-weight:400}
+/* no last line of a single word, and headings that break evenly */
+html main.ex :is(.body,.small,.ex-tool p,.row .line){text-wrap:pretty}
+html main.ex :is(h1,.more-h){text-wrap:balance}
+
+/* ---- the head: the title, what the work is, and the card's picture ------- */
+html .ex-top{padding-top:48px}
+html .ex-crumb a{color:var(--ink3)}
+html .ex-crumb a:hover{color:var(--ink)}
+html .ex-crumb span{color:var(--accent)}
+html .ex-head{display:grid;grid-template-columns:minmax(0,1fr) clamp(300px,31vw,440px);gap:40px 72px;align-items:center;margin-top:22px}
+html .ex-head h1{font-size:clamp(40px,5.2vw,76px);line-height:1.02}
+html .ex-head .body{margin-top:24px;max-width:560px}
+html .ex-facts{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:30px;font-size:12px;letter-spacing:.08em}
+html .ex-facts span{display:inline-flex;align-items:center;gap:8px}
+html .ex-facts span:first-child{color:var(--ink)}
+/* straight to the booking, for a visitor who has already decided */
+html .ex-cta{margin-top:30px}
+html .ex-jump{display:inline-flex;align-items:center;gap:9px;min-height:44px;padding:0 20px;border:1px solid var(--hair);border-radius:22px;background:var(--paper2);
+  font-weight:500;font-size:14px;line-height:1;color:var(--ink);transition:border-color 160ms var(--enter),color 160ms var(--enter)}
+html .ex-jump:hover{border-color:var(--accent);color:var(--accent)}
+html .ex-jump .sy{transition:translate 320ms var(--enter)}
+html .ex-jump:hover .sy{translate:0 2px}
+/* a section reached by a link lands with its label clear of the sticky nav */
+html main.ex section.run{scroll-margin-top:calc(var(--navh,72px) - 24px)}
+/* The picture is the card's own drawing, here as a plate rather than a
+   card's top. Its ground and the type inside it are restated from cards.css
+   rather than shared with it: cards.css is the home page's alone, and
+   importing it here would split it into a file of its own and reorder the
+   home page's stylesheets (the route's header says more). The pigments
+   themselves are theme tokens (--pic-1 … --pic-6). */
+html .ex-pic{position:relative;aspect-ratio:4/3;border:1px solid var(--hair);border-radius:16px;overflow:hidden;
+  background-color:var(--pic);background-image:url(/texture.webp);background-size:375px 278px;background-blend-mode:multiply;
+  box-shadow:0 28px 54px -34px rgba(48,44,36,.5)}
+html .ex-pic svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+html .ex-pic.pic--1{--pic:var(--pic-1)}
+html .ex-pic.pic--2{--pic:var(--pic-2)}
+html .ex-pic.pic--3{--pic:var(--pic-3)}
+html .ex-pic.pic--4{--pic:var(--pic-4)}
+html .ex-pic.pic--5{--pic:var(--pic-5)}
+html .ex-pic.pic--6{--pic:var(--pic-6)}
+html .ex-pic text{font-family:var(--sans)}
+html .ex-pic .m{font-family:var(--mono)}
+html .ex-pic .s{font-family:var(--serif);font-style:italic}
+html .ex-pic .n{font-family:var(--serif)}
+
+/* ---- the stack: layers of tools, each with what it is used for ----------- */
+html .ex-intro{margin-top:22px;max-width:720px}
+html .ex-layer{margin-top:38px}
+html .ex-layer-h{display:flex;align-items:center;gap:16px;font-family:var(--mono);font-weight:400;font-size:11px;line-height:1.6;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+html .ex-layer-h::after{content:"";flex:1;height:1px;background:var(--hair)}
+html .ex-tools{list-style:none;margin:22px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 64px}
+html .ex-tool{display:grid;grid-template-columns:44px minmax(0,1fr);column-gap:16px;row-gap:3px;align-content:start}
+html .ex-disc{grid-row:1 / span 2;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1px solid var(--hair);background:var(--paper2);color:var(--brand,var(--ink2))}
+html .ex-disc.type{font-family:var(--serif);font-style:italic;font-size:21px;line-height:1;color:var(--ink2)}
+html .ex-tool b{font-weight:500;font-size:16px;line-height:1.35;color:var(--ink)}
+html .ex-tool p{font-size:14px;line-height:1.5;color:var(--ink2)}
+
+/* what he offers beyond it: names, each linking to its card on Integrations */
+html .ex-also{margin-top:44px;padding-top:26px;border-top:1px solid var(--hair)}
+html .ex-also h3.label{font-weight:400}
+html .ex-pills{list-style:none;margin:14px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:10px}
+html .ex-pill{display:inline-flex;align-items:center;gap:8px;min-height:38px;padding:0 15px;border:1px solid var(--hair);border-radius:19px;background:var(--paper2);
+  font-size:13.5px;line-height:1;color:var(--ink2);transition:border-color 160ms var(--enter),color 160ms var(--enter)}
+html .ex-pill:hover{border-color:var(--accent);color:var(--accent)}
+html .ex-pill .br{flex:none;color:var(--brand,var(--ink2))}
+html .ex-also-note{margin-top:16px;color:var(--ink3)}
+
+/* ---- the projects: the register's rows ----------------------------------- */
+html .ex-rows{margin-top:18px;border-top:1px solid var(--hair)}
+html .ex-built-note{margin-top:18px;max-width:720px;color:var(--ink3)}
+/* the one row that is not a system with a page of its own: this site */
+html .row.ex-self:hover .name{color:var(--ink)}
+
+/* ---- the booking: the Integrations page's form, without its rule --------- */
+html .more.ex-book{margin:28px 0 0;padding-top:0;border-top:0}
+html .ex-book .more-h{font-size:clamp(32px,3.5vw,50px);line-height:1.08}
+html .ex-book .ex-book-p{margin-top:18px;max-width:420px}
+
+/* ---- the other five ------------------------------------------------------ */
+html .ex-end{padding-bottom:96px}
+html .ex-others{margin-top:22px}
+html .ex-other .mono{font-size:10.5px;letter-spacing:.08em;color:var(--ink3)}
+html .ex-other:hover .mono{color:var(--accent)}
+
+@media (max-width:899px){
+  html .ex-head{grid-template-columns:minmax(0,1fr);gap:32px}
+  html .ex-pic{max-width:520px}
+  html .ex-tools{grid-template-columns:minmax(0,1fr);gap:22px}
+}
+@media (max-width:719px){
+  html .ex-top{padding-top:28px}
+  html .ex-head h1{font-size:clamp(38px,11.4vw,52px)}
+  html .ex-head .body{margin-top:18px}
+  html .ex-facts{margin-top:22px;gap:8px 18px;font-size:11px}
+  html .ex-cta{margin-top:24px}
+  html .ex-layer{margin-top:30px}
+  html .ex-tools{margin-top:18px;gap:20px}
+  html .ex-tool{column-gap:14px}
+  html .ex-also{margin-top:34px}
+  html .ex-pill{min-height:40px}
+  html .ex-book .more-h{font-size:clamp(30px,8.6vw,38px)}
+  html .ex-end{padding-bottom:64px}
+}
+
+/* ---- arrivals -------------------------------------------------------------
+   The tools arrive as rows do everywhere on the site (scenes.css, kind c:
+   the row slides in, its mark pops, its name comes up, its note inks in), a
+   column apart where there are two; a layer's label slides in and draws its
+   rule, as the home page's section labels do. */
+/* on load the head comes in as the system pages' does (motion.css); the
+   jump link follows the facts */
+@media (prefers-reduced-motion:no-preference){
+  html .ex-head .ex-cta{animation:mo-in-rise 1000ms var(--mo-ease) 560ms both}
+}
+@supports (animation-timeline: view()){
+@media (prefers-reduced-motion:no-preference){
+  html .ex-layer-h{view-timeline:--hd block}
+  html .ex-layer-h>span{display:inline-block;animation:s-slide linear both;animation-timeline:--hd;animation-range:entry 0vh entry 15vh}
+  html .ex-layer-h::after{transform-origin:0 50%;animation:s-draw-x linear both;animation-timeline:--hd;animation-range:entry 2vh entry 24vh}
+}
+@media (prefers-reduced-motion:no-preference) and (min-width:900px){
+  html .ex-tools>.it:nth-child(2n){--col:1}
+}
+}
