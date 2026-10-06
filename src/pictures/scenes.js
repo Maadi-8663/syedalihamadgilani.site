@@ -666,6 +666,171 @@ function thisSite(L) {
   return k.s.render();
 }
 
+/* ============================================================================
+   THE EXPERTISE PICTURES (2026-10-06). The home page's six "What I do" cards,
+   and the head of each expertise page, carried dark screens drawn from his
+   systems while every project was covered by a scene; he found the pages
+   "non consistent and messy". So each kind of work is a scene too, in the
+   same light and materials, on a 4:3 stage (the cards' shape). Its marks are
+   tools of that expertise's own stack only (src/expertise/data.js, which the
+   build already holds to evidence), checked as the picture is written
+   (checkSceneMarks in src/systems/cover.js).
+   ============================================================================ */
+const X = { H: 360, oy: 226 };
+/* a board standing on a foot: the screen a scene is about */
+const board = (k, [sx, sy], { w, h, a, z = 14, m = M.graphite }) => {
+  const [mx, my] = Lf(sx, sy, w);
+  k.box([mx + w / 2 - 20, my - 12], { w: 40, d: 24, h: 4, m, r: 5 });
+  k.box([mx + w / 2 - 5, my - 4, 4], { w: 10, d: 7, h: z - 2, m, r: 2, kk: L1 });
+  k.panel([mx, my, z], { w, h, r: 7, t: 4, m, a: `<g transform="translate(6 6)">${a}</g>`, kk: L2, sh: false });
+};
+
+/* 1 · AI Automation: mail comes in, the workflow reads it, a model sorts it,
+   a gate decides, a sheet is written and a team told */
+function xAutomation(L) {
+  const k = kit(L, X);
+  const W = 148, Hh = 92;
+  const node = (x, y, inner) => art.rect(x, y, 22, 22, '#FFFFFF', 5.5, ` stroke="${INK.line}" stroke-width="1.2"`) + inner;
+  const wire = (d) => art.line(d, '#BCB6A9', 1.5);
+  let wf = art.rect(0, 0, W, Hh, '#F6F4EE', 4);
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 6; j++) wf += art.dot(8 + i * 19, 7 + j * 16, 0.85, '#D8D2C4');
+  wf += wire('M31 46H40') + wire('M62 46H72') + wire('M94 46C101 46 100 29 107 29') + wire('M94 46C101 46 100 63 107 63');
+  wf += art.path('M7.6 40.5l-3.2 5.4h2.3l-1 4.6 4-6.1H7.4z', INK.oxide);
+  wf += node(9, 35, logoSvg(L, 'Gmail', 13, 39, 14)) + node(40, 35, logoSvg(L, 'OpenAI', 44, 39, 14))
+    + node(72, 35, glyphSvg('split', 76, 39, 14, '#3F8A2B', 2.4))
+    + node(107, 18, logoSvg(L, 'Google Sheets', 111, 22, 14)) + node(107, 52, logoSvg(L, 'Slack', 111, 56, 14));
+  board(k, [8, -40], { w: 160, h: 104, a: wf });
+  /* the mail it reads, and the record it keeps */
+  k.envelope(Lf(-128, 40, 52), { w: 52, h: 33, open: true, letter: art.bar(7, 8, 26, INK.dark, 3) + lines(7, 15, 28, 3, 6), mark: logoSvg(L, 'Gmail', 19, 15.5, 14) });
+  k.panelR(Rf(134, 30, 64), { w: 64, h: 54, r: 5, face: '#FFFFFF', a: art.rect(0, 0, 64, 15, '#E2F0E6', 5) + art.rect(0, 9, 64, 6, '#E2F0E6')
+    + logoSvg(L, 'Google Sheets', 6, 3, 10) + art.bar(21, 6, 26, INK.dark, 3)
+    + [0, 1, 2, 3].map((i) => art.bar(7, 22 + i * 8, 14, INK.mid, 3) + art.bar(25, 22 + i * 8, 20 - (i % 2) * 6, INK.line, 3) + art.bar(49, 22 + i * 8, 9, i === 0 ? INK.oxide : INK.line, 3)).join('') });
+  k.flow(g(-92, 34), g(-70, 22), g(-50, 10));
+  k.flow(g(70, 4), g(90, 14), g(104, 24));
+  k.tile('n8n', Lf(-118, -70, 40, 96), { size: 40 });
+  k.tile('Google Gemini', Rf(118, -88, 32, 92), { size: 32, face: 'right' });
+  k.chips([[-30, 100, M.oxide], [150, -40, M.steel, 7], [-160, 4, M.paper, 7]]);
+  return k.s.render();
+}
+
+/* 2 · Voice & Chat Agents: a call answered, the conversation had, the job booked */
+function xVoice(L) {
+  const k = kit(L, X);
+  const wave = [6, 12, 20, 9, 25, 15, 7, 18, 11].map((h, i) => art.rect(7 + i * 4.4, 62 - h / 2, 2.8, h, INK.oxide, 1.4)).join('');
+  k.phone(Lf(-62, 10, 58), { screen: art.dot(25, 28, 13, INK.wash) + art.dot(25, 28, 7.6, INK.oxide) + art.bar(11, 46, 28, INK.dark, 3.4) + wave
+    + art.dot(15, 90, 7, INK.soft) + art.dot(35, 90, 7, INK.oxide) + art.rect(31, 88.6, 8, 2.8, '#FFFFFF', 1.4) });
+  /* what is said, both ways */
+  k.bubble(Lf(14, -46, 56, 70), { w: 56, h: 32, a: [16, 28, 40].map((cx) => art.dot(cx, 16, 3, '#FFFFFF')).join('') });
+  k.bubble(Lf(44, -8, 66, 30), { w: 66, h: 36, m: M.paper, fill: '#FFFFFF', tx: 0.7, a: art.bar(9, 9, 40, INK.dark, 3.4) + lines(9, 17, 48, 2, 7) });
+  /* what it books */
+  k.panelR(Rf(140, -18, 56), { w: 56, h: 54, r: 5, face: '#FFFFFF', a: calArt(56, 54, 6) });
+  k.check([...g(136, -62), 66], 10, { face: 'right' });
+  k.tile('ElevenLabs', Lf(-140, -52, 34, 80), { size: 34 });
+  k.tile('Twilio', Lf(-132, 56, 32, 6), { size: 32 });
+  k.tile('OpenAI', Rf(100, -98, 30, 92), { size: 30, face: 'right' });
+  k.flow(g(-22, 46), g(44, 72), g(108, 44));
+  k.chips([[70, 100, M.oxide], [-170, 10, M.steel, 7], [160, 52, M.paper, 7]]);
+  return k.s.render();
+}
+
+/* 3 · LLM Systems: sources go in, a model reads them under rules, and what
+   comes out has a fixed shape and says where it came from */
+function xLLM(L) {
+  const k = kit(L, X);
+  /* the sources: a pile of documents, searched */
+  for (let i = 0; i < 4; i++) k.mat([...Bx(-108, 34, 60, 46).slice(0, 2), i * 4.5], { w: 60, d: 46, t: 3.5, m: M.paper, face: '#FFFFFF', kk: i, a: i === 3 ? art.bar(8, 8, 30, INK.dark, 3.4) + lines(8, 16, 42, 3, 7) + art.rect(6, 36, 46, 7, INK.wash, 2) + art.rect(6, 36, 2.5, 7, INK.oxide, 1) : '' });
+  k.magnifier([...g(-80, 14), 34], 15, L1);
+  /* the model, as a block, under its rules */
+  const spark = glyphSvg('spark', 13, 13, 28, INK.oxide, 2.2);
+  k.box(Bx(-2, -6, 56, 56), { w: 56, d: 56, h: 46, m: M.graphite, r: 7, top: `<g transform="translate(0 0)">${art.rect(4, 4, 48, 48, '#34332F', 6)}${spark}</g>` });
+  /* what comes out: a fixed shape, each answer with its source */
+  const schema = art.line('M11 9c-4 0-4 3-4 6v6c0 3-2 4-3.5 4 1.5 0 3.5 1 3.5 4v6c0 3 0 6 4 6', INK.oxide, 2)
+    + art.line('M69 9c4 0 4 3 4 6v6c0 3 2 4 3.5 4-1.5 0-3.5 1-3.5 4v6c0 3 0 6-4 6', INK.oxide, 2)
+    + [0, 1, 2, 3].map((i) => art.bar(16, 11 + i * 9, 14, INK.oxide, 3.2) + art.bar(34, 11 + i * 9, 18 + (i % 2) * 10, INK.mid, 3.2)).join('')
+    + art.rect(12, 50, 56, 12, INK.soft, 3) + glyphSvg('doc', 15, 51.6, 9, INK.dark, 2.2) + art.bar(28, 54.4, 30, INK.mid, 3);
+  k.panelR(Rf(128, -10, 80, 6), { w: 80, h: 68, r: 5, face: '#FFFFFF', a: schema });
+  k.check([...g(140, 36), 0], 11, { face: 'right' });
+  k.flow(g(-54, 30), g(-38, 22), g(-24, 12));
+  k.flow(g(44, 0), g(64, -4), g(84, -2));
+  k.tile('OpenAI', Lf(-40, -104, 34, 96), { size: 34 });
+  k.tile('Google Gemini', Lf(-142, -40, 32, 78), { size: 32 });
+  k.tile('Supabase', Rf(108, 66, 32, 0), { size: 32, face: 'right' });
+  k.chips([[20, 100, M.oxide], [160, 20, M.steel, 7], [-170, 30, M.paper, 7]]);
+  return k.s.render();
+}
+
+/* 4 · Web Development: the code, the page it makes, the same page on a phone */
+function xWeb(L) {
+  const k = kit(L, X);
+  const C = ['#E07A4F', '#8FB3C0', '#D0AA6C', '#A9C4A0', '#C9C4B8'];
+  let code = art.rect(0, 0, 112, 78, '#262522', 4) + [6.5, 12, 17.5].map((cx) => art.dot(cx, 6, 1.7, '#55534E')).join('');
+  [[8, 26, 0], [14, 18, 1], [14, 30, 2], [20, 22, 3], [14, 14, 1], [8, 20, 4], [8, 30, 0], [14, 24, 2]].forEach(([x, w, c], i) => {
+    code += art.bar(x, 15 + i * 7.4, w, C[c], 3) + art.bar(x + w + 4, 15 + i * 7.4, 30 - (i % 3) * 7, '#4A4844', 3);
+  });
+  k.panel(Lf(-70, -34, 112, 16), { w: 112, h: 84, r: 6, t: 3.5, m: M.graphite, a: `<g transform="translate(0 3)">${code}</g>` });
+  const page = (w) => art.rect(8, 6, w - 16, 26, INK.wash, 3) + art.bar(14, 12, 40, INK.oxide, 4) + art.bar(14, 20, 58, INK.mid, 3)
+    + [0, 1, 2].map((i) => art.rect(8 + i * ((w - 16) / 3 + 1), 38, (w - 16) / 3 - 4, 24, '#F1EEE7', 3) + art.bar(12 + i * ((w - 16) / 3 + 1), 44, 18, INK.dark, 3)).join('')
+    + lines(8, 68, w - 24, 2, 6);
+  k.panelR(Rf(118, -44, 124, 10), { w: 124, h: 92, r: 6, t: 3.5, face: '#FFFFFF', a: winArt(124, page(124)) });
+  k.phone(Lf(28, 58, 46), { w: 46, h: 86, screen: art.rect(4, 12, 30, 14, INK.wash, 2) + art.bar(7, 15, 18, INK.oxide, 3) + art.bar(7, 21, 22, INK.mid, 2.4)
+    + art.rect(4, 31, 30, 16, '#F1EEE7', 2) + art.rect(4, 51, 30, 16, '#F1EEE7', 2) + lines(5, 71, 24, 1, 6) });
+  k.flow(g(-36, 26), g(-6, 40), g(10, 50));
+  k.tile('React', Lf(-146, 30, 32, 10), { size: 32 });
+  k.tile('Next.js', Lf(-128, -88, 32, 92), { size: 32 });
+  k.tile('Tailwind CSS', Rf(148, 44, 30, 0), { size: 30, face: 'right' });
+  k.tile('TypeScript', Rf(72, -110, 30, 98), { size: 30, face: 'right' });
+  k.chips([[-60, 100, M.oxide], [100, 92, M.steel, 7]]);
+  return k.s.render();
+}
+
+/* 5 · Platform Engineering: the product, the database and servers under it,
+   who may see what, and how it is paid for */
+function xPlatform(L) {
+  const k = kit(L, X);
+  const dash = art.rect(0, 0, 26, 84, '#F1EEE7', 0) + [0, 1, 2, 3, 4].map((i) => art.bar(6, 10 + i * 9, i === 1 ? 15 : 12, i === 1 ? INK.oxide : INK.mid, 3)).join('')
+    + [0, 1, 2].map((i) => art.rect(32 + i * 37, 8, 33, 24, '#FFFFFF', 3, ` stroke="${INK.line}" stroke-width="1"`) + art.bar(37 + i * 37, 13, 16, INK.dark, 3.2) + art.bar(37 + i * 37, 21, 22, INK.line, 3)).join('')
+    + [0, 1, 2, 3].map((i) => art.bar(32, 40 + i * 9, 108, i === 0 ? INK.mid : INK.line, 3)).join('');
+  k.panel(Lf(8, -42, 150, 12), { w: 150, h: 100, r: 6, t: 3.5, face: '#FFFFFF', a: winArt(150, dash) });
+  /* underneath: the database, the servers */
+  k.drums(g(-110, 44), 22, M.oxide);
+  const rack = (n) => art.rect(4, 4, 40, n === 0 ? 10 : 10, '#34332F', 2) + art.dot(9, 9, 1.8, '#9CCB8F') + art.dot(15, 9, 1.8, '#E8875D') + art.bar(22, 7.6, 18, '#55534E', 2.8);
+  k.box(Bx(-50, 70, 48, 30), { w: 48, d: 30, h: 16, m: M.graphite, r: 2, left: rack(0) });
+  k.box([...Bx(-50, 70, 48, 30).slice(0, 2), 16], { w: 48, d: 30, h: 16, m: M.graphite, r: 2, left: rack(1), kk: L1 });
+  /* who may see what: a lock on the product itself */
+  k.badge([...g(86, 26), 22], 15, M.oxide, glyphSvg('lock', 7, 6.6, 16, '#FFFFFF', 2.4), { kk: L3 });
+  /* how it is paid for */
+  k.panel(Lf(122, 56, 54), { w: 54, h: 34, r: 5, m: M.oxide, a: art.rect(6, 8, 10, 8, '#EBCB8B', 2) + art.bar(6, 22, 26, '#F6D9CB', 3) + art.bar(36, 22, 10, '#F6D9CB', 3) });
+  k.flow(g(-82, 34), g(-60, 20), g(-40, 6));
+  k.tile('Supabase', Lf(-150, -30, 34, 74), { size: 34 });
+  k.tile('PostgreSQL', Lf(-162, 32, 30, 64), { size: 30 });
+  k.tile('Stripe', Rf(150, 14, 32, 22), { size: 32, face: 'right' });
+  k.tile('Next.js', Rf(112, -100, 30, 94), { size: 30, face: 'right' });
+  k.chips([[40, 100, M.oxide], [170, -30, M.steel, 7]]);
+  return k.s.render();
+}
+
+/* 6 · CRM & API Integration: one record, and the systems wired into it */
+function xCRM(L) {
+  const k = kit(L, X);
+  const rec = person(18, 18, 11, INK.oxide, INK.wash) + art.bar(36, 11, 44, INK.dark, 4) + art.bar(36, 20, 30, INK.mid, 3)
+    + [['New', 0], ['Quoted', 1], ['Won', 2]].map(([, i]) => art.rect(8 + i * 34, 38, 30, 11, i === 1 ? INK.oxide : INK.soft, 5.5)).join('')
+    + [0, 1, 2].map((i) => art.dot(12, 62 + i * 10, 2.6, i === 0 ? INK.oxide : INK.mid) + art.bar(20, 60.5 + i * 10, 56 - i * 10, INK.line, 3)).join('');
+  board(k, [4, -34], { w: 110, h: 96, a: art.rect(0, 0, 98, 84, INK.screen, 4) + `<g transform="translate(2 0)">${rec}</g>` });
+  /* the systems around it, each wired in */
+  k.tile('HubSpot', Lf(-140, -14, 34, 18), { size: 34 });
+  k.tile('Shopify', Lf(-118, 62, 32, 0), { size: 32 });
+  k.tile('Stripe', Rf(122, 64, 32, 0), { size: 32, face: 'right' });
+  k.tile('Xero', Rf(150, -4, 34, 16), { size: 34, face: 'right' });
+  k.flow(g(-112, 4), g(-82, 4), g(-56, 0));
+  k.flow(g(-92, 66), g(-62, 54), g(-40, 36));
+  k.flow(g(100, 60), g(74, 50), g(56, 34));
+  k.flow(g(120, 2), g(92, 4), g(66, 2));
+  k.tile('Google Ads', Lf(-66, -104, 30, 96), { size: 30 });
+  k.tile('Meta', Rf(96, -98, 30, 90), { size: 30, face: 'right' });
+  k.chips([[0, 102, M.oxide], [-170, 40, M.steel, 7], [170, 30, M.paper, 7]]);
+  return k.s.render();
+}
+
 /* slug -> the scene. Each takes the logo set; the two featured ones also
    take `wide`. */
 export const SCENES = {
@@ -686,6 +851,13 @@ export const SCENES = {
   'content-repurposing-line': content,
   'crm-rebuild-migration': migration,
   'this-site': thisSite,
+  /* the six kinds of work, for the home page's cards and the expertise pages */
+  'x-ai-automation': xAutomation,
+  'x-voice-chat-agents': xVoice,
+  'x-llm-systems': xLLM,
+  'x-web-development': xWeb,
+  'x-platform-engineering': xPlatform,
+  'x-crm-api-integration': xCRM,
 };
 /* the ones that have a wide drawing */
 export const WIDE = new Set(['lead-to-cash-crm', 'adwash']);
@@ -710,4 +882,10 @@ export const ALT = {
   'content-repurposing-line': 'A video recording turning into a row of post cards, with a person’s approval between them.',
   'crm-rebuild-migration': 'Records moving from an old database to a new one, watched by a dry-run check.',
   'this-site': 'A laptop and a phone showing this site’s home page, with the Astro mark and a struck-out JavaScript mark.',
+  'x-ai-automation': 'An n8n workflow on a screen — mail read, a model’s call, a gate, a sheet written, a team told — between an opened email and a spreadsheet.',
+  'x-voice-chat-agents': 'A phone on a call, the conversation in two speech bubbles, and a calendar with the job booked.',
+  'x-llm-systems': 'A pile of documents searched with a magnifier, a model as a block, and an answer in a fixed shape that cites its source.',
+  'x-web-development': 'A code editor, the page it builds in a browser, and the same page on a phone.',
+  'x-platform-engineering': 'A product dashboard, the database and servers beneath it, a lock, and a payment card.',
+  'x-crm-api-integration': 'A contact record with its stage, wired to the systems around it: HubSpot, Shopify, Stripe and Xero.',
 };

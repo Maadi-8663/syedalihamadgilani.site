@@ -232,7 +232,7 @@ export const EXPERTISE = [
         ['four role-based surfaces', 'an agent sees their own calls and can contest a grade', 'cross-tenant']],
     ],
     /* not a system in the register: the site itself, which the card's picture
-       draws. Its one figure is the expertise picture's ("0 KB JavaScript"),
+       draws. Its one figure ("0 KB JavaScript"; the old Web Development picture printed it too, until 2026-10-06),
        held by the zero-JavaScript check that CLAUDE.md runs on every build. */
     self: {
       name: 'This site', sub: 'syedalihamadgilani.site · static, built with Astro',

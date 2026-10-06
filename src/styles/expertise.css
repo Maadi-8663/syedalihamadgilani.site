@@ -50,17 +50,13 @@ html main.ex section.run{scroll-margin-top:calc(var(--navh,72px) - 24px)}
 html .ex-pic{position:relative;aspect-ratio:4/3;border:1px solid var(--hair);border-radius:16px;overflow:hidden;
   background-color:var(--pic);background-image:url(/texture.webp);background-size:375px 278px;background-blend-mode:multiply;
   box-shadow:0 28px 54px -34px rgba(48,44,36,.5)}
-html .ex-pic svg{position:absolute;inset:0;display:block;width:100%;height:100%}
+html .ex-pic img{position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;object-fit:cover}
 html .ex-pic.pic--1{--pic:var(--pic-1)}
 html .ex-pic.pic--2{--pic:var(--pic-2)}
 html .ex-pic.pic--3{--pic:var(--pic-3)}
 html .ex-pic.pic--4{--pic:var(--pic-4)}
 html .ex-pic.pic--5{--pic:var(--pic-5)}
 html .ex-pic.pic--6{--pic:var(--pic-6)}
-html .ex-pic text{font-family:var(--sans)}
-html .ex-pic .m{font-family:var(--mono)}
-html .ex-pic .s{font-family:var(--serif);font-style:italic}
-html .ex-pic .n{font-family:var(--serif)}
 
 /* ---- the stack: a card for each tool, which turns to say what it is used
         for. The card is the Integrations page's (integrations.css), a size

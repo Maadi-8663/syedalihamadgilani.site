@@ -16,7 +16,7 @@
 
 import { GROUPS, TYPESET, CUSTOM } from './tools.js';
 import { toolMarks } from '../pictures/cluster.js';
-import { integrationMarks } from './marks.js';
+import { integrationMarks, DRAWN_BRAND } from './marks.js';
 import { BRAND } from '../pictures/brands.js';
 import { withIntegrationsLink } from './nav.js';
 import { withBrandMark } from '../brand/mark.js';
@@ -45,13 +45,14 @@ export function integrationsPage({ work, home }) {
     if (typeset === Boolean(svg)) {
       throw new Error(`integrations: ${name} ${typeset ? 'has a mark but is set in type' : 'has no mark in the cluster or marks.js'}`);
     }
-    if (!typeset && !BRAND[name]) throw new Error(`integrations: no brand colour for ${name}`);
+    const brand = BRAND[name] || DRAWN_BRAND[name];
+    if (!typeset && !brand) throw new Error(`integrations: no brand colour for ${name}`);
     const front = typeset
       ? `<div class="side front"><h3 class="nm type">${esc(name)}</h3></div>`
       : `<div class="side front"><span class="mark">${svg}</span><h3 class="nm">${esc(name)}</h3></div>`;
     const back = `<div class="side back"><p class="bt" aria-hidden="true">${typeset ? '' : svg}<span>${esc(name)}</span></p>`
       + `<p class="tx">${esc(text)}</p></div>`;
-    return `<li class="icard" tabindex="0"${typeset ? '' : ` style="--brand:${BRAND[name]}"`}><div class="flip">${front}${back}</div></li>`;
+    return `<li class="icard" tabindex="0"${typeset ? '' : ` style="--brand:${brand}"`}><div class="flip">${front}${back}</div></li>`;
   };
 
   const tools = (g) => g.tools.filter(([name]) => !CUSTOM[name]).length;

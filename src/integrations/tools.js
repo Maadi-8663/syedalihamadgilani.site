@@ -138,7 +138,7 @@ export const GROUPS = [
 ];
 
 /* The tools set in type: no published mark, so their card shows the name. */
-export const TYPESET = new Set(['OpenAI', 'Skyvern', 'Twilio', 'CallRail', 'GoHighLevel', 'HouseCall Pro', 'Apify',
+export const TYPESET = new Set(['Skyvern', 'CallRail', 'GoHighLevel', 'HouseCall Pro', 'Apify',
   'Microsoft Power Automate', 'Pipedream', 'Pabbly Connect', 'Activepieces', 'Workato']);
 
 /* Cards that are not a vendor's tool, with the line icon their front shows

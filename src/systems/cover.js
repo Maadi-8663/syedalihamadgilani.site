@@ -24,6 +24,7 @@
 import { SYSTEMS, PORTED } from './data.js';
 import { SCENES, WIDE, ALT } from '../pictures/scenes.js';
 import { registerRows } from '../work/register.js';
+import { EXPERTISE } from '../expertise/data.js';
 
 /* the register's seven groups on the six pigments */
 export const PIGMENT = { lead: 1, voice: 2, support: 3, backoffice: 4, content: 2, data: 6, product: 5 };
@@ -101,7 +102,13 @@ const SITE_MARKS = ['Astro', 'JavaScript'];
 export function checkSceneMarks(slug, used, work) {
   let listed, said = '';
   if (slug === 'this-site') listed = SITE_MARKS;
-  else {
+  else if (slug.startsWith('x-')) {
+    /* an expertise's picture: the tools of its stack, which the expertise
+       page already holds to evidence (src/expertise/page.js) */
+    const x = EXPERTISE.find((e) => `x-${e.slug}` === slug);
+    if (!x) throw new Error(`cover: no expertise for the picture ${slug}`);
+    listed = x.stack.flatMap((l) => l.tools.map(([t]) => t));
+  } else {
     const row = registerRows(work).get(slug), sys = SYSTEMS.find((s) => s.slug === slug);
     if (!row || (!sys && slug !== PORTED.slug)) throw new Error(`cover: no system ${slug} to check its scene against`);
     listed = sys ? sys.tools : [...row.marked, ...row.texts];
@@ -113,6 +120,16 @@ export function checkSceneMarks(slug, used, work) {
     if (from && from[0] === mark && said.includes(from[1])) continue;
     throw new Error(`cover: the scene for ${slug} carries the mark of ${mark}, which its page does not list`);
   }
+}
+
+/* An expertise's picture (2026-10-06): { pigment, html }, 4:3 like the home
+   page's cards, on the pigment its card always had (the cards' order). Its
+   description is given where it stands alone: at the head of its page. */
+export function expertiseCover(slug, { described = false, first = false } = {}) {
+  const x = EXPERTISE.find((e) => e.slug === slug), file = `x-${slug}`;
+  if (!x || !SCENES[file]) throw new Error(`cover: no picture for the expertise ${slug}`);
+  if (!ALT[file]) throw new Error(`cover: the picture "${file}" has no description`);
+  return { pigment: x.n, html: `<img src="/covers/${file}.svg" alt="${described ? attr(ALT[file]) : ''}" width="480" height="360" ${first ? 'fetchpriority="high" ' : 'loading="lazy" '}decoding="async">` };
 }
 
 /* this site, for the one project that is not on the register (the Web

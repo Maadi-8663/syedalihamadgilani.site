@@ -34,7 +34,7 @@ import { SYSTEMS, PORTED } from '../systems/data.js';
 import GRAPHS from '../systems/graphs.json';
 import { GROUPS as INTEGRATIONS } from '../integrations/tools.js';
 import { toolMarks } from '../pictures/cluster.js';
-import { integrationMarks } from '../integrations/marks.js';
+import { integrationMarks, DRAWN_BRAND } from '../integrations/marks.js';
 import { BRAND } from '../pictures/brands.js';
 import { expertisePictures } from '../pictures/expertise.js';
 import { withIntegrationsLink } from '../integrations/nav.js';
@@ -58,7 +58,7 @@ const strings = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(str
 
 /* Tools the site sets in type because no mark is published for them. A name
    in a stack must be one of these or have a mark, so a typo cannot ship. */
-const TYPESET = new Set(['OpenAI', 'Twilio', 'GoHighLevel', 'HouseCall Pro', 'CallRail', 'Skyvern', 'Apify', 'Slack', 'PandaDoc', 'AssemblyAI']);
+const TYPESET = new Set(['GoHighLevel', 'HouseCall Pro', 'CallRail', 'Skyvern', 'Apify', 'PandaDoc', 'AssemblyAI']);
 
 /* ---- the register's rows: figures, sources and the ported system ---------
    (read by src/work/register.js, which /work/ itself is built from) */
@@ -111,7 +111,7 @@ function check(x, recs, marks) {
       seen.add(tool);
       if (!note) fail(`${tool} has no note`);
       if (!marks.has(tool) && !TYPESET.has(tool)) fail(`${tool} has no mark and is not a tool the site sets in type`);
-      if (marks.has(tool) && !(BRAND[tool] || EXTRA_BRAND[tool])) fail(`no brand colour for ${tool}`);
+      if (marks.has(tool) && !brandOf(tool)) fail(`no brand colour for ${tool}`);
       if (!used.has(tool)) {
         const e = EVIDENCE[tool];
         const ok = e === 'code-nodes' ? projects.some((p) => GRAPHS[p.slug]?.workflows.some((w) => w.nodes.some((nd) => nd[3] === 'code')))
@@ -143,7 +143,7 @@ const arrowDown = '<svg class="sy" width="15" height="15" viewBox="0 0 24 24" fi
 const dotFull = '<svg class="mk" width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5"/></svg>';
 const dotRing = '<svg class="mk" width="10" height="10" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>';
 const sized = (svg, px) => svg.replace(/width="\d+" height="\d+"/, `width="${px}" height="${px}"`);
-const brandOf = (tool) => BRAND[tool] || EXTRA_BRAND[tool];
+const brandOf = (tool) => BRAND[tool] || EXTRA_BRAND[tool] || DRAWN_BRAND[tool];
 
 const section = (n, label, inner, { id, cls = '' } = {}) =>
   `<section class="run${cls ? ` ${cls}` : ''}"${id ? ` id="${id}"` : ''}>
@@ -272,7 +272,7 @@ export function expertisePage(slug, { work, home, system, sector }) {
   const recs = records({ work, system, sector });
   const projects = check(x, recs, marks);
 
-  const picture = expertisePictures(home)[x.card];
+  const picture = expertisePictures(home, { described: true, first: true })[x.card];
   if (!picture) throw new Error(`expertise: no picture for the card "${x.card}"`);
 
   const lineOf = new Map(x.projects.map(([s, line]) => [s, line]));
