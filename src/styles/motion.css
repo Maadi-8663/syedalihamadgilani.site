@@ -65,6 +65,16 @@ html:root{
 }
 
 
+/* The hero's marks pop in and then keep still. Until 2026-10-05 each also
+   bobbed, up and down, for as long as the page was open: thirty-eight
+   animations that never ended, so the home page was never at rest (he
+   found the pages "very laggy"). page-home.css is generated, so the bob is
+   dropped here: one name keeps the first of each list — the pop, its
+   duration and its delay. Phones show the marks as a grid with no bob. */
+@media (prefers-reduced-motion:no-preference) and (min-width:720px){
+  html .cluster .tile{animation-name:pop}
+}
+
 /* ==========================================================================
    POSITIONS — the hairline, the hero's exit, the photographs' drift, the phone carousel
    ========================================================================== */

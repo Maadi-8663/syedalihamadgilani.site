@@ -74,12 +74,32 @@ html .pcard.wide .pname{font-size:28px}
 html .pcard.wide .pline{grid-column:2;grid-row:1 / span 2;font-size:14.5px;align-self:center}
 html .pcard.wide .pfoot{grid-column:1 / -1;flex-direction:row;align-items:flex-end;justify-content:space-between}
 
+/* the sector page's systems (2026-10-06): its delivered three in a row, and
+   its built four in a row of four on a wide screen */
+html .sec-gallery{margin-top:20px}
+@media (min-width:1180px){
+  html .sec-gallery[data-n="4"]{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+  html .sec-gallery[data-n="4"] .pname{font-size:19.5px}
+  html .sec-gallery[data-n="4"] .pbody{padding:16px 16px 18px}
+}
+
 /* the register's filter: Delivered / Built */
 html .reg:has(#f-delivered:checked) .pcard[data-prov=Built],html .reg:has(#f-built:checked) .pcard[data-prov=Delivered]{display:none}
 
 /* ---- the head of a system's page: its cover beside the title -------------- */
 html .sys-head{display:grid;grid-template-columns:minmax(0,1fr) clamp(340px,35vw,500px);gap:40px 64px;align-items:center}
-html .sys-head .figs{gap:24px 36px}
+/* its figures in one row, however many there are: labels wrap under their
+   numeral rather than a fourth or fifth figure wrapping onto a line of its
+   own (2026-10-06; he found the pages "messy") */
+@media (min-width:720px){
+  html .sys-head .figs{flex-wrap:nowrap;gap:0 clamp(18px,2.4vw,40px)}
+  html .sys-head .figs>div{flex:0 1 auto;min-width:0}
+  html .sys-head .figs i{max-width:14ch}
+}
+/* phones: three to a row, and four as two and two */
+@media (max-width:719px){
+  html .sys-head .figs:has(>div:nth-child(4):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}
+}
 html .sys-cover{border:1px solid var(--hair);border-radius:16px;box-shadow:0 28px 54px -34px rgba(48,44,36,.5)}
 
 /* ---- the guards: cards that turn ------------------------------------------ */
@@ -155,46 +175,23 @@ html .g-hint{margin:22px 0 0;font-family:var(--mono);font-size:11px;line-height:
 }
 
 /* ---- motion ---------------------------------------------------------------
-   Arrivals with the scroll are scenes.css's: a system's card stands up
-   (kind a), its picture with it and its words after; a guard turns over
-   from an oxide back (kind b), its symbol drawn stroke by stroke and its
-   name written in. */
+   Arrivals with the scroll are scenes.css's: a system's card rises into its
+   place whole (kind a), a guard settles as tiles do (kind b). Until
+   2026-10-05 a card's words, figure and picture each had a stage of their
+   own and a guard turned over with its symbol traced — the staging that made
+   the pages lag (scenes.css has the measurements). */
 @supports (animation-timeline: view()){
-@media (prefers-reduced-motion:no-preference){
-  /* a card's words follow its picture */
-  html .pcard.it .pmeta{animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .36) entry calc(var(--p0) + var(--pw) * .66)}
-  html .pcard.it .pline{
-    -webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .55) entry calc(var(--p0) + var(--pw) * .95)}
-  html .pcard.it .pfig{animation:s-rise linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .62) entry calc(var(--p0) + var(--pw) * .96)}
-
-  /* a guard turns over, as the logos do */
-  html .gcard.it .side{position:relative}
-  html .gcard.it .flip{animation:s-b-flip linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  html .gcard.it .back>*{animation:s-b-hide linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  html .gcard.it .back::before{content:"";position:absolute;inset:0;border-radius:inherit;background:var(--accent);animation:s-b-oxide linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  html .gcard.it .gring :is(path,circle,rect,ellipse){stroke-dasharray:1;animation:s-a-wire linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .38) entry calc(var(--p0) + var(--pw) * .92)}
-  html .gcard.it .gname{
-    -webkit-mask-image:linear-gradient(90deg,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(90deg,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .5) entry calc(var(--p0) + var(--pw) * .9)}
-}
 /* side by side: a beat apart, left to right */
 @media (prefers-reduced-motion:no-preference) and (min-width:1180px){
   html .gallery>.it{--col:var(--c3,0)}
-  html .ex-gallery>.it:nth-child(3n+2){--col:1}
-  html .ex-gallery>.it:nth-child(3n+3){--col:2}
+  html :is(.ex-gallery,.sec-gallery)>.it:nth-child(3n+2){--col:1}
+  html :is(.ex-gallery,.sec-gallery)>.it:nth-child(3n+3){--col:2}
+  html .sec-gallery[data-n="4"]>.it:nth-child(n){--col:0}
+  html .sec-gallery[data-n="4"]>.it:nth-child(2){--col:1}html .sec-gallery[data-n="4"]>.it:nth-child(3){--col:2}html .sec-gallery[data-n="4"]>.it:nth-child(4){--col:3}
 }
 @media (prefers-reduced-motion:no-preference) and (min-width:720px) and (max-width:1179px){
   html .gallery>.it{--col:var(--c2,0)}
-  html .ex-gallery>.it:nth-child(2n){--col:1}
+  html :is(.ex-gallery,.sec-gallery)>.it:nth-child(2n){--col:1}
 }
 @media (prefers-reduced-motion:no-preference) and (min-width:900px){
   html .gcards>.it{--col:mod(var(--i),3)}

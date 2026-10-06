@@ -110,3 +110,37 @@ export function withGallery(page, { home }) {
         </div>
       </section>${page.slice(end)}`;
 }
+
+/* The sector page (2026-10-06). Its two lists of systems — delivered here,
+   built for the sector — were the register's rows, each with a small
+   drawing of one workflow in the empty shapes he had asked to be rid of
+   ("These workflows still use the empty nodes"), or a box saying there was
+   no export; of the pages then he said they were "non consistent and
+   messy". So the lists are the gallery's cards, as on /work/ and the
+   expertise pages: the same systems in the same order, read from the rows
+   they replace. Run it after withSystemLinks, which counts the rows' links. */
+export function withSectorGallery(page, { home, work }) {
+  const recs = new Map(systemRecords(work).map((r) => [r.slug, r]));
+  const marks = allMarks(home);
+  const swap = (html, id) => {
+    const at = html.indexOf(`<section class="run" id="${id}">`);
+    if (at === -1) throw new Error(`gallery: the sector page has no section #${id}`);
+    const end = html.indexOf('</section>', at);
+    const sec = html.slice(at, end);
+    const slugs = [...sec.matchAll(/<a class="row[^"]*" id="([^"]+)"/g)].map((m) => m[1]);
+    if (!slugs.length) throw new Error(`gallery: no rows in the sector page's #${id}`);
+    const from = sec.indexOf('<div style="margin-top:12px">');
+    const last = sec.lastIndexOf('</a>');
+    const to = sec.indexOf('</div>', last) + '</div>'.length;
+    if (from === -1 || last < from || to < last) throw new Error(`gallery: the rows of the sector page's #${id} have moved`);
+    const cards = slugs.map((slug) => {
+      const r = recs.get(slug);
+      if (!r) throw new Error(`gallery: the sector page lists ${slug}, which is not a system`);
+      return projectCard(r, marks, { attrs: ` id="${slug}"` });
+    }).join('\n        ');
+    return html.slice(0, at) + sec.slice(0, from)
+      + `<div class="gallery sec-gallery" data-n="${slugs.length}">\n        ${cards}\n      </div>`
+      + sec.slice(to) + html.slice(end);
+  };
+  return swap(swap(page, 'delivered'), 'built');
+}

@@ -46,7 +46,7 @@ html body .arch-stage{top:var(--navh);min-height:calc(100vh - var(--navh))}
 @media (min-width:900px){html body .arch-stage .arch{max-height:calc(100vh - 48px - var(--navh))}}
 html body .flow{--ti:max(var(--navh),calc(50vh + var(--navh) / 2 - var(--sh) / 2))}
 html .nav::before{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:calc(50% - 50vw);right:calc(50% - 50vw);pointer-events:none;
-  background:rgba(250,249,246,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 1px 0 var(--hair)}
+  background:var(--paper);box-shadow:0 1px 0 var(--hair)}   /* (frosted until 2026-10-05: a blur redrawn under the bar every frame of the scroll; without the blur, anything less than opaque let the page show through in ghosts) */
 html .navname{display:none}
 html .hero h1 .hn{display:block;font-weight:inherit}
 /* a link to a section — or the skip link, to main — lands below the bar,

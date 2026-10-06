@@ -107,29 +107,6 @@ export function nodeName(type) {
   return n[0];
 }
 
-/* How far into a run each node is, 0 to 1: breadth-first from the triggers
-   along the main connections. A model or parser wired into an agent lights
-   with it. */
-export function depths(wf) {
-  const n = wf.nodes.length, d = new Array(n).fill(-1), next = Array.from({ length: n }, () => []);
-  for (const [a, b, ai] of wf.edges) if (!ai) next[a].push(b);
-  const queue = [];
-  wf.nodes.forEach((node, i) => { if (node[2] === 'trigger') { d[i] = 0; queue.push(i); } });
-  if (!queue.length) { d[0] = 0; queue.push(0); }
-  while (queue.length) {
-    const a = queue.shift();
-    for (const b of next[a]) if (d[b] === -1) { d[b] = d[a] + 1; queue.push(b); }
-  }
-  for (let pass = 0; pass < n && d.includes(-1); pass++) {
-    for (const [a, b] of wf.edges) {
-      if (d[a] === -1 && d[b] !== -1) d[a] = d[b];
-      else if (d[b] === -1 && d[a] !== -1) d[b] = d[a] + 1;
-    }
-  }
-  const max = Math.max(1, ...d);
-  return d.map((v) => (v < 0 ? 1 : v / max));
-}
-
 /* a name on at most two lines of `max` characters */
 const wrap = (text, max) => {
   const lines = [''];
@@ -178,7 +155,6 @@ export function workflowCanvas(wf, logos, { names = false, label = 'The workflow
   /* a node's box is N wide whatever it holds; a round one sits in the middle of its box */
   const P = wf.nodes.map(([x, y]) => [mx + x * u, top + y * u]);
   const boxes = P.map(([x, y], i) => { const s = size(i), o = (N - s) / 2; return [x + o, y + o, x + o + s, y + o + s]; });
-  const t = depths(wf);
 
   /* a path through right-angled corners, each one rounded */
   const round = (pts, q) => {
@@ -194,11 +170,10 @@ export function workflowCanvas(wf, logos, { names = false, label = 'The workflow
   let edges = '';
   for (const [a, b, ai] of wf.edges) {
     const [x1, y1] = P[a], [x2, y2] = P[b];
-    const st = `style="--t:${r2(t[a])};--u:${r2(Math.max(t[a], t[b]))}"`;       // a wire back up the canvas draws in place
     if (ai) {
       /* from the top of the round one up to the foot of the node it is wired into */
       const sx = x1 + N / 2, sy = y1 + N / 2 - size(a) / 2, ex = x2 + N / 2, ey = y2 + N / 2 + size(b) / 2, k = Math.max(6, (sy - ey) * 0.5);
-      edges += `<path class="ed ai" ${st} d="M${r1(sx)} ${r1(sy)}C${r1(sx)} ${r1(sy - k)} ${r1(ex)} ${r1(ey + k)} ${r1(ex)} ${r1(ey)}"/>`;
+      edges += `<path class="ed ai" d="M${r1(sx)} ${r1(sy)}C${r1(sx)} ${r1(sy - k)} ${r1(ex)} ${r1(ey + k)} ${r1(ex)} ${r1(ey)}"/>`;
       continue;
     }
     const sx = x1 + N / 2 + size(a) / 2, sy = y1 + N / 2, ex = x2 + N / 2 - size(b) / 2, ey = y2 + N / 2, dx = Math.max(8, Math.abs(ex - sx) / 2);
@@ -217,10 +192,10 @@ export function workflowCanvas(wf, logos, { names = false, label = 'The workflow
       let yr = tries.find((yy) => !crosses(yy));
       if (yr === undefined) yr = Math.max(...boxes.filter(([bx0, , bx1]) => bx1 > lft && bx0 < rgt).map((bx) => bx[3])) + clear;
       H = Math.max(H, yr + 9);
-      edges += `<path class="ed" pathLength="1" ${st} d="${round([[sx, sy], [rgt, sy], [rgt, yr], [lft, yr], [lft, ey], [ex, ey]], N * 0.22)}"/>`;
+      edges += `<path class="ed" d="${round([[sx, sy], [rgt, sy], [rgt, yr], [lft, yr], [lft, ey], [ex, ey]], N * 0.22)}"/>`;
       continue;
     }
-    edges += `<path class="ed" pathLength="1" ${st} d="M${r1(sx)} ${r1(sy)}C${r1(sx + dx)} ${r1(sy)} ${r1(ex - dx)} ${r1(ey)} ${r1(ex)} ${r1(ey)}"/>`;
+    edges += `<path class="ed" d="M${r1(sx)} ${r1(sy)}C${r1(sx + dx)} ${r1(sy)} ${r1(ex - dx)} ${r1(ey)} ${r1(ex)} ${r1(ey)}"/>`;
   }
   H = r1(H);
 
@@ -256,7 +231,7 @@ export function workflowCanvas(wf, logos, { names = false, label = 'The workflow
       ? logoSvg(logos, VENDOR[type][1], ix, iy, r1(s))
       : `<g transform="translate(${ix} ${iy}) scale(${r2(s / 24)})" fill="none" stroke="${CORE[type][2]}" color="${CORE[type][2]}" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">${SIGN[CORE[type][1]]}</g>`;
     const text = (named.get(i) || []).map((l, j) => `<text class="nl" x="${r1(cx)}" y="${r1(cy + size(i) / 2 + 3 + fs * 0.86 + j * lh)}">${esc(l)}</text>`).join('');
-    nodes += `<g class="nd" style="--t:${r2(t[i])}">${tip}${shape}${icon}${text}</g>`;
+    nodes += `<g class="nd">${tip}${shape}${icon}${text}</g>`;
   });
   return {
     width: Math.round(W),

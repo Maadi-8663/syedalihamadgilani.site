@@ -143,8 +143,6 @@ html .ex-other:hover .mono{color:var(--accent)}
 }
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){
-  html .ex-stack .icard.it .lay{animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .6) entry calc(var(--p0) + var(--pw) * .92)}
 }
 /* (the stack's cards follow the section's first item, its opening sentence:
    so a card's place in its row is its index less one) */

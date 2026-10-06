@@ -96,8 +96,5 @@ html #experience .edu{padding-left:0}
 @media (prefers-reduced-motion:no-preference){
   html .tl-row.it .tl-bar{transform-origin:0 50%;animation:s-draw-x linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.3,.6,.3,1);
     animation-range:entry calc(var(--p0) + var(--pw) * .2) entry calc(var(--p0) + var(--pw) * .85)}
-  html .tl-row.it .tl-thumb{animation:s-rise linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.4 + var(--k,0) * .08)) entry calc(var(--p0) + var(--pw) * (.7 + var(--k,0) * .08))}
-  html .tl-thumb:nth-child(2){--k:1}html .tl-thumb:nth-child(3){--k:2}html .tl-thumb:nth-child(4){--k:3}
 }
 }

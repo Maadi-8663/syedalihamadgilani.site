@@ -21,9 +21,10 @@
      drawing is as wide as its workflow: a short one sits in the middle of
      its canvas, a long one fills it, and where the card is narrower than
      the drawing can go the canvas scrolls sideways, its edges fading while
-     there is more that way. As a card crosses the screen its nodes light in
-     the order a run would reach them (--t, depth from the trigger) and the
-     wires draw between them (--t to --u).
+     there is more that way. The card arrives whole (scenes.css); until
+     2026-10-05 its nodes lit one by one and its wires drew as it came up,
+     a hundred and more things animating at once on the larger pages, which
+     made them lag.
    - (Until 2026-10-04 the head had a small workflow that ran once on load;
      the head now opens on the system's cover: gallery.css.)
    - Limits: a numbered list.
@@ -132,24 +133,12 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   html .body-run>.wrap>div>div>:is(p.sys-extra,p.sys-nofig){animation:mo-in-rise 1000ms var(--mo-ease) 760ms both}
 }
 
-/* Entrances are src/styles/scenes.css's (2026-10-02): the workflow cards stand
-   up as cards, the limits come in as rows. The lit nodes and wires, and the
-   pinned sequence below, are positions. */
+/* Entrances are src/styles/scenes.css's: the workflow cards rise as cards,
+   the limits come in as rows. The pinned sequence below is a position. */
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){
   @keyframes sf-unlit{from{border-color:var(--hair);background:var(--paper2);color:var(--ink3)}}
   @keyframes sf-wire{from{transform:scaleY(0)}}
-  @keyframes cv-lit{from{opacity:.24}}
-  @keyframes cv-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-
-  /* each workflow runs as its card arrives (scenes.css: as it comes up the
-     page): its nodes light in the order a run reaches them, the wires draw
-     behind */
-  html .wfc.it :is(.nd,.ed.ai){animation:cv-lit linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.42 + var(--t) * .5)) entry calc(var(--p0) + var(--pw) * (.5 + var(--t) * .5))}
-  /* (a dashed wire to a model lights with its node: it has dashes of its own to keep) */
-  html .wfc.it .ed:not(.ai){stroke-dasharray:1;animation:cv-draw linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.44 + var(--t) * .5)) entry calc(var(--p0) + var(--pw) * (.5 + var(--u) * .5))}
 
   /* a canvas that scrolls: its right edge fades until the end is reached, its
      left once the start is left. A canvas that fits has no scroll timeline,
@@ -171,7 +160,6 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
 /* desktop: the stage pins, and the scroll runs the system step by step */
 @media (prefers-reduced-motion:no-preference) and (min-width:900px){
   @keyframes sf-name{0%{color:var(--ink3)}10%,90%{color:var(--ink)}100%{color:var(--ink2)}}
-  @keyframes sf-halo{0%,100%{box-shadow:0 0 0 0 var(--wash)}14%,86%{box-shadow:0 0 0 7px var(--wash)}}
   @keyframes sf-cap{0%{opacity:0;translate:0 22px}13%,87%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -22px}}
   @keyframes sf-cap-first{0%,87%{opacity:1;translate:0 0}100%{opacity:0;translate:0 -22px}}
   @keyframes sf-cap-last{0%{opacity:0;translate:0 22px}13%,100%{opacity:1;translate:0 0}}
@@ -190,8 +178,8 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
   html .fs{position:static;height:var(--row);padding:0;align-items:center;column-gap:16px}
   html .fs:not(:last-child)::before{content:none}
   html .fs-ring{grid-row:auto;
-    animation:sf-unlit linear both,sf-halo linear both;animation-timeline:--flow,--flow;
-    animation-range:contain calc(var(--a) * 1% - 2%) contain calc(var(--a) * 1% + 1%),contain calc(var(--a) * 1%) contain calc(var(--b) * 1%)}
+    animation:sf-unlit linear both;animation-timeline:--flow;
+    animation-range:contain calc(var(--a) * 1% - 2%) contain calc(var(--a) * 1% + 1%)}
   html .fs-w{display:block;position:absolute;left:50%;top:calc(100% + 1.5px);width:2px;margin-left:-1px;height:calc(var(--row) - 43px);background:var(--hair)}
   html .fs-w::after{content:"";position:absolute;inset:0;background:var(--accent);transform-origin:top;
     animation:sf-wire linear both;animation-timeline:--flow;animation-range:contain calc(var(--b) * 1% - 5%) contain calc(var(--b) * 1% + 1%)}

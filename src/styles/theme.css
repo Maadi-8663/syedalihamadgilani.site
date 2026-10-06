@@ -88,25 +88,13 @@ html:root{
 html:root{background:var(--paper) url(/specks.svg) 0 0/1200px 1200px repeat}
 html body{background:transparent}
 
-/* /work/'s group headers stick while their rows scroll under them, so they
-   need a fill then — but a fill would blank out the ground's marks, and at
-   rest they sit on the ground like everything else. So they are clear at rest
-   and frosted only while stuck: the group's own view timeline fades the frost
-   in over the first 24px after its header sticks (group top past the viewport
-   top, plus the group's 20px of padding) and holds it until the group has
-   scrolled away. Measured 2026-09-27: clear at 1px from the top, frosting
-   from 0. Without scroll timelines, or with motion reduced, always frosted. */
-html .ghead{background:rgba(250,249,246,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-@supports (animation-timeline: view()){
-@media (prefers-reduced-motion:no-preference){
-  @keyframes ghead-in{from{background:rgba(250,249,246,0);-webkit-backdrop-filter:blur(0);backdrop-filter:blur(0)}
-    to{background:rgba(250,249,246,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}}
-  @keyframes ghead-stuck{from,to{background:rgba(250,249,246,.9);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}}
-  html .group{view-timeline:--grp block}
-  html .ghead{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none;
-    animation:ghead-in linear,ghead-stuck linear;animation-timeline:--grp,--grp;
-    animation-range:exit-crossing 20px exit-crossing 44px,exit-crossing 44px exit-crossing 100%}
-}}
+/* The register pages' group headers stick while their rows scroll under
+   them, so they carry the ground's colour. (Until 2026-10-05 they were clear
+   at rest and frosted once stuck: a blur, and a scroll animation of it,
+   redrawn every frame for as long as a group was on screen. Of the pages
+   then he said: "very laggy". The ground's marks under a 40px strip are
+   barely visible anyway.) */
+html .ghead{background:var(--paper)}
 
 /* ---- surfaces: plates and cards are smooth plaster ---------------------- */
 html .tnode .face,html .minibox,html .cats .ring,html .gh .ring,html .strip,html .canvas,html .snode{background:var(--paper2)}

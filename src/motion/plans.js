@@ -40,6 +40,7 @@ function homeScenes_(page) {
    parts; each part's items arrive in its kind. */
 const PARTS = [
   [/<li class="wfc"/, 'a'],
+  [/<(?:a|div) class="pcard/, 'a'],          // the sector page's systems, since 2026-10-06
   [/<li class="gcard"/, 'b'],                 // the guards, since 2026-10-04: cards that turn
   [/<li><span class="ring">/, 'c'],          // gates, the lead's path
   [/<li>(?=[^<])/, 'c'],                      // limits: a sentence each

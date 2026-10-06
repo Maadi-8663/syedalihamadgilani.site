@@ -16,8 +16,9 @@
    The workflows every exported workflow drawn at its real node positions,
                    each node with the icon n8n gives it — a vendor's own mark,
                    or n8n's sign for the node (canvas.js; since 2026-10-04:
-                   until then the nodes were empty shapes); as it scrolls in
-                   it lights up in the order a run would reach each node.
+                   until then the nodes were empty shapes). Each card rises
+                   in whole as it scrolls up (until 2026-10-05 its nodes lit
+                   one by one, which made the larger pages lag).
    Limits        what the system does not do, from its own write-up.
 
    Since 2026-10-04 a page opens on its system's cover (cover.js) where the

@@ -1,26 +1,33 @@
 /* scenes.css — how items arrive as the page scrolls (2026-10-02; reworked
-   2026-10-03). The markup is src/motion/scenes.js (its header has his
-   words); what arrives on each page is src/motion/plans.js.
+   2026-10-03; made light 2026-10-05). The markup is src/motion/scenes.js (its
+   header has his words); what arrives on each page is src/motion/plans.js.
 
-   The four kinds he chose ("Use all four, as on the page"):
-     a  Stand up        cards
-     b  Flip and trace  logos
-     c  Ink line        rows
-     d  Out of depth    photographs
-     t  paragraphs, which ink in
-   Each item arrives on its own view timeline as it comes up the screen: its
-   stages are fractions of its "window", the first --fw of its entry (a
-   column --col × --cs later than the first of its row), so the motion is
-   scrubbed by the scroll and runs backwards when it is scrolled back.
+   2026-10-05. Syed: "the pages have been very laggy and non consistent and
+   messy." Measured in Chrome, scrolling each page top to bottom: with the
+   arrivals on, the home page managed 6 frames a second and Integrations 35
+   (a third of its frames late), the system and expertise pages lost 12–34%
+   of theirs; with every animation off, all twenty-six held 58 with none
+   late. The cost was the staging inside each item — a card's picture
+   developing through a filter, its wires drawing, its title word by word,
+   its text inked in through a mask, its tools popping; a logo traced stroke
+   by stroke, a sheen run across it; photographs out of a blur — dozens of
+   things on the main thread for every item on screen. Keeping only each
+   item's own arrival brought the home page to 52.
 
-   2026-10-03, he turned down the pinned screens of the night before ("It is
-   like turning the pages... and is not smooth... We should feel like
-   scrolling down, with the animated transitions of item first"), except on
-   the home page's first screen: "Keep the page turning animation. But just
-   for the First View Port". So that one screen still holds, on a desktop at
-   least 1024px wide and 620px tall, while "What I do" slides up over it and
-   it dims; his name meanwhile goes up into the nav (src/styles/navbar.css).
-   Everything else scrolls as a page.
+   So an item now arrives as one thing, and only with what the browser can
+   run beside the page rather than in it: opacity and position. Each kind
+   keeps its own gesture — cards and photographs rise into place, logos and
+   tiles settle from a little below and smaller, rows come in from the left,
+   labels slide and draw their rule, paragraphs rise a short way — and items
+   in a row still arrive a beat apart, left to right, scrubbed by the scroll
+   and run backwards when it is scrolled back. The four styles of 2026-10-02
+   (stand up, flip and trace, ink line, out of depth) are gone with their
+   costs; git has them (5c72700 and before).
+
+   Unchanged: on a desktop at least 1024px wide and 620px tall the home
+   page's first screen holds while "What I do" slides up over it and it dims
+   (he asked to keep that: "Keep the page turning animation. But just for
+   the First View Port"), and his name goes up into the nav (navbar.css).
 
    With reduced motion, or without scroll timelines, nothing here applies:
    every element is simply at rest. Every selector starts with `html`, as in
@@ -29,9 +36,6 @@
 /* ---- the wrappers around the home page's first screen: not boxes unless
         it is held ------------------------------------------------------------ */
 html .track,html .scene,html .panel{display:contents}
-
-@property --s-ink{syntax:'<percentage>';inherits:false;initial-value:130%}
-@property --s-sheen{syntax:'<percentage>';inherits:false;initial-value:-40%}
 
 @supports (animation-timeline: view()){
 
@@ -67,246 +71,66 @@ html .track,html .scene,html .panel{display:contents}
 
   /* ---- an item's window: the first --fw of its own entry, a column --col
           × --cs behind the first of its row ------------------------------ */
-  html .it{view-timeline:--it block;--p0:calc(var(--col,0) * var(--cs,5vh));--pw:var(--fw,30vh)}
-  html .it.k-a,html .it.k-d{--fw:40vh}
-  html .it.k-b,html .row.it{--fw:32vh}
-  html .it.k-t{--fw:26vh}
+  html .it{view-timeline:--it block;--p0:calc(var(--col,0) * var(--cs,5vh));--pw:var(--fw,28vh)}
+  html .it.k-a,html .it.k-d{--fw:34vh}
+  html .it.k-b,html .row.it{--fw:26vh}
+  html .it.k-t{--fw:24vh}
   /* items that already name a timeline of their own keep it */
   html .xp li.it{view-timeline-name:--it,--row;view-timeline-axis:block,block}
   html .sect.it{view-timeline-name:--it,--mo-sect;view-timeline-axis:block,block}
 
-  /* ---- shared keyframes ---------------------------------------------------- */
-  @keyframes s-ink{from{--s-ink:0%}to{--s-ink:130%}}
-  @keyframes s-slot{from{translate:0 100%;clip-path:inset(0 0 100% 0)}to{translate:0 0;clip-path:inset(0)}}
-  @keyframes s-fade-x{from{opacity:0;translate:-14px 0}}
-  @keyframes s-pop{0%{scale:0;rotate:-40deg;opacity:0}70%{scale:1.25;rotate:6deg;opacity:1}100%{scale:1;rotate:0deg;opacity:1}}
-  @keyframes s-word{from{translate:0 108%;rotate:6deg}}
-  @keyframes s-slide{from{opacity:0;translate:-30px 0}}
-  @keyframes s-draw-x{from{scale:0 1}}
+  /* ---- the gestures: opacity and position only --------------------------- */
+  @keyframes s-card{from{opacity:0;translate:0 64px}}
+  @keyframes s-tile{from{opacity:0;translate:0 18px;scale:.92}}
+  @keyframes s-in{from{opacity:0;translate:-22px 0}}
   @keyframes s-rise{from{opacity:0;translate:0 26px}}
+  @keyframes s-slide{from{opacity:0;translate:-26px 0}}
+  @keyframes s-fade-x{from{opacity:0;translate:-14px 0}}
+  @keyframes s-draw-x{from{scale:0 1}}
 
   /* ==========================================================================
-     HEADS: labels slide in and draw their rule; headings come up word by
-     word, as they come up the screen. A page's first screen runs on load
-     (motion.css).
+     HEADS: labels slide in and draw their rule, headings rise, as they come
+     up the screen. A page's first screen runs on load (motion.css).
      ========================================================================== */
   html :is(.lab,.slabel,.ghead,.wsplit:not(.wload)){view-timeline:--hd block}
   html .lab>span{display:inline-block;animation:s-slide linear both;animation-timeline:--hd;animation-range:entry 0vh entry 15vh}
   html .lab::after{transform-origin:0 50%;animation:s-draw-x linear both;animation-timeline:--hd;animation-range:entry 2vh entry 24vh}
   html .slabel{animation:s-slide linear both;animation-timeline:--hd;animation-range:entry 0vh entry 17vh}
-  html .ghead .ring{animation:s-pop linear both;animation-timeline:--hd;animation-range:entry 0vh entry 15vh}
-  html .ghead .n{animation:s-slide linear both;animation-timeline:--hd;animation-range:entry 7vh entry 24vh}
-  html .wsplit:not(.wload) .w>span{animation:s-word linear both;animation-timeline:--hd;animation-timing-function:cubic-bezier(.2,.75,.25,1);
-    animation-range:entry calc(min(var(--i),12) * .8vh) entry calc(19vh + min(var(--i),12) * .8vh)}
+  html .ghead :is(.ring,.n){animation:s-slide linear both;animation-timeline:--hd;animation-range:entry 0vh entry 17vh}
+  html .wsplit:not(.wload){animation:s-rise linear both;animation-timeline:--hd;animation-timing-function:cubic-bezier(.22,.7,.3,1);
+    animation-range:entry 0vh entry 22vh}
 
-  /* ==========================================================================
-     A · STAND UP — cards. The card lies back, in shadow, and stands up into
-     its place; then its picture develops, the screen in it rises, its wires
-     draw, its title comes up word by word, its text inks in, its tools pop.
-     ========================================================================== */
-  html :has(> .it.k-a){perspective:1500px;perspective-origin:50% 115%}
+  /* ---- cards: rise into place -------------------------------------------- */
   /* (the class is doubled to outrank the ported page's own column stagger,
      .skills .skill:nth-child(3n+2) and the like, which set a range) */
-  html .it.k-a.k-a{transform-origin:50% 100%;animation:s-a-card linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  @keyframes s-a-card{
-    0%{opacity:0;translate:0 110px -220px;rotate:x 72deg;filter:brightness(.6) saturate(.8);animation-timing-function:cubic-bezier(.25,.7,.3,1)}
-    18%{opacity:1}
-    70%{translate:0 -10px 0;rotate:x -6deg;filter:brightness(.97) saturate(1);animation-timing-function:cubic-bezier(.45,0,.3,1)}
-    100%{opacity:1;translate:none;rotate:none;filter:none}}
-  html .it.k-a .pic{animation:s-a-pic linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .12) entry calc(var(--p0) + var(--pw) * .72)}
-  @keyframes s-a-pic{from{filter:saturate(.35) brightness(1.08)}to{filter:none}}
-  html .it.k-a .pic .lift{transform-box:fill-box;transform-origin:50% 100%;animation:s-a-lift linear both;animation-timeline:--it;
-    animation-timing-function:cubic-bezier(.2,.7,.25,1);
-    animation-range:entry calc(var(--p0) + var(--pw) * .28) entry calc(var(--p0) + var(--pw) * .84)}
-  @keyframes s-a-lift{from{translate:0 54px;scale:.9;opacity:0}}
-  html .it.k-a .wire{stroke-dasharray:1;animation:s-a-wire linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .4) entry calc(var(--p0) + var(--pw) * .98)}
-  @keyframes s-a-wire{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
-  html .it.k-a h3 .w{display:inline-block;overflow:clip;vertical-align:top;padding:0 .05em .12em;margin:0 -.05em -.12em}
-  html .it.k-a h3 .w>span{display:inline-block;animation:s-word linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.2,.75,.25,1);
-    animation-range:entry calc(var(--p0) + var(--pw) * (.44 + var(--j) * .05)) entry calc(var(--p0) + var(--pw) * (.72 + var(--j) * .05))}
-  html .it.k-a>p,html .it.k-a .draft .msg{
-    -webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .55) entry calc(var(--p0) + var(--pw) * .95)}
-  html .it.k-a .stack>span{display:inline-flex;animation:s-pop linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.7 + var(--k,0) * .06)) entry calc(var(--p0) + var(--pw) * (.86 + var(--k,0) * .06))}
-  html .it .stack>span:nth-child(2){--k:1}html .it .stack>span:nth-child(3){--k:2}html .it .stack>span:nth-child(4){--k:3}
-  html .it .stack>span:nth-child(5){--k:4}html .it .stack>span:nth-child(n+6){--k:5}
-  /* the contact form: its questions and chips come in after it stands */
-  html .it.k-a.compose>:is(.q,.chips,.draft,.send){animation:s-rise linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .5) entry calc(var(--p0) + var(--pw) * .95)}
+  html .it.k-a.k-a{animation:s-card linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.22,.7,.3,1);
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw))}
 
-  /* ==========================================================================
-     B · FLIP AND TRACE — logos. The tile turns over from an oxide back to
-     its face; its logo is traced in the brand's colour, then filled; its
-     name is written in; a light runs across it.
-     ========================================================================== */
-  html .it.k-b{animation:s-b-fade linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .07)}
-  @keyframes s-b-fade{from{opacity:0}}
-  html .icard.it .side{position:relative}
-  html .icard.it .flip{animation:s-b-flip linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  @keyframes s-b-flip{
-    0%{rotate:y -180deg;translate:0 50px -90px;animation-timing-function:cubic-bezier(.5,.08,.3,1)}
-    72%{rotate:y 10deg;translate:0 -6px 40px;animation-timing-function:cubic-bezier(.45,0,.3,1)}
-    100%{rotate:none;translate:none}}
-  /* while it turns its back is the oxide itself; at rest the back is the
-     wash the hover shows, and its words are there */
-  html .icard.it .back>*{animation:s-b-hide linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  @keyframes s-b-hide{0%,99%{opacity:0}100%{opacity:1}}
-  html .icard.it .back::before{content:"";position:absolute;inset:0;background:var(--accent);animation:s-b-oxide linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .6)}
-  @keyframes s-b-oxide{0%,99%{opacity:1}100%{opacity:0}}
-  html .it.k-b :is(.mark,.face:not(.back)) .br path{stroke:currentColor;stroke-width:.35;stroke-linejoin:round;stroke-dasharray:1;
-    animation:s-b-trace linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .34) entry calc(var(--p0) + var(--pw) * .96)}
-  @keyframes s-b-trace{0%{stroke-dashoffset:1;fill-opacity:0;stroke-width:.35}56%{stroke-dashoffset:0;fill-opacity:0;stroke-width:.35}
-    100%{stroke-dashoffset:0;fill-opacity:1;stroke-width:0}}
-  html .icard.it .nm,html .tnode.it .face.txt{
-    -webkit-mask-image:linear-gradient(90deg,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(90deg,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .5) entry calc(var(--p0) + var(--pw) * .88)}
-  html .icard.it .front::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(112deg,transparent calc(var(--s-sheen) - 16%),rgba(156,55,18,.13) var(--s-sheen),transparent calc(var(--s-sheen) + 16%));
-    animation:s-b-sheen linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .62) entry calc(var(--p0) + var(--pw))}
-  @keyframes s-b-sheen{from{--s-sheen:-30%}to{--s-sheen:130%}}
-  /* a tool badge: its own oxide back turns over to its face */
-  html .tnode.it .faces{animation:s-b-flip-sm linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .62)}
-  @keyframes s-b-flip-sm{0%{rotate:y -180deg;animation-timing-function:cubic-bezier(.5,.08,.3,1)}75%{rotate:y 12deg;animation-timing-function:cubic-bezier(.45,0,.3,1)}100%{rotate:none}}
+  /* ---- logos, tiles, guards: settle from a little below and smaller ------ */
+  html .it.k-b{animation:s-tile linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.22,.7,.3,1);
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw))}
 
-  /* ==========================================================================
-     C · INK LINE — rows. The row's rule is drawn in oxide and cools to a
-     hairline; its mark drops in with a ring; its name comes up out of the
-     line; its text inks in; its figure slides in under a passing marker.
-     ========================================================================== */
-  html .row.it{position:relative;border-bottom-color:transparent}
-  html .row.it::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--hair);transform-origin:0 50%;
-    animation:s-c-rule linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .5)}
-  @keyframes s-c-rule{0%{scale:0 1;background-color:var(--accent);animation-timing-function:cubic-bezier(.3,.6,.3,1)}62%{background-color:var(--accent)}
-    100%{scale:1 1;background-color:var(--hair)}}
-  html .row.it .mk{animation:s-c-dot linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .08) entry calc(var(--p0) + var(--pw) * .34)}
-  @keyframes s-c-dot{0%{scale:0}65%{scale:1.6}100%{scale:1}}
-  html .row.it>span:first-child{position:relative}
-  html .row.it>span:first-child::after{content:"";position:absolute;left:6px;top:11px;width:32px;height:32px;margin:-16px 0 0 -16px;border-radius:50%;
-    border:1.5px solid var(--accent);opacity:0;pointer-events:none;animation:s-c-ring linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .16) entry calc(var(--p0) + var(--pw) * .5)}
-  @keyframes s-c-ring{0%{opacity:0;scale:.25}1%{opacity:.9;scale:.25}100%{opacity:0;scale:1.5}}
-  html .row.it .name{display:block;animation:s-slot linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.2,.75,.25,1);
-    animation-range:entry calc(var(--p0) + var(--pw) * .16) entry calc(var(--p0) + var(--pw) * .48)}
-  html .row.it .sector{animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .3) entry calc(var(--p0) + var(--pw) * .58)}
-  html .row.it .line{
-    -webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .36) entry calc(var(--p0) + var(--pw) * .8)}
-  html .row.it :is(.col3,.col5){animation:s-c-fig linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.2,.75,.25,1);
-    animation-range:entry calc(var(--p0) + var(--pw) * .44) entry calc(var(--p0) + var(--pw) * .78)}
-  @keyframes s-c-fig{from{opacity:0;translate:40px 0}}
-  html .row.it .fig{display:inline-block;background:linear-gradient(var(--wash),var(--wash)) no-repeat 0 0/0% 100%;
-    animation:s-c-mark linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .5) entry calc(var(--p0) + var(--pw) * .94)}
-  @keyframes s-c-mark{0%{background-size:0% 100%;background-position:0 0}46%{background-size:100% 100%;background-position:0 0}
-    54%{background-size:100% 100%;background-position:100% 0}100%{background-size:0% 100%;background-position:100% 0}}
-  html .row.it .stack>span{display:inline-flex;animation:s-pop linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.58 + var(--k,0) * .06)) entry calc(var(--p0) + var(--pw) * (.76 + var(--k,0) * .06))}
-  html .row.it :is(.texts,.prov){animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .78) entry calc(var(--p0) + var(--pw))}
+  /* ---- rows: in from the left --------------------------------------------- */
+  html :is(.row.it,.it.k-c:is(li,.way,.gh),.limits>li.it){animation:s-in linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.22,.7,.3,1);
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw))}
 
-  /* list rows elsewhere — the CV's roles, the contact lines, guards, limits,
-     the lead's path, the gates: the row slides in, its ring or dot pops, its
-     title comes up out of the line, its words ink in */
-  html .it.k-c:is(li,.way,.gh){animation:s-c-in linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .34)}
-  @keyframes s-c-in{from{opacity:0;translate:-22px 0}}
-  html .it.k-c:is(li,.way,.gh)>.ring,html .it.k-c>span>.ring,html .it.k-c:is(.way,.gh) .ring{animation:s-pop linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .06) entry calc(var(--p0) + var(--pw) * .4)}
-  html .it.k-c :is(h3,b){display:block;animation:s-slot linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.2,.75,.25,1);
-    animation-range:entry calc(var(--p0) + var(--pw) * .14) entry calc(var(--p0) + var(--pw) * .5)}
-  html .it.k-c :is(.when,.org,i,small){animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .24) entry calc(var(--p0) + var(--pw) * .6)}
-  html .it.k-c p,html .limits>li.it{
-    -webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .3) entry calc(var(--p0) + var(--pw) * .82)}
-  html .limits>li.it.k-c{animation-name:s-ink,s-c-in;animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .8)}
-  html .it.k-c .stack>span{display:inline-flex;animation:s-pop linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.6 + var(--k,0) * .06)) entry calc(var(--p0) + var(--pw) * (.78 + var(--k,0) * .06))}
-  /* the CV: the role's dot pops and fills as the row arrives */
-  html .xp li.it .dot{animation:s-c-dotfill linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .06) entry calc(var(--p0) + var(--pw) * .4)}
-  @keyframes s-c-dotfill{0%{scale:0}60%{scale:1.5;border-color:var(--accent);background:var(--accent)}100%{scale:1;border-color:var(--accent);background:var(--accent)}}
-  /* the lead's path: each ring lights as its step arrives */
-  html .cats li.it.k-c .ring{animation:s-c-ringlit linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .06) entry calc(var(--p0) + var(--pw) * .5)}
-  @keyframes s-c-ringlit{0%{scale:0}60%{scale:1.2;border-color:var(--accent);background:var(--wash);color:var(--accent)}
-    100%{scale:1;border-color:var(--accent);background:var(--wash);color:var(--accent)}}
-  /* a gate's last stroke draws as it arrives */
-  html .gates li.it .ring .last{animation:draw linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .34) entry calc(var(--p0) + var(--pw) * .8)}
-
-  /* ==========================================================================
-     D · OUT OF DEPTH — photographs and screens. The card comes forward out
-     of a blur; its photo develops from black and white as the camera pulls
-     back; its name comes up out of the foot; its arrow spins in.
-     ========================================================================== */
-  html :has(> .it.k-d){perspective:1100px}
-  /* Chrome counted the sector cards, waiting back in depth, as 5px of
-     sideways overflow at 1024 wide, though each drew well inside the screen
-     (2026-10-03). Nothing in their grid reaches past its sides by design —
-     the cards clip their own photos and cast no shadow — so it clips. */
-  html .sects{overflow-x:clip}
-  html .it.k-d.k-d{animation:s-d-card linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .62)}
-  @keyframes s-d-card{
-    0%{opacity:0;translate:0 60px -560px;rotate:x 14deg;filter:blur(10px);animation-timing-function:cubic-bezier(.25,.7,.3,1)}
-    35%{opacity:1}
-    100%{opacity:1;translate:none;rotate:none;filter:none}}
+  /* ---- photographs and screens: rise, as cards do; the sector photographs
+          keep their drift behind the card (motion.css) ----------------------- */
+  html .it.k-d.k-d{animation:s-card linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.22,.7,.3,1);
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw))}
   html .sect.it{clip-path:none}
-  html .sect.it .sect-photo img{animation:s-d-photo linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .08) entry calc(var(--p0) + var(--pw))}
-  @keyframes s-d-photo{
-    from{scale:1.42;filter:grayscale(1) saturate(.88) sepia(.08) contrast(.92) brightness(1.15)}
-    to{scale:1;filter:grayscale(0) saturate(.88) sepia(.08) contrast(1.03) brightness(1)}}
-  html .sect.it b{animation:s-slot linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.2,.75,.25,1);
-    animation-range:entry calc(var(--p0) + var(--pw) * .42) entry calc(var(--p0) + var(--pw) * .76)}
-  html .sect.it i{animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .58) entry calc(var(--p0) + var(--pw) * .88)}
-  html .sect.it .go{animation:s-d-go linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .7) entry calc(var(--p0) + var(--pw))}
-  @keyframes s-d-go{0%{scale:0;rotate:-120deg;opacity:0}70%{scale:1.15;rotate:8deg;opacity:1}100%{scale:1;rotate:0deg;opacity:1}}
-  /* a dark screen mock: its contents come up once it is there */
-  html .screen.it>*{animation:s-rise linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * .45) entry calc(var(--p0) + var(--pw) * .95)}
 
-  /* ==========================================================================
-     T — paragraphs ink in, top to bottom, rising a little
-     ========================================================================== */
-  html .it.k-t{
-    -webkit-mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));mask-image:linear-gradient(to bottom,#000 calc(var(--s-ink) - 30%),transparent var(--s-ink));
-    animation:s-ink linear both,s-rise linear both;animation-timeline:--it,--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .8)}
+  /* ---- paragraphs: rise a short way --------------------------------------- */
+  html .it.k-t{animation:s-rise linear both;animation-timeline:--it;animation-timing-function:cubic-bezier(.22,.7,.3,1);
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw))}
 
-  /* the node inventory: the bar is built a type at a time, left to right */
-  html .inv.it{-webkit-mask-image:none;mask-image:none;animation:s-rise linear both;animation-timeline:--it;
-    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .3)}
+  /* the node inventory: the bar rises, and is built a type at a time */
+  html .inv.it{animation:s-rise linear both;animation-timeline:--it;
+    animation-range:entry var(--p0) entry calc(var(--p0) + var(--pw) * .4)}
   html .inv.it>span{transform-origin:0 50%;animation:s-draw-x linear both;animation-timeline:--it;
     animation-range:entry calc(var(--p0) + var(--pw) * (.1 + var(--k,0) * .07)) entry calc(var(--p0) + var(--pw) * (.36 + var(--k,0) * .07))}
   html .inv>span:nth-child(2){--k:1}html .inv>span:nth-child(3){--k:2}html .inv>span:nth-child(4){--k:3}html .inv>span:nth-child(5){--k:4}
   html .inv>span:nth-child(6){--k:5}html .inv>span:nth-child(7){--k:6}html .inv>span:nth-child(8){--k:7}html .inv>span:nth-child(n+9){--k:8}
-  /* the staff dashboard: a dark screen out of depth, its rows filling in */
-  html .dash.it .tr{animation:s-fade-x linear both;animation-timeline:--it;
-    animation-range:entry calc(var(--p0) + var(--pw) * (.45 + var(--k,0) * .05)) entry calc(var(--p0) + var(--pw) * (.62 + var(--k,0) * .05))}
-  html .dash .tr:nth-child(4){--k:1}html .dash .tr:nth-child(5){--k:2}html .dash .tr:nth-child(6){--k:3}html .dash .tr:nth-child(7){--k:4}
-  html .dash .tr:nth-child(n+8){--k:5}
 }
 
 /* ---- side by side: items in a row a beat apart, left to right ------------- */
@@ -314,8 +138,7 @@ html .track,html .scene,html .panel{display:contents}
   html .skills>.it:nth-child(3n+2),html .sects>.it:nth-child(3n+2){--col:1}
   html .skills>.it:nth-child(3n+3),html .sects>.it:nth-child(3n+3){--col:2}
   html .icards>.it:nth-child(2n){--col:1}
-  /* a run of tool badges ripples along, a few at a time (1.4vh a badge
-     until 2026-10-03: the last of a row needed 45% of a screen to land) */
+  /* a run of tool badges ripples along, a few at a time */
   html .tools>.it{--cs:.8vh;--col:mod(var(--i),10)}
 }
 @media (prefers-reduced-motion:no-preference) and (min-width:720px) and (max-width:1000px){
@@ -324,11 +147,9 @@ html .track,html .scene,html .panel{display:contents}
 @media (prefers-reduced-motion:no-preference) and (min-width:900px){
   /* The last things on a register page can only rise as far as the page
      lets them — about 250px above its foot — while their windows need up to
-     40% of a screen: on screens 900 and 1080px tall the last rows and
-     badges stopped 50-90% in (2026-10-03). So the foot gets room that grows
-     with the screen: none at 600px tall, ~120px at 900, ~190px at 1080. */
+     a third of a screen: the foot gets room that grows with the screen. */
   html main:has(.body-run){padding-bottom:max(0px, calc(40vh - 240px))}
-  html .guards>.it:nth-child(2n){--col:1}   /* (.wfcs too until 2026-10-04: its cards were two to a row) */
+  html .guards>.it:nth-child(2n){--col:1}
   html .gates>.it:nth-child(4n+2){--col:1}html .gates>.it:nth-child(4n+3){--col:2}html .gates>.it:nth-child(4n+4){--col:3}
   html .cats>.it{--cs:3vh}
   html .cats>.it:nth-child(2){--col:1}html .cats>.it:nth-child(3){--col:2}html .cats>.it:nth-child(4){--col:3}
@@ -342,12 +163,11 @@ html .track,html .scene,html .panel{display:contents}
 }
 /* How it runs, as a list (under 900px): each step comes in as a row */
 @media (prefers-reduced-motion:no-preference) and (max-width:899px){
-  html .fs{animation:s-c-in linear both;animation-timeline:view();animation-range:entry 0% entry 26vh}
+  html .fs{animation:s-in linear both;animation-timeline:view();animation-range:entry 0% entry 26vh}
 }
 /* phones: the expertise row is a carousel — its cards keep the carousel's
-   motion (motion.css) and only their pictures and words arrive */
+   motion (motion.css) */
 @media (prefers-reduced-motion:no-preference) and (max-width:719px){
   html .skills .skill.it.k-a.k-a{animation:mo-carousel linear both;animation-timeline:view(inline);animation-range:cover 0% cover 100%}
-  html .skills .skill.it.k-a :is(.pic,.pic .lift,.wire,h3 .w>span,p,.stack>span){animation-timeline:view(inline);animation-range:cover 10% cover 45%}
 }
 }

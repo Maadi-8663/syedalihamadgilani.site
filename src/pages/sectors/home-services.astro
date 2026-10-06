@@ -1,6 +1,9 @@
 ---
 import Site from '../../layouts/Site.astro';
 import ported from '../../html/sector.html?raw';
+import home from '../../html/home.html?raw';
+import work from '../../html/work.html?raw';
+import { withSectorGallery } from '../../work/gallery.js';
 import { withSectorFlow, withTouchCopy } from '../../mobile/diagrams.js';
 import { withWords } from '../../motion/words.js';
 import { withTnodeColours } from '../../pictures/brands.js';
@@ -10,6 +13,7 @@ import { withSystemLinks } from '../../systems/links.js';
 import { registerScenes } from '../../motion/plans.js';
 import '../../styles/page-base.css';
 import '../../styles/page-sector.css';
+import '../../styles/gallery.css';
 import '../../styles/mobile.css';
 import '../../styles/motion.css';
 import '../../styles/scenes.css';
@@ -22,8 +26,10 @@ import '../../styles/theme.css'; // last: the theme overrides the page tokens
    rest as they scroll in */
 /* and the tool marks in their brands' colours, and the nav's Integrations link */
 /* and its links to the systems pointed at their pages (src/systems/links.js) */
-const body = withBrandMark(withIntegrationsLink(registerScenes(withSystemLinks(withWords(withWords(withTouchCopy(withTnodeColours(withSectorFlow(ported))), [/<h1>/], 'load'),
-  [/<h2 class="serif"[^>]*>/, /<h2 class="serif-i"[^>]*>/]), 'sector'))));
+/* and, since 2026-10-06, its lists of systems shown as the gallery's cards
+   (src/work/gallery.js), after the links are counted */
+const body = withBrandMark(withIntegrationsLink(registerScenes(withSectorGallery(withSystemLinks(withWords(withWords(withTouchCopy(withTnodeColours(withSectorFlow(ported))), [/<h1>/], 'load'),
+  [/<h2 class="serif"[^>]*>/, /<h2 class="serif-i"[^>]*>/]), 'sector'), { home, work }))));
 
 const title = 'Home services & construction — Syed Ali Hamad Gilani';
 const description =
