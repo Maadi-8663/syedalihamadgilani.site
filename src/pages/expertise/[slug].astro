@@ -7,6 +7,7 @@ import sector from '../../html/sector.html?raw';
 import { expertisePage, expertiseMeta, SLUGS } from '../../expertise/page.js';
 import { withWords } from '../../motion/words.js';
 import { expertiseScenes } from '../../motion/plans.js';
+import { withBoot } from '../../motion/boot.js';
 import '../../styles/page-base.css';
 import '../../styles/page-work.css';
 import '../../styles/integrations.css';
@@ -16,6 +17,7 @@ import '../../styles/mobile.css';
 import '../../styles/motion.css';
 import '../../styles/scenes.css';
 import '../../styles/navbar.css';
+import '../../styles/boot.css';
 import '../../styles/brand.css';
 import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
@@ -37,8 +39,10 @@ export function getStaticPaths() {
 
 const { slug } = Astro.params;
 const sources = { work, home, system, sector };
-const body = expertiseScenes(withWords(withWords(expertisePage(slug, sources), [/<h1 class="serif"[^>]*>/], 'load'),
-  [/<h3 class="more-h serif"[^>]*>/]));
+/* Since 2026-10-08 it opens as the home page does (src/motion/boot.js,
+   boot.css), which wraps the page last. */
+const body = withBoot(expertiseScenes(withWords(withWords(expertisePage(slug, sources), [/<h1 class="serif"[^>]*>/], 'load'),
+  [/<h3 class="more-h serif"[^>]*>/])));
 
 const meta = expertiseMeta(slug, sources);
 const url = (path) => new URL(path, Astro.site).href;

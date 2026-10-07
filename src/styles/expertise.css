@@ -135,7 +135,7 @@ html .ex-other:hover .mono{color:var(--accent)}
 /* on load the head comes in as the system pages' does (motion.css); the
    jump link follows the facts */
 @media (prefers-reduced-motion:no-preference){
-  html .ex-head .ex-cta{animation:mo-in-rise 1000ms var(--mo-ease) 560ms both}
+  html .ex-head .ex-cta{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 560ms) both}
 }
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){

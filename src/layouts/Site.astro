@@ -75,9 +75,11 @@ const identity = profile
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
 
-    {/* the ground's dots: every page's background, and the dots the home
-        page's opening moves, so fetch them alongside the CSS, not after it */}
+    {/* the ground's dots: every page's background, and their lit copy, which
+        every page's opening flies (since 2026-10-08; the home page's alone
+        until then), so fetch them alongside the CSS, not after it */}
     <link rel="preload" href="/specks.svg" as="image" type="image/svg+xml" />
+    <link rel="preload" href="/specks-lit.svg" as="image" type="image/svg+xml" />
     {preload.map((href) => <link rel="preload" href={href} as="image" type="image/svg+xml" />)}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />

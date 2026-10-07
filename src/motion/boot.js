@@ -1,4 +1,6 @@
-/* boot.js — the home page's opening, built at build time (2026-09-29).
+/* boot.js — every page's opening, built at build time (2026-09-29; on every
+   page since 2026-10-08 — he asked: "Add the page loader animation for each
+   and every page." Until then only the home page had it).
 
    Syed: "Make the loading animation. All the dots in the background should
    combine in the center.... Rotate... and then spread. Make it very
@@ -137,10 +139,12 @@ function network() {
 }
 
 /* The opening goes first in the page, before the nav, so it is parsed — and
-   its animations start — with the first paint. */
+   its animations start — with the first paint. Every page carries the same
+   one, so it is drawn once per build. */
+let opening;
 export function withBoot(page) {
-  const net = network();
-  return `<div class="boot" aria-hidden="true" style="--rest:${REST}"><div class="boot-ground"></div><div class="boot-field">${marks().join('')}${net.html}</div></div>\n${page}`;
+  opening ??= `<div class="boot" aria-hidden="true" style="--rest:${REST}"><div class="boot-ground"></div><div class="boot-field">${marks().join('')}${network().html}</div></div>`;
+  return `${opening}\n${page}`;
 }
 
 export const bootStats = () => ({ marks: marks().length, ...network().stats });

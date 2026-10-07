@@ -11,6 +11,7 @@ import { withIntegrationsLink } from '../../integrations/nav.js';
 import { withBrandMark } from '../../brand/mark.js';
 import { withSystemLinks } from '../../systems/links.js';
 import { registerScenes } from '../../motion/plans.js';
+import { withBoot } from '../../motion/boot.js';
 import '../../styles/page-base.css';
 import '../../styles/page-system.css';
 import '../../styles/systems.css';
@@ -19,6 +20,7 @@ import '../../styles/mobile.css';
 import '../../styles/motion.css';
 import '../../styles/scenes.css';
 import '../../styles/navbar.css';
+import '../../styles/boot.css';
 import '../../styles/brand.css';
 import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
@@ -28,7 +30,9 @@ import '../../styles/theme.css'; // last: the theme overrides the page tokens
 /* and, since 2026-10-04, it opens on its cover, where the small diagram
    was, and its guards are cards that turn, like every system page
    (src/systems/cover.js, guards.js). */
-const body = withBrandMark(withIntegrationsLink(registerScenes(withSystemLinks(withWords(withSystemArch(withPortedWorkflow(withGuardCards(withSystemCover(ported)), home)), [/<h1 class="serif"[^>]*>/], 'load'), 'system'))));
+/* Since 2026-10-08 it opens as the home page does (src/motion/boot.js,
+   boot.css), which wraps the page last. */
+const body = withBoot(withBrandMark(withIntegrationsLink(registerScenes(withSystemLinks(withWords(withSystemArch(withPortedWorkflow(withGuardCards(withSystemCover(ported)), home)), [/<h1 class="serif"[^>]*>/], 'load'), 'system')))));
 
 const title = 'Lead-to-Cash CRM for Three Contractors — Syed Ali Hamad Gilani';
 const description =

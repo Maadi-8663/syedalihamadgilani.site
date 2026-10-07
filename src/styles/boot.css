@@ -1,4 +1,6 @@
-/* boot.css — the home page's opening, all CSS (2026-09-29).
+/* boot.css — every page's opening, all CSS (2026-09-29; on all 26 pages
+   since 2026-10-08, when he asked for it "for each and every page" — until
+   then only the home page had it, and every other page opened at once).
 
    His brief is in src/motion/boot.js, which writes the markup. The timeline,
    from first paint:
@@ -32,12 +34,16 @@
    when the browser lacks CSS trigonometry or container units (@supports), when
    the address carries a #section (arriving at /#contact from another page),
    or once someone presses Tab (:focus-visible) — a keyboard user gets the page
-   at once. Scrolling during it fades it away. Every selector starts with
-   `html`, as in theme.css and motion.css. */
+   at once. Scrolling during it fades it away and shows the page (see "then
+   the page" below). Every selector starts with `html`, as in theme.css and
+   motion.css. */
 
 @property --bm{syntax:'<percentage>';inherits:false;initial-value:0%}
 
 html .boot{display:none}
+/* printing stops every animation (motion.css), so the opening would never
+   hide: its fixed layer, network and all, would print behind every page */
+@media print{html .boot{display:none!important}}
 
 @media (prefers-reduced-motion:no-preference){
 @supports (width:calc(1cqw * cos(0deg))) and (translate:1px){
@@ -150,18 +156,39 @@ html .boot{display:none}
 
   /* ---- then the page, a piece at a time ---------------------------------
      Everything waits behind the opening; the pieces that already had an
-     entrance (page-home.css) keep it, --boot-at later, and the nav gets one. */
+     entrance keep it, --boot-at later, and the nav gets one. On the home
+     page those are page-home.css's, which is generated, so they are moved
+     here, below; on every other page they are motion.css's (and one each in
+     systems.css and expertise.css), whose delays add var(--boot-at, 0ms)
+     themselves. The page itself is .page, the only child of <body> besides
+     the skip link and this (and, on the Home services page, its footer,
+     which its markup leaves outside .page). boot-rise is page-home.css's
+     `rise`, which the other pages do not have. */
   html:not(:has(:target,:focus-visible)) body>:not(.boot):not(.skip){animation:boot-page 700ms var(--enter) 2700ms backwards}
   @keyframes boot-page{from{opacity:0}}
+  @keyframes boot-rise{from{opacity:0;transform:translateY(14px)}}
+  /* Scrolled during it — or reloaded halfway down a page, where the browser
+     puts the scroll back — the page shows at once: until 2026-10-08 it waited
+     for 2.7s regardless, on an empty ground, since scrolling takes the
+     opening away (measured: scrolled 3000px straight after load, nothing
+     showed for 2.7s). A scroll-state query, not an animation: an always-on
+     scroll-linked fade on the page (tried first) changed how everything in it
+     rendered mid-arrival. `!important` outranks the running fade without
+     replacing it, so scrolling back to the top never restarts it. Browsers
+     without scroll-state queries keep the wait. */
+  html{container-type:scroll-state}
+  @container scroll-state(scrollable:top){
+    html:not(:has(:target,:focus-visible)) body>:not(.boot):not(.skip){opacity:1!important}
+  }
 
-  html:not(:has(:target,:focus-visible)) .nav .mark{animation:rise 620ms var(--enter) var(--boot-at) both}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li{animation:rise 560ms var(--enter) both;animation-delay:calc(var(--boot-at) + 60ms + var(--n, 0) * 55ms)}
+  html:not(:has(:target,:focus-visible)) .nav .mark{animation:boot-rise 620ms var(--enter) var(--boot-at) both}
+  html:not(:has(:target,:focus-visible)) .nav>ul>li{animation:boot-rise 560ms var(--enter) both;animation-delay:calc(var(--boot-at) + 60ms + var(--n, 0) * 55ms)}
   html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(2){--n:1}
   html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(3){--n:2}
   html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(4){--n:3}
   html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(5){--n:4}
   html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(6){--n:5}
-  html:not(:has(:target,:focus-visible)) .nav .menu{animation:rise 560ms var(--enter) calc(var(--boot-at) + 80ms) both}
+  html:not(:has(:target,:focus-visible)) .nav .menu{animation:boot-rise 560ms var(--enter) calc(var(--boot-at) + 80ms) both}
 
   html:not(:has(:target,:focus-visible)) .hero .eyebrow{animation-delay:calc(var(--boot-at) + 120ms)}
   html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(1){animation-delay:calc(var(--boot-at) + 190ms)}
@@ -172,9 +199,15 @@ html .boot{display:none}
   html:not(:has(:target,:focus-visible)) .hero .facts{animation-delay:calc(var(--boot-at) + 530ms)}
   html:not(:has(:target,:focus-visible)) .cluster .tile{
     animation-delay:calc(var(--k) * 42ms + 300ms + var(--boot-at)),calc(var(--k) * 42ms + 860ms + var(--boot-at))}
+  /* the sector page's workflow draws its first two wires, lights two nodes
+     and types two log lines on load (page-base.css, generated) */
+  html:not(:has(:target,:focus-visible)) :is(.wf .w1,.log .l1){animation-delay:calc(var(--boot-at) + 120ms)}
+  html:not(:has(:target,:focus-visible)) :is(.wf .w2,.log .l2){animation-delay:calc(var(--boot-at) + 420ms)}
+  html:not(:has(:target,:focus-visible)) .wf .n2 :is(.lit,.glyph){animation-delay:calc(var(--boot-at) + 560ms)}
+  html:not(:has(:target,:focus-visible)) .wf .n3 :is(.lit,.glyph){animation-delay:calc(var(--boot-at) + 860ms)}
   /* phones show the marks as a grid with no entrance of their own: give them
      one, row by row */
   @media (max-width:719px){
-    html:not(:has(:target,:focus-visible)) .cluster .tile{animation:rise 520ms var(--enter) calc(var(--boot-at) + 560ms + var(--k) * 24ms) both}
+    html:not(:has(:target,:focus-visible)) .cluster .tile{animation:boot-rise 520ms var(--enter) calc(var(--boot-at) + 560ms + var(--k) * 24ms) both}
   }
 }}

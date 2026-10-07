@@ -130,7 +130,7 @@ html .limits li::before{content:counter(lim,decimal-leading-zero);position:absol
    ================================================================ */
 @media (prefers-reduced-motion:no-preference){
   /* the head's last lines arrive after its figures, like the rest of it */
-  html .body-run>.wrap>div>div>:is(p.sys-extra,p.sys-nofig){animation:mo-in-rise 1000ms var(--mo-ease) 760ms both}
+  html .body-run>.wrap>div>div>:is(p.sys-extra,p.sys-nofig){animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 760ms) both}
 }
 
 /* Entrances are src/styles/scenes.css's: the workflow cards rise as cards,

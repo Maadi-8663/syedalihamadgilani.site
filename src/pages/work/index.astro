@@ -7,6 +7,7 @@ import { withIntegrationsLink } from '../../integrations/nav.js';
 import { withBrandMark } from '../../brand/mark.js';
 import { withGallery } from '../../work/gallery.js';
 import { workScenes } from '../../motion/plans.js';
+import { withBoot } from '../../motion/boot.js';
 import '../../styles/page-base.css';
 import '../../styles/page-work.css';
 import '../../styles/gallery.css';
@@ -14,6 +15,7 @@ import '../../styles/mobile.css';
 import '../../styles/motion.css';
 import '../../styles/scenes.css';
 import '../../styles/navbar.css';
+import '../../styles/boot.css';
 import '../../styles/brand.css';
 import '../../styles/theme.css'; // last: the theme overrides the page tokens
 
@@ -22,7 +24,9 @@ import '../../styles/theme.css'; // last: the theme overrides the page tokens
    the picture that covers it — built from those rows at build time
    (src/work/gallery.js), each card opening its system's page. The title is
    split into words for motion.css, and rises on load. */
-const body = withBrandMark(withIntegrationsLink(workScenes(withWords(withGallery(ported, { home }), [/<h1 class="serif"[^>]*>/], 'load'))));
+/* Since 2026-10-08 it opens as the home page does (src/motion/boot.js,
+   boot.css), which wraps the page last. */
+const body = withBoot(withBrandMark(withIntegrationsLink(workScenes(withWords(withGallery(ported, { home }), [/<h1 class="serif"[^>]*>/], 'load')))));
 
 const title = 'Work — sixteen systems by Syed Ali Hamad Gilani';
 const description =

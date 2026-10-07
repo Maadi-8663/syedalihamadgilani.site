@@ -45,23 +45,26 @@ html:root{
   @keyframes mo-in-rise{from{opacity:0;translate:0 26px}}
   @keyframes mo-in-fade{from{opacity:0}}
   @keyframes mo-in-wipe{from{clip-path:inset(0 100% 0 0)}}
-  html .wload .w>span{animation:mo-in-word 1000ms var(--mo-ease) both;animation-delay:calc(160ms + var(--i) * 60ms)}
+  html .wload .w>span{animation:mo-in-word 1000ms var(--mo-ease) both;animation-delay:calc(var(--boot-at, 0ms) + 160ms + var(--i) * 60ms)}
 
-  /* ---- the register pages' first screen, on load ------------------------ */
+  /* ---- the register pages' first screen, on load ------------------------
+     Since 2026-10-08 every page opens with boot.css's opening, which sets
+     --boot-at while it runs: each delay here starts after it (and at once
+     where it does not run). */
   html :is(.body-run>.wrap,.first .panel>.wrap,.first .panel)>p.label:first-child,
-  html .stage>p.label:first-child{animation:mo-in-fade 700ms var(--mo-ease) 60ms both}
-  html .reg-head{animation:mo-in-rise 1000ms var(--mo-ease) 420ms both}
-  html .filters{animation:mo-in-rise 1000ms var(--mo-ease) 540ms both}
-  html .sec-head .lede{animation:mo-in-rise 1000ms var(--mo-ease) 380ms both}
-  html .sec-head .facts{animation:mo-in-rise 1000ms var(--mo-ease) 480ms both}
-  html .stage.sec .strip{animation:mo-in-rise 1100ms var(--mo-ease) 560ms both}
-  html .stage.sec .under{animation:mo-in-fade 900ms var(--mo-ease) 820ms both}
-  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div>p.body{animation:mo-in-rise 1000ms var(--mo-ease) 400ms both}
-  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div>p.label-m{animation:mo-in-rise 1000ms var(--mo-ease) 480ms both}
-  html .figs>div{animation:mo-in-rise 1000ms var(--mo-ease) both;animation-delay:calc(560ms + var(--k, 0) * 70ms)}
+  html .stage>p.label:first-child{animation:mo-in-fade 700ms var(--mo-ease) calc(var(--boot-at, 0ms) + 60ms) both}
+  html .reg-head{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 420ms) both}
+  html .filters{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 540ms) both}
+  html .sec-head .lede{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 380ms) both}
+  html .sec-head .facts{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 480ms) both}
+  html .stage.sec .strip{animation:mo-in-rise 1100ms var(--mo-ease) calc(var(--boot-at, 0ms) + 560ms) both}
+  html .stage.sec .under{animation:mo-in-fade 900ms var(--mo-ease) calc(var(--boot-at, 0ms) + 820ms) both}
+  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div>p.body{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 400ms) both}
+  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div>p.label-m{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 480ms) both}
+  html .figs>div{animation:mo-in-rise 1000ms var(--mo-ease) both;animation-delay:calc(var(--boot-at, 0ms) + 560ms + var(--k, 0) * 70ms)}
   html .figs>div:nth-child(2){--k:1}html .figs>div:nth-child(3){--k:2}html .figs>div:nth-child(4){--k:3}html .figs>div:nth-child(5){--k:4}
-  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div+div{animation:mo-in-rise 1100ms var(--mo-ease) 640ms both}
-  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div+div .mini{clip-path:inset(0);animation:mo-in-wipe 1400ms var(--mo-ease) 900ms both}
+  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div+div{animation:mo-in-rise 1100ms var(--mo-ease) calc(var(--boot-at, 0ms) + 640ms) both}
+  html :is(.body-run>.wrap,.first .panel>.wrap)>div>div+div .mini{clip-path:inset(0);animation:mo-in-wipe 1400ms var(--mo-ease) calc(var(--boot-at, 0ms) + 900ms) both}
 }
 
 
