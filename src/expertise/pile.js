@@ -25,6 +25,8 @@ const CARD = /<article class="skill rv"><div class="pic (pic--\d)">(<img [^>]+>)
 const MARK = /<span title="([^"]+)">(<svg[\s\S]*?<\/svg>)<\/span>/g;
 const ARROW = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" '
   + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const UP = '<svg class="up" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" '
+  + 'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>';
 const pad = (n) => String(n).padStart(2, '0');
 
 /* a card's tools: its marks, named, then the ones set in type ("GoHighLevel · Twilio") */
@@ -35,14 +37,24 @@ function tools(stack) {
   return named.concat(typed).join('');
 }
 
+/* Each card's top edge is a tab with its number and name, which is what
+   shows of it once the pile is over it; clicking it scrolls back to where
+   that card comes to rest on top (his ask, the same morning: "On the top of
+   each card, when piled up, there should be written its number and name of
+   the expertise, and clicking it should scroll back to that card."). A
+   pinned card is already on screen as far as the browser knows, so the tab
+   links to a marker in the flow just above where the card rests — `pile-at`,
+   whose scroll margin (cards.css) lands the card on its resting place. */
 export function withSkillPile(page, sources) {
   let i = 0;
   const out = page.replace(CARD, (m, pic, img, link, slug, text, stack) => {
     const x = EXPERTISE.find((e) => e.slug === slug);
     if (!x) throw new Error(`skill pile: no expertise page /expertise/${slug}/`);
-    return `<article class="skill" style="--i:${i++}"><div class="skill-body">`
-      + `<p class="skill-n" aria-hidden="true"><span>${pad(x.n)}</span> / ${pad(EXPERTISE.length)}</p>`
-      + `<h3>${link}</h3><p class="skill-p">${text}</p>`
+    const at = `do-${slug}`;
+    return `<span class="pile-at" id="${at}" style="--i:${i}"></span>`
+      + `<article class="skill" style="--i:${i++}">`
+      + `<a class="skill-tab" href="#${at}"><span class="sr">Back to </span><b>${pad(x.n)}</b> ${x.card}${UP}</a>`
+      + `<div class="skill-body"><h3>${link}</h3><p class="skill-p">${text}</p>`
       + `<p class="skill-facts">${expertiseFacts(slug, sources)}</p>`
       + `<ul class="skill-tools" aria-label="Tools">${tools(stack)}</ul>`
       + `<span class="skill-go" aria-hidden="true">See the work${ARROW}</span>`

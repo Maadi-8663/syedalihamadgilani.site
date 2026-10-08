@@ -32,7 +32,10 @@
 
    It does not run at all — the page is simply there — when motion is reduced,
    when the browser lacks CSS trigonometry or container units (@supports), when
-   the address carries a #section (arriving at /#contact from another page),
+   the address carries a #section (arriving at /#contact from another page;
+   not the What I do pile's markers, .pile-at, which its tabs link to: since
+   2026-10-08 a tab's click must not switch the whole opening off mid-page,
+   which restyled ~800 elements and held the scroll back, or lost it),
    or once someone presses Tab (:focus-visible) — a keyboard user gets the page
    at once. Scrolling during it fades it away and shows the page (see "then
    the page" below). Every selector starts with `html`, as in theme.css and
@@ -48,8 +51,8 @@ html .boot{display:none}
 @media (prefers-reduced-motion:no-preference){
 @supports (width:calc(1cqw * cos(0deg))) and (translate:1px){
 
-  html:not(:has(:target,:focus-visible)){--boot-at:2700ms}
-  html:not(:has(:target,:focus-visible)) .boot{display:block;animation:boot-done 1ms linear 3400ms forwards}
+  html:not(:has(:target:not(.pile-at),:focus-visible)){--boot-at:2700ms}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .boot{display:block;animation:boot-done 1ms linear 3400ms forwards}
   /* hidden at both ends: Chrome finishes a 1ms animation at progress
      0.99999999999989, not 1, and visibility stays visible for any progress
      short of 1 (measured 2026-09-29) */
@@ -164,7 +167,7 @@ html .boot{display:none}
      the skip link and this (and, on the Home services page, its footer,
      which its markup leaves outside .page). boot-rise is page-home.css's
      `rise`, which the other pages do not have. */
-  html:not(:has(:target,:focus-visible)) body>:not(.boot):not(.skip){animation:boot-page 700ms var(--enter) 2700ms backwards}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) body>:not(.boot):not(.skip){animation:boot-page 700ms var(--enter) 2700ms backwards}
   @keyframes boot-page{from{opacity:0}}
   @keyframes boot-rise{from{opacity:0;transform:translateY(14px)}}
   /* Scrolled during it — or reloaded halfway down a page, where the browser
@@ -178,36 +181,36 @@ html .boot{display:none}
      without scroll-state queries keep the wait. */
   html{container-type:scroll-state}
   @container scroll-state(scrollable:top){
-    html:not(:has(:target,:focus-visible)) body>:not(.boot):not(.skip){opacity:1!important}
+    html:not(:has(:target:not(.pile-at),:focus-visible)) body>:not(.boot):not(.skip){opacity:1!important}
   }
 
-  html:not(:has(:target,:focus-visible)) .nav .mark{animation:boot-rise 620ms var(--enter) var(--boot-at) both}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li{animation:boot-rise 560ms var(--enter) both;animation-delay:calc(var(--boot-at) + 60ms + var(--n, 0) * 55ms)}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(2){--n:1}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(3){--n:2}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(4){--n:3}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(5){--n:4}
-  html:not(:has(:target,:focus-visible)) .nav>ul>li:nth-child(6){--n:5}
-  html:not(:has(:target,:focus-visible)) .nav .menu{animation:boot-rise 560ms var(--enter) calc(var(--boot-at) + 80ms) both}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav .mark{animation:boot-rise 620ms var(--enter) var(--boot-at) both}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav>ul>li{animation:boot-rise 560ms var(--enter) both;animation-delay:calc(var(--boot-at) + 60ms + var(--n, 0) * 55ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav>ul>li:nth-child(2){--n:1}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav>ul>li:nth-child(3){--n:2}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav>ul>li:nth-child(4){--n:3}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav>ul>li:nth-child(5){--n:4}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav>ul>li:nth-child(6){--n:5}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .nav .menu{animation:boot-rise 560ms var(--enter) calc(var(--boot-at) + 80ms) both}
 
-  html:not(:has(:target,:focus-visible)) .hero .eyebrow{animation-delay:calc(var(--boot-at) + 120ms)}
-  html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(1){animation-delay:calc(var(--boot-at) + 190ms)}
-  html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(2){animation-delay:calc(var(--boot-at) + 270ms)}
-  html:not(:has(:target,:focus-visible)) .hero h1 span:nth-child(3){animation-delay:calc(var(--boot-at) + 350ms)}
-  html:not(:has(:target,:focus-visible)) .hero .tw{animation-delay:calc(var(--boot-at) + 450ms)}
-  html:not(:has(:target,:focus-visible)) .tw :is(.t,.c){animation-delay:calc(var(--boot-at) + 900ms)}
-  html:not(:has(:target,:focus-visible)) .hero .facts{animation-delay:calc(var(--boot-at) + 530ms)}
-  html:not(:has(:target,:focus-visible)) .cluster .tile{
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .hero .eyebrow{animation-delay:calc(var(--boot-at) + 120ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .hero h1 span:nth-child(1){animation-delay:calc(var(--boot-at) + 190ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .hero h1 span:nth-child(2){animation-delay:calc(var(--boot-at) + 270ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .hero h1 span:nth-child(3){animation-delay:calc(var(--boot-at) + 350ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .hero .tw{animation-delay:calc(var(--boot-at) + 450ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .tw :is(.t,.c){animation-delay:calc(var(--boot-at) + 900ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .hero .facts{animation-delay:calc(var(--boot-at) + 530ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .cluster .tile{
     animation-delay:calc(var(--k) * 42ms + 300ms + var(--boot-at)),calc(var(--k) * 42ms + 860ms + var(--boot-at))}
   /* the sector page's workflow draws its first two wires, lights two nodes
      and types two log lines on load (page-base.css, generated) */
-  html:not(:has(:target,:focus-visible)) :is(.wf .w1,.log .l1){animation-delay:calc(var(--boot-at) + 120ms)}
-  html:not(:has(:target,:focus-visible)) :is(.wf .w2,.log .l2){animation-delay:calc(var(--boot-at) + 420ms)}
-  html:not(:has(:target,:focus-visible)) .wf .n2 :is(.lit,.glyph){animation-delay:calc(var(--boot-at) + 560ms)}
-  html:not(:has(:target,:focus-visible)) .wf .n3 :is(.lit,.glyph){animation-delay:calc(var(--boot-at) + 860ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) :is(.wf .w1,.log .l1){animation-delay:calc(var(--boot-at) + 120ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) :is(.wf .w2,.log .l2){animation-delay:calc(var(--boot-at) + 420ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .wf .n2 :is(.lit,.glyph){animation-delay:calc(var(--boot-at) + 560ms)}
+  html:not(:has(:target:not(.pile-at),:focus-visible)) .wf .n3 :is(.lit,.glyph){animation-delay:calc(var(--boot-at) + 860ms)}
   /* phones show the marks as a grid with no entrance of their own: give them
      one, row by row */
   @media (max-width:719px){
-    html:not(:has(:target,:focus-visible)) .cluster .tile{animation:boot-rise 520ms var(--enter) calc(var(--boot-at) + 560ms + var(--k) * 24ms) both}
+    html:not(:has(:target:not(.pile-at),:focus-visible)) .cluster .tile{animation:boot-rise 520ms var(--enter) calc(var(--boot-at) + 560ms + var(--k) * 24ms) both}
   }
 }}
