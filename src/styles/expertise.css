@@ -135,7 +135,9 @@ html .ex-other:hover .mono{color:var(--accent)}
 /* on load the head comes in as the system pages' does (motion.css); the
    jump link follows the facts */
 @media (prefers-reduced-motion:no-preference){
-  html .ex-head .ex-cta{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 560ms) both}
+  /* read, not seen: the separators between the counts (page.js factsOf) */
+html .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html .ex-head .ex-cta{animation:mo-in-rise 1000ms var(--mo-ease) calc(var(--boot-at, 0ms) + 560ms) both}
 }
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){

@@ -112,7 +112,7 @@ function place(ringIndex, i) {
 
 const pct = (x) => `${Math.round(x * 10) / 10}%`;
 
-const OPEN = '<div class="cluster" aria-label="Tools used in the work">';
+const OPEN = '<div class="cluster" role="group" aria-label="Tools used in the work">';
 const TILE = /<span class="tile" style="([^"]*)" title="([^"]*)" role="img" aria-label="([^"]+)">(<svg[\s\S]*?<\/svg>)<\/span>/g;
 const PORTED = RINGS[0].n + RINGS[1].n + RINGS[2].n;
 

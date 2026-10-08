@@ -12,7 +12,7 @@
    the 38 marks of the home page's cluster (src/pictures/cluster.js has the
    evidence that each was used in real work), plus the seven the site sets
    in type because Simple Icons publishes no mark for them: OpenAI, Twilio,
-   GoHighLevel, HouseCall Pro, CallRail, Skyvern and Apify. Later the same
+   GoHighLevel, Housecall Pro, CallRail, Skyvern and Apify. Later the same
    day he asked for more: "Add more automation platforms: Zapier, and all
    others you know. And also add a card named Custom Automations." Those
    platforms are listed at his word, as what he offers — this page is
@@ -32,13 +32,13 @@ export const GROUPS = [
     tools: [
       ['n8n', 'End-to-end workflows on n8n, self-hosted or cloud: webhooks, schedules, sub-workflows and custom code, with error handling, retries and duplicate protection built in, so a failed step is caught and recovered, never silently lost.'],
       ['Make', 'Scenarios in Make for teams that prefer a visual builder: routers, filters and iterators moving data between your apps, with error routes and schedules set up so the scenario can be maintained without a developer.'],
-      ['Zapier', 'Zaps across the apps your team already uses: multi-step workflows with paths, filters and formatting, built so a non-technical team can read and adjust them, and documented step by step at hand-over.'],
+      ['Zapier', 'Zaps across the apps your team already uses: multi-step workflows with paths, filters and formatting, built so a non-technical team can read and adjust them, and documented step by step at handover.'],
       ['Microsoft Power Automate', 'Flows inside Microsoft 365: approvals in Teams and Outlook, files routed to SharePoint and OneDrive, Excel and Dataverse kept in step, and connectors out to the rest of your stack.'],
       ['Pipedream', 'Code-first workflows on Pipedream: event-driven steps in Node.js or Python between any APIs, for integrations that need custom logic without running a server of your own.'],
-      ['IFTTT', 'IFTTT applets for small, everyday automations: a single trigger and action between common apps and smart devices, for jobs too small to justify a full workflow.'],
+      ['IFTTT', 'IFTTT applets for everyday automations: a single trigger and action between common apps and smart devices, for jobs too small to justify a full workflow.'],
       ['Pabbly Connect', 'Pabbly Connect workflows for flat-price automation: triggers, routers and filters moving data between your apps, set up and documented so your team can run them day to day.'],
       ['Node-RED', 'Flow-based automation on Node-RED for devices, sensors and internal systems: lightweight, self-hosted flows that watch, transform and route events as they happen.'],
-      ['Activepieces', 'Open-source automation on Activepieces, self-hosted so the data stays on your servers: flows with branches, loops and AI steps that your team can maintain after hand-over.'],
+      ['Activepieces', 'Open-source automation on Activepieces, self-hosted so the data stays on your servers: flows with branches, loops and AI steps that your team can maintain after handover.'],
       ['Apache Airflow', 'Scheduled data pipelines on Apache Airflow: workflows that extract, transform and load data between your systems on a timetable, with retries, dependencies and a record of every run.'],
       ['Workato', 'Workato recipes for larger organisations: governed integrations between ERP, CRM, finance and HR systems, with error handling, logging and role-based access.'],
       ['Custom Automations', 'When no platform fits: automations written as code around your process — Python or Node.js services, scheduled jobs, webhooks and AI agents — hosted on your servers or in the cloud, with logging and alerts so no failure goes unseen.'],
@@ -50,7 +50,7 @@ export const GROUPS = [
     tools: [
       ['OpenAI', 'GPT models inside your workflows: classifying and routing inbound messages, extracting fields from emails and documents, drafting replies and transcribing calls with Whisper, with structured outputs validated before anything acts on them.'],
       ['Google Gemini', 'Gemini for high-volume and multimodal steps: reading PDFs, images and long documents, summarising threads and extracting data at low cost, with rules checked in code wherever a model’s answer decides an outcome.'],
-      ['ElevenLabs', 'Voice agents that answer and place calls in a natural voice: qualifying leads, answering questions and booking appointments, with each call’s outcome written to your CRM and a hand-off to a person when needed.'],
+      ['ElevenLabs', 'Voice agents that answer and place calls in a natural voice: qualifying leads, answering questions and booking appointments, with each call’s outcome written to your CRM and a handoff to a person when needed.'],
       ['LangChain', 'Retrieval-augmented assistants built with LangChain that answer from your own documents — policies, manuals, knowledge bases — and cite the passage they used, so staff can check an answer rather than trust it.'],
       ['Ollama', 'Private AI on your own hardware: open models served through Ollama for reading, classifying and drafting when data must not leave your network, suited to healthcare, legal and financial work.'],
       ['Skyvern', 'Browser automation for portals without an API: an AI agent that logs in, fills forms and downloads reports from supplier, insurer and government sites, with every run recorded for review.'],
@@ -73,7 +73,7 @@ export const GROUPS = [
     tools: [
       ['HubSpot', 'HubSpot integration: contacts, companies and deals created and updated from your forms, calls and inboxes, pipeline stages advanced by events, and duplicates merged so the CRM stays the single source of truth.'],
       ['GoHighLevel', 'GoHighLevel automations for agencies and local businesses: lead capture into pipelines, SMS and email follow-up, calendar booking and voice AI, extended with custom webhooks where the built-in workflows stop.'],
-      ['HouseCall Pro', 'Field-service automation around HouseCall Pro: new leads turned into customers and jobs, technician availability checked before a booking is offered, and job status pushed to your CRM and to the customer by text.'],
+      ['Housecall Pro', 'Field-service automation around Housecall Pro: new leads turned into customers and jobs, technician availability checked before a booking is offered, and job status pushed to your CRM and to the customer by text.'],
     ],
   },
   {
@@ -110,8 +110,8 @@ export const GROUPS = [
     id: 'backend', title: 'Databases & back ends',
     icon: '<ellipse cx="12" cy="6" rx="7" ry="2.5"/><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5"/>',
     tools: [
-      ['PostgreSQL', 'PostgreSQL designed for automation: clean schemas, job queues and audit tables that let workflows run reliably at volume, with row-level security where several clients share one system.'],
-      ['Supabase', 'Supabase back ends for portals and SaaS products: Postgres, authentication, storage and row-level security, with database triggers and edge functions feeding your automations.'],
+      ['PostgreSQL', 'PostgreSQL schemas designed for automation: job queues and audit tables that let workflows run reliably at volume, with row-level security where several clients share one system.'],
+      ['Supabase', 'Supabase back ends for portals and SaaS products: PostgreSQL, authentication, storage and row-level security, with triggers and edge functions feeding your automations.'],
       ['Prisma', 'Type-safe data access with Prisma: schemas, migrations and queries for Node.js and Next.js applications, so the database and the code that uses it cannot drift apart.'],
       ['Node.js', 'Node.js services for work that outgrows a workflow tool: API integrations, background jobs and webhook receivers that handle volume, retries and custom logic.'],
       ['Express', 'Lightweight APIs on Express: secure webhook receivers for third-party events, internal endpoints that expose your data to automations, and small self-contained web apps.'],
@@ -138,7 +138,7 @@ export const GROUPS = [
 ];
 
 /* The tools set in type: no published mark, so their card shows the name. */
-export const TYPESET = new Set(['Skyvern', 'CallRail', 'GoHighLevel', 'HouseCall Pro', 'Apify',
+export const TYPESET = new Set(['Skyvern', 'CallRail', 'GoHighLevel', 'Housecall Pro', 'Apify',
   'Microsoft Power Automate', 'Pipedream', 'Pabbly Connect', 'Activepieces', 'Workato']);
 
 /* Cards that are not a vendor's tool, with the line icon their front shows

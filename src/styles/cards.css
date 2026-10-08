@@ -75,6 +75,10 @@ html .skills .skill-go{display:inline-flex;align-items:center;align-self:flex-st
   transition:background 240ms var(--enter),border-color 240ms var(--enter),color 240ms var(--enter)}
 html .skills .skill-go svg{transition:translate 320ms var(--enter)}
 
+/* "What I do" and "Experience" are h2s since 2026-10-08 (the outline jumped from the
+   h1 to the cards' h3s), set as the labels they were */
+html h2.lab{font-weight:inherit}
+
 /* The title is the link, stretched over the whole card (src/expertise/links.js) */
 html .skill-a{color:inherit;text-decoration:none;transition:color 200ms var(--enter)}
 html .skill-a::after{content:"";position:absolute;inset:0;z-index:1}

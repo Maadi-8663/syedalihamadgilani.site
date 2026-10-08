@@ -43,7 +43,7 @@ const PRODUCED = {
 /* "Mar 2025 — now" / "Aug — Sep 2026" -> [first month, last month], counted
    in months from January of year 0; `now` for a role that continues */
 function span(when, now) {
-  const m = when.match(/^([A-Z][a-z]{2})(?: (\d{4}))? — (?:(now)|([A-Z][a-z]{2}) (\d{4}))$/);
+  const m = when.match(/^([A-Z][a-z]{2})(?: (\d{4}))? [–—] (?:(now)|([A-Z][a-z]{2}) (\d{4}))$/);
   if (!m) throw new Error(`timeline: cannot read the dates "${when}"`);
   const month = (name) => {
     const i = MONTHS.indexOf(name);

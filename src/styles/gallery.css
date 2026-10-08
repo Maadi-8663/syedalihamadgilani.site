@@ -37,6 +37,9 @@ html .cover.pic--6{--pic:var(--pic-6)}
 /* ---- the gallery, and a system's card ------------------------------------ */
 html .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:28px}
 html .group.gal{padding-top:8px;padding-bottom:96px}
+/* section labels set as headings (h2) keep the label's weight: the sector page
+   does not load systems.css, which has the same rule */
+html h2.slabel{font-weight:400}
 html .gal-h{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 html .pcard{position:relative;display:flex;flex-direction:column;min-width:0;border:1px solid var(--hair);border-radius:18px;background:var(--paper2);
   overflow:hidden;color:inherit;text-decoration:none;scroll-margin-top:calc(var(--navh,72px) + 20px);

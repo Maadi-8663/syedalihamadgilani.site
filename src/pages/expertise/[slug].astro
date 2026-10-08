@@ -49,7 +49,7 @@ const url = (path) => new URL(path, Astro.site).href;
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: meta.title,
+  name: meta.name,
   description: meta.description,
   url: url(`/expertise/${slug}/`),
   about: { '@type': 'Thing', name: meta.name },

@@ -36,7 +36,7 @@ import { toolMarks } from '../pictures/cluster.js';
 import { integrationMarks } from '../integrations/marks.js';
 import { headCover } from './cover.js';
 import { guardCards } from './guards.js';
-import { workflowCanvas } from './canvas.js';
+import { workflowCanvas, nodeName } from './canvas.js';
 import { logoSet } from '../pictures/logos.js';
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -104,7 +104,7 @@ function head(sys, g) {
 
   let prov, figs = [];
   if (sys.source === 'json') {
-    prov = 'Built — counted from the workflow JSON in the repo; not yet run against live accounts';
+    prov = 'Built — counted from the workflow JSON in the repository; not yet run against live accounts';
     figs = [[g.nodes, 'nodes'], [g.workflows.length, 'workflows'], [g.notes, 'sticky notes'], [g.connections, 'connections']];
   } else if (sys.source === 'export') {
     prov = 'Delivered — figures counted directly from the exported workflow JSON';
@@ -116,7 +116,7 @@ function head(sys, g) {
     prov = sys.provLine;
     figs = sys.figs;
   } else {
-    prov = 'Delivered — no workflow export was supplied, so nothing here is counted';
+    prov = 'Delivered — no workflow export was supplied';
   }
   const figHtml = figs.length
     ? `<div class="figs">${figs.map(([v, l]) => `<div><b>${esc(typeof v === 'number' ? num(v) : v)}</b><i class="label">${esc(l)}</i></div>`).join('')}</div>`
@@ -215,12 +215,12 @@ export function withPortedWorkflow(page, home) {
   if (!g || g.workflows.length !== 1 || g.workflows[0].name !== 'Stage Change Router') throw new Error('page: graphs.json should keep the Stage Change Router, and only it, for the Lead-to-Cash page');
   for (const t of ROUTER_SAYS) if (!page.includes(`>${t}</text>`)) throw new Error(`page: the Lead-to-Cash architecture no longer says "${t}"`);
   const role = `${ROUTER_SAYS[0]}: ${ROUTER_SAYS[1]}, ${ROUTER_SAYS[2]}`;
-  const label = '<p class="label-m slabel">482 executing nodes, by type</p>';
+  const label = '<h2 class="label-m slabel">482 executing nodes, by type</h2>';
   const at = page.indexOf('    <section class="run">\n      <span class="snode " aria-hidden="true"></span>' + label);
   if (at === -1 || page.indexOf(label) !== page.lastIndexOf(label)) throw new Error('page: the Lead-to-Cash node inventory has moved');
   const card = workflowCard(g.workflows[0], 'Stage Change Router', role, logoSet(home));
   return page.slice(0, at) + `    <section class="run">
-      <span class="snode " aria-hidden="true"></span><p class="label-m slabel">Stage Change Router, as exported</p>
+      <span class="snode " aria-hidden="true"></span><h2 class="label-m slabel">Stage Change Router, as exported</h2>
       <div class="wrap">${workflowKey(false, g.workflows)}<ul class="wfcs">
         ${card}
       </ul></div>
@@ -232,13 +232,17 @@ function inventory(sys, g) {
   const counts = [...typeCounts(g)].sort((a, b) => b[1] - a[1]);
   const top = counts.slice(0, 8), rest = counts.slice(8).reduce((s, [, v]) => s + v, 0);
   const gates = counts.filter(([t]) => /^(if|switch|filter)$/.test(t)).reduce((s, [, v]) => s + v, 0);
+  const present = ['if', 'switch', 'filter'].filter((t) => counts.some(([k]) => k === t)).map(nodeName);
+  const gateNames = present.length > 1 ? `${present.slice(0, -1).join(', ')} and ${present.at(-1)}` : present[0];
   let shade = 0;
   const colour = (t) => (/^(if|switch|filter)$/.test(t) ? 'var(--accent)' : `var(--viz${(shade++ % 3) + 1})`);
   const rows = top.map(([t, v]) => [t, v, colour(t)]);
   if (rest) rows.push(['other', rest, 'var(--hair)']);
   const pct = (v) => ((v / g.nodes) * 100).toFixed(2);
-  const bar = rows.map(([t, v, c]) => `<span title="${t} ${v}" style="width:${pct(v)}%;background:${c}"></span>`).join('');
-  const keys = rows.map(([t, v, c]) => `<span><i style="background:${c}"></i>${t} <span class="dim">${v}</span></span>`).join('');
+  const bar = rows.map(([t, v, c]) => `<span title="${t === 'other' ? 'Other' : nodeName(t)} ${v}" style="width:${pct(v)}%;background:${c}"></span>`).join('');
+  /* n8n's own names (Edit Fields, not "set"), as on the workflow cards (2026-10-08) */
+  const label = (t) => (t === 'other' ? 'Other' : nodeName(t));
+  const keys = rows.map(([t, v, c]) => `<span><i style="background:${c}"></i>${label(t)} <span class="dim">${v}</span></span>`).join('');
   const notes = sys.prov === 'built'
     ? ` The ${g.notes} sticky notes carry the reasoning on the canvas, at the point it applies.`
     : '';
@@ -246,7 +250,7 @@ function inventory(sys, g) {
   return section(`${num(g.nodes)} executing nodes, by type`,
     `<div class="inv" aria-hidden="true">${bar}</div>
         <div class="invkey">${keys}</div>
-        <p class="small" style="margin-top:22px;max-width:900px"><span style="color:var(--maroon)">${gates} if, switch and filter nodes</span> decide whether anything happens next — the gates are a countable part of the system, not a claim about it.${total}${notes}</p>`);
+        <p class="small" style="margin-top:22px;max-width:900px">${gates ? `The gates, <span style="color:var(--maroon)">${gates} ${gateNames} nodes</span>, decide whether anything happens next: a countable part of the system, not a claim about it.` : ''}${total}${notes}</p>`);
 }
 
 function guards(sys) {
@@ -269,14 +273,14 @@ function builtWith(sys, marks, next) {
       const back = svg.replace(/width="\d+" height="\d+"/, 'width="16" height="16"');
       return `<li class="tnode" tabindex="0" title="${esc(t)}" aria-label="${esc(t)}"><span class="faces"><span class="face">${face}</span><span class="face back">${back}${esc(t)}</span></span></li>`;
     }
-    return `<li class="tnode wide" tabindex="0" aria-label="${esc(t)}"><span class="faces"><span class="face txt">${esc(t)}</span><span class="face back">${esc(t)}</span></span></li>`;
+    return `<li class="tnode wide" tabindex="0" aria-label="${esc(t)}"><span class="faces"><span class="face txt">${esc(t)}</span><span class="face back" aria-hidden="true">${esc(t)}</span></span></li>`;
   }).join('');
   return `<section class="run" style="padding-bottom:96px">
       <span class="snode ghost" aria-hidden="true"></span><h2 class="label-m slabel" style="color:var(--ink3)">Built with</h2>
       <div class="wrap">
         <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:32px;align-items:start">
           <ul class="tools built" style="margin-top:24px">${badges}</ul>
-          <div style="text-align:right;margin-top:24px"><p class="label">Next system</p><a class="link" href="/work/${next.slug}/" style="display:inline-block;margin-top:8px;font-size:16px">${esc(next.name)} →</a></div>
+          <div style="text-align:right;margin-top:24px"><p class="label">Next system</p><a class="link" href="/work/${next.slug}/" style="display:inline-block;margin-top:8px;font-size:16px">${esc(next.name)} <span aria-hidden="true">→</span></a></div>
         </div>
       </div>
     </section>`;
@@ -325,10 +329,12 @@ export function systemMeta(slug) {
     throw new Error(`systems: ${slug}'s description says ${said[0]}; the JSON disagrees`);
   }
   return {
-    title: `${sys.name} — Syed Ali Hamad Gilani`,
+    /* a long name gets a shorter `title` for search results (2026-10-08: Google shows
+       about 60 characters); the page keeps the full name as its heading */
+    title: `${sys.seoTitle || sys.name} — Syed Ali Hamad Gilani`,
     description: sys.description,
     name: sys.name,
-    about: sys.sub,
+    about: sys.name,
     keywords: sys.tools.join(', '),
   };
 }

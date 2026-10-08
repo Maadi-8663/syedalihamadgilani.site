@@ -27,14 +27,14 @@ const body = withBoot(integrationsScenes(withWords(withWords(integrationsPage({ 
 
 /* No count, in the title or the heading — his instruction, 2026-09-29: "dont
    write the number: 45 Tools". The page ends "And a lot more." */
-const title = 'Integrations — tools connected by Syed Ali Hamad Gilani';
+const title = 'Integrations: n8n, CRMs, AI and APIs — Syed Ali Hamad Gilani';
 const description =
-  'What each integration does: n8n, WhatsApp, OpenAI, HubSpot, GoHighLevel, Google Workspace, Shopify, Stripe and the rest of the tools Syed Ali Hamad Gilani connects and builds with.';
+  'The tools Syed Ali Hamad Gilani connects and builds with, grouped by job: n8n, Make, Zapier, OpenAI, WhatsApp, HubSpot, GoHighLevel, Shopify, Stripe and more.';
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: title,
+  name: 'Integrations',
   description,
   url: new URL('/integrations/', Astro.site).href,
   author: { '@id': new URL('/#person', Astro.site).href },

@@ -58,7 +58,7 @@ const strings = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(str
 
 /* Tools the site sets in type because no mark is published for them. A name
    in a stack must be one of these or have a mark, so a typo cannot ship. */
-const TYPESET = new Set(['GoHighLevel', 'HouseCall Pro', 'CallRail', 'Skyvern', 'Apify', 'PandaDoc', 'AssemblyAI']);
+const TYPESET = new Set(['GoHighLevel', 'Housecall Pro', 'CallRail', 'Skyvern', 'Apify', 'PandaDoc', 'AssemblyAI']);
 
 /* ---- the register's rows: figures, sources and the ported system ---------
    (read by src/work/register.js, which /work/ itself is built from) */
@@ -165,7 +165,7 @@ function factsOf(x, projects) {
   const [one, many] = x.noun || ['system', 'systems'];
   return [`<span>${c.total} ${c.total === 1 ? one : many}</span>`,
     c.built ? `<span>${dotFull}${c.delivered} delivered</span>` : `<span>${dotFull}all delivered</span>`,
-    ...(c.built ? [`<span>${dotRing}${c.built} built</span>`] : [])].join('');
+    ...(c.built ? [`<span>${dotRing}${c.built} built</span>`] : [])].join('<span class="sr">, </span>');
 }
 
 function head(x, projects, picture) {
@@ -237,7 +237,7 @@ function booking(n, x) {
           <form class="more-form" action="mailto:${site.email}?subject=${encodeURIComponent(b.subject)}" method="post" enctype="text/plain">
             <label class="q" for="book-msg">${esc(b.q)}</label>
             <textarea id="book-msg" name="Message" rows="6" required placeholder="${esc(b.ph)}"></textarea>
-            <button class="send" type="submit">Book an appointment ${arrow(16)}</button>
+            <button class="send" type="submit">Book a call ${arrow(16)}</button>
             <p class="note">This opens your email app with your message, addressed to <a class="link" href="mailto:${site.email}">${site.email}</a>.</p>
           </form>
         </div>`, { id: 'book-a-call', cls: 'ex-booking' });
@@ -328,7 +328,7 @@ export function expertiseMeta(slug, { work, home, system, sector }) {
   const recs = records({ work, system, sector });
   const projects = check(x, recs, allMarks(home));
   return {
-    title: `${x.title} — Syed Ali Hamad Gilani`,
+    title: `${x.seoTitle || x.title} — Syed Ali Hamad Gilani`,
     description: x.description(counts(x, projects)),
     name: x.title,
     tools: x.stack.flatMap((l) => l.tools.map(([t]) => t)),

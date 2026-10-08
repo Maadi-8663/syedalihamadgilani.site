@@ -55,10 +55,12 @@ export function integrationsPage({ work, home }) {
     return `<li class="icard" tabindex="0"${typeset ? '' : ` style="--brand:${brand}"`}><div class="flip">${front}${back}</div></li>`;
   };
 
-  const tools = (g) => g.tools.filter(([name]) => !CUSTOM[name]).length;
+  /* a group is numbered, not counted (2026-10-08): his rule is no count of
+     the tools on this page, and the count left out Custom Automations, so the
+     first group showed 12 cards under "11 TOOLS" */
   const group = (g, i) => `<section class="group" id="${g.id}">
         <span class="snode" style="top:40px" aria-hidden="true"></span>
-        <div class="ghead"><span class="ring"><svg class="sy " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${g.icon}</svg></span><h2>${esc(g.title)}</h2><span class="n">${String(i + 1).padStart(2, '0')} · ${tools(g)} ${tools(g) === 1 ? 'TOOL' : 'TOOLS'}</span></div>
+        <div class="ghead"><span class="ring"><svg class="sy " width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${g.icon}</svg></span><h2>${esc(g.title)}</h2><span class="n">${String(i + 1).padStart(2, '0')}</span></div>
         <ul class="icards">${g.tools.map(card).join('')}</ul>
       </section>`;
 
@@ -74,7 +76,7 @@ export function integrationsPage({ work, home }) {
         <div class="more-say"><h2 class="more-h serif" id="more">And a lot more.</h2><p class="body rv">Book an appointment to get your manual tasks automated.</p></div>
         <form class="more-form rv" action="mailto:${site.email}?subject=Appointment%3A%20automating%20a%20manual%20task" method="post" enctype="text/plain">
           <label class="q" for="more-msg">What should be automated?</label>
-          <textarea id="more-msg" name="Message" rows="6" required placeholder="The task, how often it happens, and the tools it touches. For example: every new web lead is copied into the CRM by hand, then sent a quote."></textarea>
+          <textarea id="more-msg" name="Message" rows="6" required placeholder="The task, how often it happens and the tools it touches. For example: every new web lead is copied into the CRM by hand, then sent a quote."></textarea>
           <button class="send" type="submit">Book an appointment <svg class="sy" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
           <p class="note">This opens your email app with your message, addressed to <a class="link" href="mailto:${site.email}">${site.email}</a>.</p>
         </form>

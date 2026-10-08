@@ -865,12 +865,12 @@ export const WIDE = new Set(['lead-to-cash-crm', 'adwash']);
 /* What each picture shows, for someone who cannot see it. Said where the
    picture stands alone: at the head of its system's page. */
 export const ALT = {
-  'lead-to-cash-crm': 'Lead sources — ads, calls, forms, chat and bookings — arriving at one pipeline board, beside three contractors’ houses and the follow-ups each stage sends.',
+  'lead-to-cash-crm': 'Leads from ads, calls, forms, chat and bookings feeding one pipeline board for three contractors, and the follow-ups it sends.',
   'aesthetics-voice-agent': 'A phone on a live call with a voice agent, a graduation cap on a stack of books, and the call’s outcome written to a CRM record.',
   'shopify-support-automation': 'Customer emails arriving at a laptop that shows a Shopify order, with a replacement parcel ready beside it.',
-  'lsa-lead-responder': 'A phone answering a Google lead in a chat thread, a stopwatch, a calendar with a booked slot and a technician’s van.',
+  'lsa-lead-responder': 'A phone answering a Google lead in a chat thread, a stopwatch, a calendar with a booked slot, and a technician’s van.',
   'construction-lead-outreach': 'A map with pinned firms, a hard hat, and a row of four emails, the last one stopped by a reply.',
-  'labor-law-outreach': 'A courthouse, a clock, a sheet of prospects and emails going out, one of them answered.',
+  'labor-law-outreach': 'A courthouse, a clock, a sheet of prospects, and emails going out, one of them answered.',
   'linkedin-lead-pipeline': 'Profile cards on a conveyor, passing a checking gate into a database, with a magnifier over the first.',
   adwash: 'An ads dashboard with a bid slider, a sun and a rain cloud beside it, a payment card, coins and a target.',
   'just-grade-metrics': 'A scorecard on a clipboard beside a call transcript with one quoted line marked.',
@@ -879,10 +879,10 @@ export const ALT = {
   'knowledge-assistant': 'Binders and a folder beside a chat window whose answer marks the passage it quotes.',
   'client-onboarding-pipeline': 'Five rising steps — a signed contract, a payment, a folder, a channel — ending at a flag.',
   'weekly-ops-report': 'Five sources feeding one spreadsheet report with its total row marked, beside a weekly calendar.',
-  'content-repurposing-line': 'A video recording turning into a row of post cards, with a person’s approval between them.',
+  'content-repurposing-line': 'A video recording turning into a row of posts, with a person’s approval between them.',
   'crm-rebuild-migration': 'Records moving from an old database to a new one, watched by a dry-run check.',
   'this-site': 'A laptop and a phone showing this site’s home page, with the Astro mark and a struck-out JavaScript mark.',
-  'x-ai-automation': 'An n8n workflow on a screen — mail read, a model’s call, a gate, a sheet written, a team told — between an opened email and a spreadsheet.',
+  'x-ai-automation': 'An n8n workflow — mail read, a model called, a gate, a sheet written, a team told — between an email and a spreadsheet.',
   'x-voice-chat-agents': 'A phone on a call, the conversation in two speech bubbles, and a calendar with the job booked.',
   'x-llm-systems': 'A pile of documents searched with a magnifier, a model as a block, and an answer in a fixed shape that cites its source.',
   'x-web-development': 'A code editor, the page it builds in a browser, and the same page on a phone.',

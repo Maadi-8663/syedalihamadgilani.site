@@ -27,7 +27,7 @@ const person = {
   name: site.name,
   alternateName: site.alternateNames,
   jobTitle: site.role,
-  description: site.bio,
+  description: site.summary,
   url: origin,
   email: `mailto:${site.email}`,
   address: { '@type': 'PostalAddress', addressLocality: 'Lahore', addressCountry: 'PK' },
@@ -46,7 +46,7 @@ const identity = profile
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -58,7 +58,7 @@ const identity = profile
 
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={site.name} />
-    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale" content="en_GB" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />

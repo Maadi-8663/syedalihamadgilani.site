@@ -19,7 +19,10 @@
    this file before the page stylesheets it overrides. */
 
 /* ---- things that exist only on phones -------------------------------- */
-html .nav .menu,html .mflow,html .march{display:none}
+html .nav .menu,html .mflow{display:none}
+/* the architecture as a list: shown on phones, read (not seen) on a desktop, where the
+   diagram is an image with only a title (2026-10-08) */
+html .march{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
 /* Instructions that name an input are swapped by what the screen can do, not
    by its width: "Hover a mark" becomes "Tap a mark" on a touch screen
@@ -138,7 +141,7 @@ html .if-touch{display:none}
   html .figs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 12px;margin-top:30px}
   html .figs b{font-size:34px}
   html .arch-track{display:none}
-  html .march{display:block;margin-top:6px}
+  html .march{display:block;position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;margin-top:6px}
   html .ma-cap{display:flex;align-items:center;gap:10px;margin:26px 0 10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
   html .ma-cap::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
   html .ma-src{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;list-style:none;margin:0;padding:0}

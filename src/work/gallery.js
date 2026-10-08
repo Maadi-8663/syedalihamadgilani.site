@@ -30,6 +30,7 @@ import { integrationMarks } from '../integrations/marks.js';
 import { expertiseMarks } from '../expertise/marks.js';
 import { registerRows } from './register.js';
 import { projectCard } from './cards.js';
+import { elementEnd } from '../motion/scenes.js';
 
 /* every tool mark the site has, by name */
 export const allMarks = (home) => new Map([...toolMarks(home), ...integrationMarks(), ...expertiseMarks()]);
@@ -129,10 +130,13 @@ export function withSectorGallery(page, { home, work }) {
     const sec = html.slice(at, end);
     const slugs = [...sec.matchAll(/<a class="row[^"]*" id="([^"]+)"/g)].map((m) => m[1]);
     if (!slugs.length) throw new Error(`gallery: no rows in the sector page's #${id}`);
+    /* the rows' own container, to its matching close: until 2026-10-08 this ran to
+       the section's last link, which in #built is adwash.ai's inside the platform
+       block after the rows, so the swap cut that block away (live from 2026-10-06) */
     const from = sec.indexOf('<div style="margin-top:12px">');
-    const last = sec.lastIndexOf('</a>');
-    const to = sec.indexOf('</div>', last) + '</div>'.length;
-    if (from === -1 || last < from || to < last) throw new Error(`gallery: the rows of the sector page's #${id} have moved`);
+    if (from === -1) throw new Error(`gallery: the rows of the sector page's #${id} have moved`);
+    const to = elementEnd(sec, from);
+    if (!/^<div style="margin-top:12px">(\s*<a class="row[\s\S]*?<\/a>)+\s*<\/div>$/.test(sec.slice(from, to))) throw new Error(`gallery: the rows' container in #${id} holds something besides rows`);
     const cards = slugs.map((slug) => {
       const r = recs.get(slug);
       if (!r) throw new Error(`gallery: the sector page lists ${slug}, which is not a system`);

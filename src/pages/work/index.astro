@@ -28,14 +28,14 @@ import '../../styles/theme.css'; // last: the theme overrides the page tokens
    boot.css), which wraps the page last. */
 const body = withBoot(withBrandMark(withIntegrationsLink(workScenes(withWords(withGallery(ported, { home }), [/<h1 class="serif"[^>]*>/], 'load')))));
 
-const title = 'Work — sixteen systems by Syed Ali Hamad Gilani';
+const title = 'AI Automation Portfolio: 16 Systems — Syed Ali Hamad Gilani';
 const description =
-  'Nine delivered for clients, seven built with the workflow JSON in the repo. Every figure is counted or attributed; nothing is estimated.';
+  '16 systems by Syed Ali Hamad Gilani: n8n automations, AI voice agents and two SaaS platforms. Nine delivered, seven built; every figure counted or attributed.';
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
-  name: title,
+  name: 'AI automation portfolio',
   description,
   url: new URL('/work/', Astro.site).href,
   author: { '@id': new URL('/#person', Astro.site).href },
