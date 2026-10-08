@@ -157,19 +157,25 @@ function counts(x, projects) {
   return { total, built, delivered: total - built, word: WORDS[total] || String(total) };
 }
 
-function head(x, projects, picture) {
+/* "14 systems · 7 delivered · 7 built": the head of the page prints it, and
+   since 2026-10-08 so does the page's card on the home page (pile.js), from
+   this one function, so the two cannot disagree. */
+function factsOf(x, projects) {
   const c = counts(x, projects);
   const [one, many] = x.noun || ['system', 'systems'];
-  const facts = [`<span>${c.total} ${c.total === 1 ? one : many}</span>`,
+  return [`<span>${c.total} ${c.total === 1 ? one : many}</span>`,
     c.built ? `<span>${dotFull}${c.delivered} delivered</span>` : `<span>${dotFull}all delivered</span>`,
-    ...(c.built ? [`<span>${dotRing}${c.built} built</span>`] : [])];
+    ...(c.built ? [`<span>${dotRing}${c.built} built</span>`] : [])].join('');
+}
+
+function head(x, projects, picture) {
   return `<div class="wrap ex-top">
       <p class="label ex-crumb"><a href="/#expertise">Expertise</a> &nbsp;/&nbsp; <span>${pad(x.n)}</span></p>
       <div class="ex-head">
         <div>
           <h1 class="serif">${esc(x.title)}</h1>
           <p class="body">${esc(x.lede)}</p>
-          <p class="label-m ex-facts">${facts.join('')}</p>
+          <p class="label-m ex-facts">${factsOf(x, projects)}</p>
           <p class="ex-cta"><a class="ex-jump" href="#book-a-call">Book a call ${arrowDown}</a></p>
         </div>
         <div class="ex-pic pic pic--${picture[0]}">${picture[1]}</div>
@@ -310,6 +316,13 @@ ${cut(work, '<footer>', '</footer>')}
 
 /* For the route: every slug, and what each page's head needs. */
 export const SLUGS = EXPERTISE.map((x) => x.slug);
+
+/* For the home page's card: the page's own counts, checked against their
+   sources exactly as the page is. */
+export function expertiseFacts(slug, { work, home, system, sector }) {
+  const x = find(slug);
+  return factsOf(x, check(x, records({ work, system, sector }), allMarks(home)));
+}
 export function expertiseMeta(slug, { work, home, system, sector }) {
   const x = find(slug);
   const recs = records({ work, system, sector });

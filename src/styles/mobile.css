@@ -76,14 +76,8 @@ html .if-touch{display:none}
   html .cluster .tile{position:static;width:auto;margin:0;aspect-ratio:1;animation:none}
   html .cluster .tile .br{width:44%;height:44%}
 
-  /* ---- home: expertise, a swipeable row of picture cards -------------- */
-  html .skills{display:flex;gap:12px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x mandatory;scrollbar-width:none;
-    margin:24px calc(-1 * var(--edge)) 0;padding:0 var(--edge) 4px;scroll-padding-inline:var(--edge)}
-  html .skills::-webkit-scrollbar{display:none}
-  html .skills .skill{--pad:18px;flex:0 0 min(84%,340px);scroll-snap-align:start;border-radius:18px;animation:none}
-  html .skills .skill h3{font-size:17px}
-  html .skills .skill p{font-size:14.5px;line-height:1.5}
-  html .skills .skill .stack i{display:inline}
+  /* home: expertise — until 2026-10-08 a row of picture cards to swipe; now
+     a pile of full-width cards, as on a desktop (cards.css) */
 
   /* ---- home: contact -------------------------------------------------- */
   html .way{flex-wrap:wrap}
@@ -186,18 +180,6 @@ html .if-touch{display:none}
     font-size:12px;box-shadow:0 16px 32px -14px rgba(40,36,30,.6);animation:m-toast 220ms var(--enter) both}
   @keyframes m-toast{from{opacity:0;transform:translate(-50%,10px)}}
 }
-
-/* The expertise row shows where you are in it: a thin track under the cards
-   whose oxide thumb follows the swipe. Only where scroll timelines exist. */
-@supports (animation-timeline: scroll()){
-@media (max-width:719px){
-  html #expertise{timeline-scope:--skills}
-  html .skills{scroll-timeline:--skills inline}
-  html #expertise::after{content:"";display:block;height:2px;margin-top:18px;border-radius:1px;
-    background:linear-gradient(var(--accent),var(--accent)) 0 0/22% 100% no-repeat,var(--hair);
-    animation:m-track linear both;animation-timeline:--skills}
-  @keyframes m-track{to{background-position:100% 0,0 0}}
-}}
 
 /* The flow lights step by step as it is read — the phone's version of the
    desktop hub running with the scroll. Base styles above are the lit end

@@ -135,8 +135,8 @@ html .track,html .scene,html .panel{display:contents}
 
 /* ---- side by side: items in a row a beat apart, left to right ------------- */
 @media (prefers-reduced-motion:no-preference) and (min-width:720px){
-  html .skills>.it:nth-child(3n+2),html .sects>.it:nth-child(3n+2){--col:1}
-  html .skills>.it:nth-child(3n+3),html .sects>.it:nth-child(3n+3){--col:2}
+  html .sects>.it:nth-child(3n+2){--col:1}
+  html .sects>.it:nth-child(3n+3){--col:2}
   html .icards>.it:nth-child(2n){--col:1}
   /* a run of tool badges ripples along, a few at a time */
   html .tools>.it{--cs:.8vh;--col:mod(var(--i),10)}
@@ -164,10 +164,5 @@ html .track,html .scene,html .panel{display:contents}
 /* How it runs, as a list (under 900px): each step comes in as a row */
 @media (prefers-reduced-motion:no-preference) and (max-width:899px){
   html .fs{animation:s-in linear both;animation-timeline:view();animation-range:entry 0% entry 26vh}
-}
-/* phones: the expertise row is a carousel — its cards keep the carousel's
-   motion (motion.css) */
-@media (prefers-reduced-motion:no-preference) and (max-width:719px){
-  html .skills .skill.it.k-a.k-a{animation:mo-carousel linear both;animation-timeline:view(inline);animation-range:cover 0% cover 100%}
 }
 }

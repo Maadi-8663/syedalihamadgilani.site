@@ -16,8 +16,9 @@
      - the load-time motion: a page's first screen (headings word by word,
        the register heads), which is on view when the page opens;
      - positions — things whose state IS the scroll position: the reading
-       hairline, the hero's exit, the sector photographs' drift, the phone's
-       expertise carousel. The page sheets keep theirs (spine, lit rings,
+       hairline, the hero's exit, the sector photographs' drift (the phone's
+       expertise carousel went on 2026-10-08, when "What I do" became a
+       pile: cards.css). The page sheets keep theirs (spine, lit rings,
        drawn wires, pinned diagrams); scenes.css re-times the ones that sit
        in a pinned screen, which would otherwise stop where the pin caught
        them.
@@ -79,7 +80,7 @@ html:root{
 }
 
 /* ==========================================================================
-   POSITIONS — the hairline, the hero's exit, the photographs' drift, the phone carousel
+   POSITIONS — the hairline, the hero's exit, the photographs' drift
    ========================================================================== */
 @supports (animation-timeline: view()){
 @media (prefers-reduced-motion:no-preference){
@@ -90,7 +91,6 @@ html:root{
   @keyframes mo-drift{from{translate:0 -6%}to{translate:0 6%}}
   @keyframes mo-hero-copy{to{translate:0 -11vh;opacity:.12}}
   @keyframes mo-hero-cluster{to{translate:0 -17vh;scale:1.12;opacity:0}}
-  @keyframes mo-carousel{0%{scale:.9;opacity:.5}32%,68%{scale:1;opacity:1}100%{scale:.9;opacity:.5}}
   @keyframes mo-progress{from{scale:0 1}to{scale:1 1}}
 
   /* ---- reading progress: a hairline of oxide across the top ------------- */
@@ -108,8 +108,6 @@ html:root{
 
 }
 @media (max-width:719px) and (prefers-reduced-motion:no-preference){
-  /* the expertise row: the card in front is full size, its neighbours sit back */
-  html body .skills .skill.rv:not(.it){animation:mo-carousel linear both;animation-timeline:view(inline);animation-range:cover 0% cover 100%}
   html .hero>div:first-child{animation-name:mo-hero-copy-sm}
   html .hero>.cluster{animation:none}
   @keyframes mo-hero-copy-sm{to{translate:0 -6vh}}

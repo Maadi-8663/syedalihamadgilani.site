@@ -22,8 +22,8 @@ function markIn(page, re, items, from = 0) {
 
 /* ---- / ------------------------------------------------------------------- */
 function homeScenes_(page) {
-  // what arrives, section by section
-  page = markIn(page, /<section class="sec" id="expertise">/, [[/<article class="skill/, 'a']]);
+  // what arrives, section by section — not "What I do": since 2026-10-08
+  // its cards are a pile (src/expertise/pile.js), which is their motion
   page = markIn(page, /<section class="sec" id="contact">/, [[/<(?:a|span) class="way"/, 'c'], [/<form class="compose/, 'a']]);
   page = markIn(page, /<section class="sec" id="experience">/, [[/<li\b/, 'c'], [/<p class="edu/, 't']]);
   page = markIn(page, /<section class="sec last" id="niches">/, [[/<a class="sect/, 'd'], [/<p class="note/, 't']]);
